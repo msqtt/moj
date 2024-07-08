@@ -1,0 +1,4 @@
+devbox.lock
+devbox.json
+.go/pkg/mod/cache
+.go
