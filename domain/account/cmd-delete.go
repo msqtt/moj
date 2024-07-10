@@ -1,0 +1,25 @@
+package account
+
+import "moj/domain/pkg/queue"
+
+type DeleteAccountCmd struct {
+	AccountID int
+	Time      int64
+}
+
+type DeleteAccountCmdHandler struct {
+	repo AccountRepo
+}
+
+func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccountCmd) error {
+	acc, err := d.repo.findAccountByID(cmd.AccountID)
+	if err != nil {
+		return err
+	}
+
+	err = acc.delete(queue, cmd)
+	if err != nil {
+		return err
+	}
+	return d.repo.save(&acc)
+}
