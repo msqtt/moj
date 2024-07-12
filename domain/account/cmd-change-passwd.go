@@ -12,7 +12,7 @@ type ChangePasswdAccountCmd struct {
 }
 
 type ChangePasswdAccountCmdHandler struct {
-	repo  AccountRepo
+	repo  AccountRepository
 	crypt crypt.Cryptor
 }
 

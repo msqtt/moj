@@ -8,7 +8,7 @@ type SetStatusAccountCmd struct {
 }
 
 type SetStatusAccountCmdHandler struct {
-	repo AccountRepo
+	repo AccountRepository
 }
 
 func (s *SetStatusAccountCmdHandler) Handle(queue queue.EventQueue,

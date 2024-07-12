@@ -1,6 +1,6 @@
 package captcha
 
-type CaptchaRepo interface {
+type CaptchaRepository interface {
 	findLatestCaptcha(accountID int, content string, captchaType CaptchaType) (*Captcha, error)
 	save(captcha *Captcha) error
 }

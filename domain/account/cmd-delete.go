@@ -8,7 +8,7 @@ type DeleteAccountCmd struct {
 }
 
 type DeleteAccountCmdHandler struct {
-	repo AccountRepo
+	repo AccountRepository
 }
 
 func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccountCmd) error {

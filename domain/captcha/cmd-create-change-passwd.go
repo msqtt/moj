@@ -9,7 +9,7 @@ type CreateChangePasswdCaptchaCmd struct {
 }
 
 type CreateChangePasswdCaptchaCmdHandler struct {
-	repo CaptchaRepo
+	repo CaptchaRepository
 }
 
 func (h *CreateChangePasswdCaptchaCmdHandler) Handle(cmd *CreateChangePasswdCaptchaCmd) error {

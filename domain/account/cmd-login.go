@@ -10,7 +10,7 @@ type LoginAccountCmd struct {
 }
 
 type LoginAccountCmdHandler struct {
-	repo AccountRepo
+	repo AccountRepository
 }
 
 func (l *LoginAccountCmdHandler) Handle(queue queue.EventQueue, cmd LoginAccountCmd) error {

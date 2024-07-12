@@ -9,7 +9,7 @@ type ModifyInfoAccountCmd struct {
 }
 
 type ModifyInfoAccountCmdHandler struct {
-	repo AccountRepo
+	repo AccountRepository
 }
 
 func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {

@@ -13,7 +13,7 @@ type CreateAccountCmd struct {
 }
 
 type CreateAccountCmdHandler struct {
-	repo  AccountRepo
+	repo  AccountRepository
 	crypt crypt.Cryptor
 }
 
