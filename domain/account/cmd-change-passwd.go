@@ -27,5 +27,5 @@ func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
 	if err != nil {
 		return err
 	}
-	return h.repo.save(&acc)
+	return h.repo.save(acc)
 }

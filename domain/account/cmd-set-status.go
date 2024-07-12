@@ -23,5 +23,5 @@ func (s *SetStatusAccountCmdHandler) Handle(queue queue.EventQueue,
 		return err
 	}
 
-	return s.repo.save(&acc)
+	return s.repo.save(acc)
 }

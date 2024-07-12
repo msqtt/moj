@@ -21,5 +21,5 @@ func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyI
 	if err != nil {
 		return err
 	}
-	return m.repo.save(&account)
+	return m.repo.save(account)
 }

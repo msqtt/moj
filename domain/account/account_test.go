@@ -6,31 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestIsURL(t *testing.T) {
-	validURLs := []string{
-		"http://example.com",
-		"https://example.com",
-		"http://example.com/page",
-		"https://example.com/page?param=value",
-	}
-
-	for _, url := range validURLs {
-		require.True(t, isURL(url), "URL: %s", url)
-	}
-
-	invalidURLs := []string{
-		"example.com",
-		"http://",
-		"https://",
-		"https://",
-		"ftp://example.com",
-	}
-
-	for _, url := range invalidURLs {
-		require.False(t, isURL(url), "URL: %s", url)
-	}
-}
-
 func TestNickName(t *testing.T) {
 	validNames := []string{"user_123", "hello", "张三", "李四王五",
 		"铁臂阿童木"}
@@ -73,29 +48,4 @@ func TestIsPasswd(t *testing.T) {
 	// 测试缺少特殊字符
 	noSpecialPasswd := "Password123"
 	require.False(t, isPasswd(noSpecialPasswd))
-}
-
-func TestIsEmail(t *testing.T) {
-	// 有效邮箱
-	validEmails := []string{
-		"example@example.com",
-		"test.user@example.org",
-	}
-
-	// 无效邮箱
-	invalidEmails := []string{
-		"invalid.email",
-		"@example.com",
-		"test@",
-	}
-
-	// 测试有效邮箱
-	for _, email := range validEmails {
-		require.True(t, isEmail(email), "Email: %s", email)
-	}
-
-	// 测试无效邮箱
-	for _, email := range invalidEmails {
-		require.False(t, isEmail(email), "Email: %s", email)
-	}
 }

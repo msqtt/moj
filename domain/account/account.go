@@ -2,6 +2,7 @@ package account
 
 import (
 	"errors"
+	"moj/domain/pkg/common"
 	"moj/domain/pkg/crypt"
 	"moj/domain/pkg/queue"
 	"regexp"
@@ -28,7 +29,7 @@ type Account struct {
 }
 
 func NewAccount(cry crypt.Cryptor, email, passwd, nickName string) (acc *Account, err error) {
-	if !isEmail(email) {
+	if !common.IsEmail(email) {
 		err = errors.Join(err, ErrInValidEmail)
 	}
 
@@ -82,7 +83,7 @@ func (a *Account) login(queue queue.EventQueue, cmd LoginAccountCmd) error {
 }
 
 func (a *Account) modifyInfo(queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {
-	if !isURL(cmd.AvatarLink) {
+	if !common.IsURL(cmd.AvatarLink) {
 		return ErrInValidAvatarLink
 	}
 	if !isNickName(cmd.NickName) {
@@ -148,19 +149,6 @@ func (a *Account) setStatus(queue queue.EventQueue, cmd SetStatusAccountCmd) err
 		Enabled:   cmd.Enabled,
 	}
 	return queue.EnQueue(event)
-}
-
-// isEmail checks whether given email is a valid email.
-func isEmail(email string) bool {
-	regex := regexp.MustCompile(`[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+`)
-	return regex.MatchString(email)
-}
-
-// isURL checks whether given link is a valid URL.
-func isURL(link string) bool {
-	regex := regexp.MustCompile(
-		`^(http|https)://[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$`)
-	return regex.MatchString(link)
 }
 
 // isNickName checks whether given name is a valid nickname.

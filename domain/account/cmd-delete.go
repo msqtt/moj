@@ -21,5 +21,5 @@ func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccou
 	if err != nil {
 		return err
 	}
-	return d.repo.save(&acc)
+	return d.repo.save(acc)
 }
