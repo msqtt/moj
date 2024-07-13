@@ -1,0 +1,46 @@
+package judgement
+
+import "moj/domain/pkg/queue"
+
+type Case struct {
+	Number       int
+	InputContent string
+	OuputContent string
+}
+
+type ExecutionCmd struct {
+	RecordID           int
+	QuestionID         int
+	QuestionModifyTime int64
+	Cases              []Case
+	Language           string
+	Code               string
+	CodeHash           string
+	Time               int64
+}
+
+type ExecutionCmdHandler struct {
+	repo       JudgementRepository
+	exeService ExecutionService
+}
+
+func (e *ExecutionCmdHandler) Handle(queue queue.EventQueue, cmd ExecutionCmd) error {
+	// Check if there are already cached before execution
+	jud, err := e.repo.findJudgementByHash(cmd.QuestionID, cmd.CodeHash, cmd.QuestionModifyTime)
+	if err != nil {
+		return err
+	}
+
+	if jud != nil {
+		return jud.sendExecutionEvent(queue, cmd)
+	}
+
+	jud = NewJudgement(cmd.RecordID, cmd.QuestionID, len(cmd.Cases),
+		cmd.Language, cmd.Code, cmd.CodeHash, cmd.Time)
+
+	err = jud.execute(queue, e.exeService, cmd)
+	if err != nil {
+		return err
+	}
+	return e.repo.save(jud)
+}
