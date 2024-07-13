@@ -1,0 +1,99 @@
+package question
+
+import (
+	"errors"
+	"fmt"
+)
+
+type QuestionLevel int
+
+const (
+	QuestionLevelEasy QuestionLevel = iota
+	QuestionLevelNormal
+	QuestionLevelHard
+)
+
+func (q QuestionLevel) IsValid() bool {
+	return q >= QuestionLevelEasy && q <= QuestionLevelHard
+}
+
+type QuestionLanguage string
+
+const (
+	QuestionLangC      QuestionLanguage = "c"
+	QuestionLangCpp    QuestionLanguage = "cpp"
+	QuestionLangGo     QuestionLanguage = "golang"
+	QuestionLangJava   QuestionLanguage = "java"
+	QuestionLangPython QuestionLanguage = "python"
+	QuestionLangRust   QuestionLanguage = "rust"
+)
+
+func (q QuestionLanguage) IsValid() bool {
+	return q == QuestionLangC || q == QuestionLangCpp || q == QuestionLangGo ||
+		q == QuestionLangJava || q == QuestionLangPython || q == QuestionLangRust
+}
+
+var (
+	ErrInValidQuestionLanguage = errors.New("invalid language")
+	ErrInvalidQuestionLevel    = errors.New("invalid level")
+	ErrEmpltyCases             = errors.New("empty cases")
+)
+
+type Question struct {
+	QuestionID      int
+	Enabled         bool
+	Title           string
+	Text            string
+	Level           QuestionLevel
+	AllowedLanguage []QuestionLanguage
+	TimeLimit       int
+	MemoryLimit     int
+	Tags            []string
+	CreateTime      int64
+	ModifyTime      int64
+}
+
+func NewQuestion(questionID int, title, text string, level QuestionLevel,
+	langs []QuestionLanguage, timeLimit, memoryLimit int,
+	tags []string, createTime, modifyTime int64, cases []Case) (que *Question, err error) {
+
+	if !level.IsValid() {
+		err = ErrInvalidQuestionLevel
+	}
+
+	if err1 := ValidCases(cases); err1 != nil {
+		err = errors.Join(err, err1)
+	}
+
+	for _, lang := range langs {
+		if !lang.IsValid() {
+			err = errors.Join(err, fmt.Errorf("%w: %s", ErrInValidQuestionLanguage, lang))
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	que = &Question{
+		QuestionID:      questionID,
+		Enabled:         false,
+		Title:           title,
+		Text:            text,
+		Level:           level,
+		AllowedLanguage: langs,
+		TimeLimit:       timeLimit,
+		MemoryLimit:     memoryLimit,
+		Tags:            tags,
+		CreateTime:      createTime,
+		ModifyTime:      modifyTime,
+	}
+	return
+}
+
+func ValidCases(cases []Case) error {
+	if len(cases) == 0 {
+		return ErrEmpltyCases
+	}
+	return nil
+}
