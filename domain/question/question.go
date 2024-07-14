@@ -46,6 +46,7 @@ type Question struct {
 	Text            string
 	Level           QuestionLevel
 	AllowedLanguage []QuestionLanguage
+	Case            []Case
 	TimeLimit       int
 	MemoryLimit     int
 	Tags            []string
@@ -87,6 +88,7 @@ func NewQuestion(questionID int, title, text string, level QuestionLevel,
 		Tags:            tags,
 		CreateTime:      createTime,
 		ModifyTime:      modifyTime,
+		Case:            cases,
 	}
 	return
 }
