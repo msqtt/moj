@@ -55,3 +55,10 @@ func TestIsEmail(t *testing.T) {
 		require.False(t, IsEmail(email), "Email: %s", email)
 	}
 }
+
+func TestSha1(t *testing.T) {
+	t.Log(Sha1("hello world"))
+
+	require.Equal(t, Sha1("hello"), Sha1("hello"))
+	require.NotEqual(t, Sha1("hello"), Sha1("Bye"))
+}

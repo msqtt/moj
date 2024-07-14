@@ -1,6 +1,8 @@
 package common
 
 import (
+	"crypto/sha1"
+	"fmt"
 	"math/rand"
 	"regexp"
 )
@@ -24,4 +26,9 @@ func RandomStr(n int) (ret string) {
 		ret += string(alphbet[rand.Intn(len(alphbet))])
 	}
 	return
+}
+
+func Sha1(str string) string {
+	hashBytes := sha1.Sum([]byte(str))
+	return fmt.Sprintf("%x", hashBytes)
 }
