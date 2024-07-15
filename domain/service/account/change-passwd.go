@@ -1,0 +1,56 @@
+package account
+
+import (
+	"errors"
+	"moj/domain/account"
+	"moj/domain/captcha"
+	"moj/domain/pkg/queue"
+	"time"
+)
+
+var ErrFailedToChangePasswd = errors.New("failed to change password")
+
+type ChangePasswdCmd struct {
+	AccountID int
+	Email     string
+	Password  string
+	Captcha   string
+}
+
+type ChangePasswdService struct {
+	changePasswdAccountCmdHandler account.ChangePasswdAccountCmdHandler
+	captchaRepository             captcha.CaptchaRepository
+}
+
+func NewChangePasswdService(changePasswdAccountCmdHandler account.ChangePasswdAccountCmdHandler,
+	captchaRepository captcha.CaptchaRepository) *ChangePasswdService {
+	return &ChangePasswdService{
+		changePasswdAccountCmdHandler: changePasswdAccountCmdHandler,
+		captchaRepository:             captchaRepository,
+	}
+}
+
+func (s *ChangePasswdService) Handle(queue queue.EventQueue, cmd ChangePasswdCmd) error {
+	cap, err := s.captchaRepository.FindLatestCaptcha(cmd.Email, cmd.Captcha,
+		captcha.CaptchaTypeChangePasswd)
+	if err != nil {
+		return err
+	}
+	if cap == nil {
+		return ErrCaptchaNotFound
+	}
+	if cap.IsExpired(time.Now().Unix()) {
+		return ErrCaptchaAlreadyExpired
+	}
+
+	changePasswdAccountCmd := account.ChangePasswdAccountCmd{
+		AccountID: cmd.AccountID,
+		Password:  cmd.Password,
+		Time:      time.Now().Unix(),
+	}
+	err = s.changePasswdAccountCmdHandler.Handle(queue, changePasswdAccountCmd)
+	if err != nil {
+		return errors.Join(ErrFailedToChangePasswd, err)
+	}
+	return nil
+}
