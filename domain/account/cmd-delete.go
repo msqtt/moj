@@ -12,7 +12,7 @@ type DeleteAccountCmdHandler struct {
 }
 
 func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccountCmd) error {
-	acc, err := d.repo.findAccountByID(cmd.AccountID)
+	acc, err := d.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -21,5 +21,5 @@ func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccou
 	if err != nil {
 		return err
 	}
-	return d.repo.save(acc)
+	return d.repo.Save(acc)
 }

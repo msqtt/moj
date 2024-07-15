@@ -13,7 +13,7 @@ type ModifyInfoAccountCmdHandler struct {
 }
 
 func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {
-	account, err := m.repo.findAccountByID(cmd.AccountID)
+	account, err := m.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -21,5 +21,5 @@ func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyI
 	if err != nil {
 		return err
 	}
-	return m.repo.save(account)
+	return m.repo.Save(account)
 }

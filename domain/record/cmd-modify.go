@@ -19,12 +19,12 @@ type ModifyRecordCmdHandler struct {
 }
 
 func (h *ModifyRecordCmdHandler) Handle(queue queue.EventQueue, cmd ModifyRecordCmd) error {
-	rec, err := h.repo.findRecordByID(cmd.RecordID)
+	rec, err := h.repo.FindRecordByID(cmd.RecordID)
 	if err != nil {
 		return err
 	}
 
 	rec.modify(queue, cmd)
 
-	return h.repo.save(rec)
+	return h.repo.Save(rec)
 }

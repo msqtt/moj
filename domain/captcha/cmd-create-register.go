@@ -16,5 +16,5 @@ func (h *CreateRegisterCaptchaCmdHandler) Handle(cmd *CreateRegisterCaptchaCmd) 
 	if err != nil {
 		return err
 	}
-	return h.repo.save(cap)
+	return h.repo.Save(cap)
 }

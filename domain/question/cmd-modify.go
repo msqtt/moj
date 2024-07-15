@@ -19,7 +19,7 @@ type ModifyQuestionCmdHandler struct {
 }
 
 func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) error {
-	ques, err := h.repo.findQuestionByID(cmd.QuestionID)
+	ques, err := h.repo.FindQuestionByID(cmd.QuestionID)
 	if err != nil {
 		return err
 	}
@@ -29,5 +29,5 @@ func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) error {
 	if err != nil {
 		return err
 	}
-	return h.repo.save(ques2)
+	return h.repo.Save(ques2)
 }

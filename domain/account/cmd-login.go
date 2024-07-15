@@ -14,7 +14,7 @@ type LoginAccountCmdHandler struct {
 }
 
 func (l *LoginAccountCmdHandler) Handle(queue queue.EventQueue, cmd LoginAccountCmd) error {
-	account, err := l.repo.findAccountByID(cmd.AccountID)
+	account, err := l.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}

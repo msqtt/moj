@@ -13,7 +13,7 @@ type SetStatusAccountCmdHandler struct {
 
 func (s *SetStatusAccountCmdHandler) Handle(queue queue.EventQueue,
 	cmd SetStatusAccountCmd) error {
-	acc, err := s.repo.findAccountByID(cmd.AccountID)
+	acc, err := s.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -23,5 +23,5 @@ func (s *SetStatusAccountCmdHandler) Handle(queue queue.EventQueue,
 		return err
 	}
 
-	return s.repo.save(acc)
+	return s.repo.Save(acc)
 }

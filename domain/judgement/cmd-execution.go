@@ -26,7 +26,7 @@ type ExecutionCmdHandler struct {
 
 func (e *ExecutionCmdHandler) Handle(queue queue.EventQueue, cmd ExecutionCmd) error {
 	// Check if there are already cached before execution
-	jud, err := e.repo.findJudgementByHash(cmd.QuestionID, cmd.CodeHash, cmd.QuestionModifyTime)
+	jud, err := e.repo.FindJudgementByHash(cmd.QuestionID, cmd.CodeHash, cmd.QuestionModifyTime)
 	if err != nil {
 		return err
 	}
@@ -42,5 +42,5 @@ func (e *ExecutionCmdHandler) Handle(queue queue.EventQueue, cmd ExecutionCmd) e
 	if err != nil {
 		return err
 	}
-	return e.repo.save(jud)
+	return e.repo.Save(jud)
 }

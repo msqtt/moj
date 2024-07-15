@@ -16,7 +16,7 @@ type ModifyGameCmdHandler struct {
 }
 
 func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd) error {
-	game, err := h.repo.findGameByID(cmd.GameID)
+	game, err := h.repo.FindGameByID(cmd.GameID)
 	if err != nil {
 		return err
 	}
@@ -26,5 +26,5 @@ func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd)
 		return err
 	}
 
-	return h.repo.save(game)
+	return h.repo.Save(game)
 }

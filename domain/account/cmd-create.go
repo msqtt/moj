@@ -24,7 +24,7 @@ func (c *CreateAccountCmdHandler) Handle(queue queue.EventQueue,
 		return err
 	}
 
-	err = c.repo.save(acc)
+	err = c.repo.Save(acc)
 	if err != nil {
 		return err
 	}

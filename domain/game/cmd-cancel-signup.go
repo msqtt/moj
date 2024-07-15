@@ -13,10 +13,10 @@ type CancelSignUpGameCmdHandler struct {
 }
 
 func (h *CancelSignUpGameCmdHandler) Handle(queue queue.EventQueue, cmd CancelSignUpGameCmd) error {
-	game, err := h.repo.findGameByID(cmd.GameID)
+	game, err := h.repo.FindGameByID(cmd.GameID)
 	if err != nil {
 		return err
 	}
 
-	return game.cancelSignUp(queue, h.repo.deletSignUpAccount, cmd)
+	return game.cancelSignUp(queue, h.repo.DeletSignUpAccount, cmd)
 }

@@ -18,7 +18,7 @@ type ChangePasswdAccountCmdHandler struct {
 
 func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
 	cmd ChangePasswdAccountCmd) error {
-	acc, err := h.repo.findAccountByID(cmd.AccountID)
+	acc, err := h.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -27,5 +27,5 @@ func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
 	if err != nil {
 		return err
 	}
-	return h.repo.save(acc)
+	return h.repo.Save(acc)
 }

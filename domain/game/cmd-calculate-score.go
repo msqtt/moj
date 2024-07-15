@@ -17,7 +17,7 @@ type CalculateScoreCmdHandler struct {
 }
 
 func (h *CalculateScoreCmdHandler) Handle(queue queue.EventQueue, cmd CalculateScoreCmd) error {
-	game, err := h.repo.findGameByID(cmd.AccountID)
+	game, err := h.repo.FindGameByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}

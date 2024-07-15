@@ -18,5 +18,5 @@ func (h *CreateChangePasswdCaptchaCmdHandler) Handle(cmd *CreateChangePasswdCapt
 	if err != nil {
 		return err
 	}
-	return h.repo.save(cap)
+	return h.repo.Save(cap)
 }

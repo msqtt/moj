@@ -13,10 +13,10 @@ type SignupGameCmdHandler struct {
 }
 
 func (h *SignupGameCmdHandler) Handle(queue queue.EventQueue, cmd SignUpGameCmd) error {
-	game, err := h.repo.findGameByID(cmd.GameID)
+	game, err := h.repo.FindGameByID(cmd.GameID)
 	if err != nil {
 		return err
 	}
 
-	return game.signUp(queue, h.repo.insertSignUpAccount, cmd)
+	return game.signUp(queue, h.repo.InsertSignUpAccount, cmd)
 }

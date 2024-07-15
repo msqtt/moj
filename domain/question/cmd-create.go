@@ -22,5 +22,5 @@ func (h *CreateQuestionCmdHandler) Handle(cmd CreateQuestionCmd) error {
 	if err != nil {
 		return err
 	}
-	return h.repo.save(ques)
+	return h.repo.Save(ques)
 }

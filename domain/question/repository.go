@@ -1,6 +1,6 @@
 package question
 
 type QuestionRepository interface {
-	findQuestionByID(questionID int) (*Question, error)
-	save(*Question) error
+	FindQuestionByID(questionID int) (*Question, error)
+	Save(*Question) error
 }

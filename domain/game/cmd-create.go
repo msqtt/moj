@@ -22,5 +22,5 @@ func (h *CreateGameCmdHandler) Handle(queue queue.EventQueue, cmd CreateGameCmd)
 	if err != nil {
 		return err
 	}
-	return h.repo.save(game)
+	return h.repo.Save(game)
 }
