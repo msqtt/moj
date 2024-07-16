@@ -10,21 +10,21 @@ import (
 
 var ErrFailedToModifyRecord error = errors.New("failed to modify record")
 
-type ModifyRecordAfterExecutionPolicy struct {
+type ModifyRecordPolicy struct {
 	modifyRecordCmdHandler record.ModifyRecordCmdHandler
 	queue                  queue.EventQueue
 }
 
 func NewModifyRecordAfterExecutionPolicy(modifyRecordCmdHandler record.ModifyRecordCmdHandler,
 	queue queue.EventQueue,
-) ModifyRecordAfterExecutionPolicy {
-	return ModifyRecordAfterExecutionPolicy{
+) ModifyRecordPolicy {
+	return ModifyRecordPolicy{
 		modifyRecordCmdHandler: modifyRecordCmdHandler,
 		queue:                  queue,
 	}
 }
 
-func (p *ModifyRecordAfterExecutionPolicy) OnEvent(event any) error {
+func (p *ModifyRecordPolicy) OnEvent(event any) error {
 	evt, ok := event.(judgement.ExecutionFinishEvent)
 	if !ok {
 		return nil
