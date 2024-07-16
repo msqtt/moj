@@ -18,6 +18,12 @@ type ModifyQuestionCmdHandler struct {
 	repo QuestionRepository
 }
 
+func NewModifyQuestionCmdHandler(repo QuestionRepository) *ModifyQuestionCmdHandler {
+	return &ModifyQuestionCmdHandler{
+		repo: repo,
+	}
+}
+
 func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) error {
 	ques, err := h.repo.FindQuestionByID(cmd.QuestionID)
 	if err != nil {

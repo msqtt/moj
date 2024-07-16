@@ -16,6 +16,12 @@ type CalculateScoreCmdHandler struct {
 	repo GameRepository
 }
 
+func NewCalculateScoreCmdHandler(repo GameRepository) *CalculateScoreCmdHandler {
+	return &CalculateScoreCmdHandler{
+		repo: repo,
+	}
+}
+
 func (h *CalculateScoreCmdHandler) Handle(queue queue.EventQueue, cmd CalculateScoreCmd) error {
 	game, err := h.repo.FindGameByID(cmd.AccountID)
 	if err != nil {

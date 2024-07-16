@@ -24,6 +24,13 @@ type ExecutionCmdHandler struct {
 	exeService ExecutionService
 }
 
+func NewExecutionCmdHandler(repo JudgementRepository, exeService ExecutionService) *ExecutionCmdHandler {
+	return &ExecutionCmdHandler{
+		repo:       repo,
+		exeService: exeService,
+	}
+}
+
 func (e *ExecutionCmdHandler) Handle(queue queue.EventQueue, cmd ExecutionCmd) error {
 	// Check if there are already cached before execution
 	jud, err := e.repo.FindJudgementByHash(cmd.QuestionID, cmd.CodeHash, cmd.QuestionModifyTime)

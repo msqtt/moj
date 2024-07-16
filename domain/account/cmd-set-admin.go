@@ -11,6 +11,12 @@ type SetAdminAccountCmdHandler struct {
 	repo AccountRepository
 }
 
+func NewSetAdminAccountCmdHandler(repo AccountRepository) *SetAdminAccountCmdHandler {
+	return &SetAdminAccountCmdHandler{
+		repo: repo,
+	}
+}
+
 func (s *SetAdminAccountCmdHandler) Handle(queue queue.EventQueue,
 	cmd SetAdminAccountCmd) error {
 	acc, err := s.repo.FindAccountByID(cmd.AccountID)
@@ -18,7 +24,7 @@ func (s *SetAdminAccountCmdHandler) Handle(queue queue.EventQueue,
 		return err
 	}
 
-	err = acc.setAdmin(queue, cmd)
+	err = acc.SetAdmin(queue, cmd)
 	if err != nil {
 		return err
 	}

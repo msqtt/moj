@@ -13,6 +13,12 @@ type LoginAccountCmdHandler struct {
 	repo AccountRepository
 }
 
+func NewLoginAccountCmdHandler(repo AccountRepository) *LoginAccountCmdHandler {
+	return &LoginAccountCmdHandler{
+		repo: repo,
+	}
+}
+
 func (l *LoginAccountCmdHandler) Handle(queue queue.EventQueue, cmd LoginAccountCmd) error {
 	account, err := l.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {

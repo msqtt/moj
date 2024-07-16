@@ -11,6 +11,12 @@ type CreateRegisterCaptchaCmdHandler struct {
 	repo CaptchaRepository
 }
 
+func NewCreateRegisterCaptchaCmdHandler(repo CaptchaRepository) *CreateRegisterCaptchaCmdHandler {
+	return &CreateRegisterCaptchaCmdHandler{
+		repo: repo,
+	}
+}
+
 func (h *CreateRegisterCaptchaCmdHandler) Handle(cmd *CreateRegisterCaptchaCmd) error {
 	cap, err := NewCaptcha(0, cmd.Email, CaptchaTypeRegister, cmd.IpAddr, cmd.Duration, cmd.Time)
 	if err != nil {

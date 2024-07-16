@@ -132,7 +132,7 @@ func (a *Account) delete(queue queue.EventQueue, cmd DeleteAccountCmd) error {
 	return queue.EnQueue(event)
 }
 
-func (a *Account) setAdmin(queue queue.EventQueue, cmd SetAdminAccountCmd) error {
+func (a *Account) SetAdmin(queue queue.EventQueue, cmd SetAdminAccountCmd) error {
 	a.IsAdmin = cmd.IsAdmin
 	event := SetAdminAccountEvent{
 		AccountID: a.AccountID,
@@ -141,7 +141,7 @@ func (a *Account) setAdmin(queue queue.EventQueue, cmd SetAdminAccountCmd) error
 	return queue.EnQueue(event)
 }
 
-func (a *Account) setStatus(queue queue.EventQueue, cmd SetStatusAccountCmd) error {
+func (a *Account) SetStatus(queue queue.EventQueue, cmd SetStatusAccountCmd) error {
 	a.Enabled = cmd.Enabled
 
 	event := SetStatusAccountEvent{

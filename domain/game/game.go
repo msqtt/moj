@@ -10,8 +10,8 @@ type GameQuestion struct {
 	Score      int
 }
 
-type SignUpUser struct {
-	UserID     int
+type SignUpAccount struct {
+	AccountID  int
 	SignUpTime int64
 }
 
@@ -31,7 +31,7 @@ type Game struct {
 	StartTime      int64
 	EndTime        int64
 	QuestionList   []GameQuestion
-	SignUpUserList []SignUpUser
+	SignUpUserList []SignUpAccount
 }
 
 func NewGame(userID int, title, desc string,
@@ -72,7 +72,7 @@ func (g *Game) modify(cmd ModifyGameCmd) error {
 
 func (g *Game) findSignedUp(accountID int) int {
 	for id, user := range g.SignUpUserList {
-		if user.UserID == accountID {
+		if user.AccountID == accountID {
 			return id
 		}
 	}

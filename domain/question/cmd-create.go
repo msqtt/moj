@@ -16,6 +16,12 @@ type CreateQuestionCmdHandler struct {
 	repo QuestionRepository
 }
 
+func NewCreateQuestionCmdHandler(repo QuestionRepository) *CreateQuestionCmdHandler {
+	return &CreateQuestionCmdHandler{
+		repo: repo,
+	}
+}
+
 func (h *CreateQuestionCmdHandler) Handle(cmd CreateQuestionCmd) error {
 	ques, err := NewQuestion(0, cmd.Title, cmd.Text, cmd.Level, cmd.AllowedLanguages,
 		cmd.TimeLimit, cmd.MemoryLimit, cmd.Tags, cmd.Time, 0, cmd.Cases)

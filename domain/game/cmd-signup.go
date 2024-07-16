@@ -12,6 +12,12 @@ type SignupGameCmdHandler struct {
 	repo GameRepository
 }
 
+func NewSignupGameCmdHandler(repo GameRepository) *SignupGameCmdHandler {
+	return &SignupGameCmdHandler{
+		repo: repo,
+	}
+}
+
 func (h *SignupGameCmdHandler) Handle(queue queue.EventQueue, cmd SignUpGameCmd) error {
 	game, err := h.repo.FindGameByID(cmd.GameID)
 	if err != nil {

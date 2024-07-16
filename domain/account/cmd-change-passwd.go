@@ -16,6 +16,13 @@ type ChangePasswdAccountCmdHandler struct {
 	crypt crypt.Cryptor
 }
 
+func NewChangePasswdAccountCmdHandler(repo AccountRepository, crypt crypt.Cryptor) *ChangePasswdAccountCmdHandler {
+	return &ChangePasswdAccountCmdHandler{
+		repo:  repo,
+		crypt: crypt,
+	}
+}
+
 func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
 	cmd ChangePasswdAccountCmd) error {
 	acc, err := h.repo.FindAccountByID(cmd.AccountID)

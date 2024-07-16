@@ -17,6 +17,13 @@ type CreateAccountCmdHandler struct {
 	crypt crypt.Cryptor
 }
 
+func NewCreateAccountCmdHandler(repo AccountRepository, crypt crypt.Cryptor) *CreateAccountCmdHandler {
+	return &CreateAccountCmdHandler{
+		repo:  repo,
+		crypt: crypt,
+	}
+}
+
 func (c *CreateAccountCmdHandler) Handle(queue queue.EventQueue,
 	cmd CreateAccountCmd) error {
 	acc, err := NewAccount(c.crypt, cmd.Email, cmd.Password, cmd.NickName)

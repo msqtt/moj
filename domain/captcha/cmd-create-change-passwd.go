@@ -12,6 +12,12 @@ type CreateChangePasswdCaptchaCmdHandler struct {
 	repo CaptchaRepository
 }
 
+func NewCreateChangePasswdCaptchaCmdHandler(repo CaptchaRepository) *CreateChangePasswdCaptchaCmdHandler {
+	return &CreateChangePasswdCaptchaCmdHandler{
+		repo: repo,
+	}
+}
+
 func (h *CreateChangePasswdCaptchaCmdHandler) Handle(cmd *CreateChangePasswdCaptchaCmd) error {
 	cap, err := NewCaptcha(cmd.AccountID,
 		cmd.Email, CaptchaTypeChangePasswd, cmd.IpAddr, cmd.Duration, cmd.Time)

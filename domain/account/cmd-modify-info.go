@@ -12,6 +12,12 @@ type ModifyInfoAccountCmdHandler struct {
 	repo AccountRepository
 }
 
+func NewModifyInfoAccountCmdHandler(repo AccountRepository) *ModifyInfoAccountCmdHandler {
+	return &ModifyInfoAccountCmdHandler{
+		repo: repo,
+	}
+}
+
 func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {
 	account, err := m.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
