@@ -6,22 +6,22 @@ import (
 )
 
 type Record struct {
-	RecordID       int
-	AccountID      int
-	GameID         int
-	QuestionID     int
-	Language       string
-	Code           string
-	CodeHash       string
-	JudgeStatus    string
-	FailedReason   string
-	NumberFinishAt int
-	TotalQuestion  int
-	CreateTime     int64
-	FinishTime     int64
-	MemoryUsed     int
-	TimeUsed       int
-	CPUTimeUsed    int
+	RecordID         int
+	AccountID        int
+	GameID           int
+	QuestionID       int
+	Language         string
+	Code             string
+	CodeHash         string
+	JudgeStatus      string
+	FailedReason     string
+	NumberFinishedAt int
+	TotalQuestion    int
+	CreateTime       int64
+	FinishTime       int64
+	MemoryUsed       int
+	TimeUsed         int
+	CPUTimeUsed      int
 }
 
 func NewRecord(accountID, gameID, questionID int, lang, code string, time int64) *Record {
@@ -54,7 +54,7 @@ func (r *Record) submit(queue queue.EventQueue) error {
 func (r *Record) modify(queue queue.EventQueue, cmd ModifyRecordCmd) error {
 	r.JudgeStatus = cmd.JudgeStatus
 	r.FailedReason = cmd.FailedReason
-	r.NumberFinishAt = cmd.NumberFinishAt
+	r.NumberFinishedAt = cmd.NumberFinishAt
 	r.TotalQuestion = cmd.TotalQuestion
 	r.FinishTime = cmd.Time
 	r.MemoryUsed = cmd.MemoryUsed
@@ -62,14 +62,14 @@ func (r *Record) modify(queue queue.EventQueue, cmd ModifyRecordCmd) error {
 	r.CPUTimeUsed = cmd.CPUTimeUsed
 
 	event := ModifyRecordEvent{
-		RecordID:       r.RecordID,
-		AccountID:      r.AccountID,
-		QuestionID:     r.QuestionID,
-		GameID:         r.GameID,
-		JudgeStatus:    r.JudgeStatus,
-		NumberFinishAt: r.NumberFinishAt,
-		TotalQuestion:  r.TotalQuestion,
-		FinishTime:     r.FinishTime,
+		RecordID:         r.RecordID,
+		AccountID:        r.AccountID,
+		QuestionID:       r.QuestionID,
+		GameID:           r.GameID,
+		JudgeStatus:      r.JudgeStatus,
+		NumberFinishedAt: r.NumberFinishedAt,
+		TotalQuestion:    r.TotalQuestion,
+		FinishTime:       r.FinishTime,
 	}
 	return queue.EnQueue(event)
 }
