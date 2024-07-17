@@ -1,6 +1,7 @@
-package common
+package common_test
 
 import (
+	"moj/domain/pkg/common"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,7 +16,7 @@ func TestIsURL(t *testing.T) {
 	}
 
 	for _, url := range validURLs {
-		require.True(t, IsURL(url), "URL: %s", url)
+		require.True(t, common.IsURL(url), "URL: %s", url)
 	}
 
 	invalidURLs := []string{
@@ -27,7 +28,7 @@ func TestIsURL(t *testing.T) {
 	}
 
 	for _, url := range invalidURLs {
-		require.False(t, IsURL(url), "URL: %s", url)
+		require.False(t, common.IsURL(url), "URL: %s", url)
 	}
 }
 
@@ -47,18 +48,18 @@ func TestIsEmail(t *testing.T) {
 
 	// 测试有效邮箱
 	for _, email := range validEmails {
-		require.True(t, IsEmail(email), "Email: %s", email)
+		require.True(t, common.IsEmail(email), "Email: %s", email)
 	}
 
 	// 测试无效邮箱
 	for _, email := range invalidEmails {
-		require.False(t, IsEmail(email), "Email: %s", email)
+		require.False(t, common.IsEmail(email), "Email: %s", email)
 	}
 }
 
 func TestSha1(t *testing.T) {
-	t.Log(Sha1("hello world"))
+	t.Log(common.Sha1("hello world"))
 
-	require.Equal(t, Sha1("hello"), Sha1("hello"))
-	require.NotEqual(t, Sha1("hello"), Sha1("Bye"))
+	require.Equal(t, common.Sha1("hello"), common.Sha1("hello"))
+	require.NotEqual(t, common.Sha1("hello"), common.Sha1("Bye"))
 }
