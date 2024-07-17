@@ -1,9 +1,12 @@
 package record
 
 import (
+	"errors"
 	"moj/domain/pkg/common"
 	"moj/domain/pkg/queue"
 )
+
+var ErrRecordNotFound = errors.New("record not found")
 
 type Record struct {
 	RecordID         int

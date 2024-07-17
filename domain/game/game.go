@@ -16,6 +16,7 @@ type SignUpAccount struct {
 }
 
 var (
+	ErrGameNotFound        = errors.New("game do not exist")
 	ErrInvalidTimeRange    = errors.New("invalid time range")
 	ErrAccountNotExist     = errors.New("account do not exist")
 	ErrAccountAlreadyExist = errors.New("account already exist")

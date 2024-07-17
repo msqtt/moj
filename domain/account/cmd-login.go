@@ -20,9 +20,12 @@ func NewLoginAccountCmdHandler(repo AccountRepository) *LoginAccountCmdHandler {
 }
 
 func (l *LoginAccountCmdHandler) Handle(queue queue.EventQueue, cmd LoginAccountCmd) error {
-	account, err := l.repo.FindAccountByID(cmd.AccountID)
+	acc, err := l.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}
-	return account.login(queue, cmd)
+	if acc == nil {
+		return ErrAccountNotFound
+	}
+	return acc.login(queue, cmd)
 }

@@ -34,6 +34,7 @@ func (q QuestionLanguage) IsValid() bool {
 }
 
 var (
+	ErrQuestionNotFound        = errors.New("question not found")
 	ErrInValidQuestionLanguage = errors.New("invalid language")
 	ErrInvalidQuestionLevel    = errors.New("invalid level")
 	ErrEmpltyCases             = errors.New("empty cases")

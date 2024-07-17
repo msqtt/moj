@@ -30,6 +30,10 @@ func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
 		return err
 	}
 
+	if acc == nil {
+		return ErrAccountNotFound
+	}
+
 	err = acc.changePasswd(h.crypt, queue, cmd)
 	if err != nil {
 		return err

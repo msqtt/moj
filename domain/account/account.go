@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	ErrAccountNotFound   = errors.New("account not found")
 	ErrInValidAvatarLink = errors.New("invalid avatar link")
 	ErrInValidNickName   = errors.New("invalid nickname")
 	ErrInValidEmail      = errors.New("invalid email")

@@ -29,7 +29,9 @@ func (h *ModifyRecordCmdHandler) Handle(queue queue.EventQueue, cmd ModifyRecord
 	if err != nil {
 		return err
 	}
-
+	if rec == nil {
+		return ErrRecordNotFound
+	}
 	rec.modify(queue, cmd)
 
 	return h.repo.Save(rec)

@@ -19,13 +19,16 @@ func NewModifyInfoAccountCmdHandler(repo AccountRepository) *ModifyInfoAccountCm
 }
 
 func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {
-	account, err := m.repo.FindAccountByID(cmd.AccountID)
+	acc, err := m.repo.FindAccountByID(cmd.AccountID)
 	if err != nil {
 		return err
 	}
-	err = account.modifyInfo(queue, cmd)
+	if acc == nil {
+		return ErrAccountNotFound
+	}
+	err = acc.modifyInfo(queue, cmd)
 	if err != nil {
 		return err
 	}
-	return m.repo.Save(account)
+	return m.repo.Save(acc)
 }
