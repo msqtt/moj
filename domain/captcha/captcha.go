@@ -36,7 +36,7 @@ func NewCaptcha(
 	accountID int,
 	email string, captchaType CaptchaType, ipAddr string, duration int64, time int64) (*Captcha, error) {
 
-	if common.IsEmail(email) {
+	if !common.IsEmail(email) {
 		return nil, ErrInValidEmail
 	}
 
@@ -59,5 +59,5 @@ func NewCaptcha(
 }
 
 func (c *Captcha) IsExpired(time int64) bool {
-	return c.ExpireTime >= time
+	return c.ExpireTime < time
 }
