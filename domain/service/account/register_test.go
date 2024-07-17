@@ -37,7 +37,7 @@ func TestRegister(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, cap)
 
-	cap.Content = cmd.Captcha
+	cap.Code = cmd.Captcha
 
 	event := account.CreateAccountEvent{
 		AccountID:    0,

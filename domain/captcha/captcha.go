@@ -23,7 +23,7 @@ var (
 
 type Captcha struct {
 	AccountID  int
-	Content    string
+	Code       string
 	Email      string
 	Type       CaptchaType
 	IpAddr     string
@@ -44,11 +44,11 @@ func NewCaptcha(
 		return nil, ErrInValidCaptchaType
 	}
 
-	content := common.RandomStr(6)
+	content := generateRandomCaptcha()
 
 	return &Captcha{
 		AccountID:  accountID,
-		Content:    content,
+		Code:       content,
 		Email:      email,
 		Type:       captchaType,
 		IpAddr:     ipAddr,
@@ -60,4 +60,8 @@ func NewCaptcha(
 
 func (c *Captcha) IsExpired(time int64) bool {
 	return c.ExpireTime < time
+}
+
+func generateRandomCaptcha() string {
+	return common.RandomStr(6)
 }

@@ -43,7 +43,7 @@ func TestChangePasswd(t *testing.T) {
 	require.NotEmpty(t, cap)
 	require.NoError(t, err)
 
-	cap.Content = cmd.Captcha
+	cap.Code = cmd.Captcha
 
 	mCRepo.EXPECT().
 		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
@@ -86,7 +86,7 @@ func TestChangePasswd(t *testing.T) {
 	require.NotEmpty(t, cap2)
 	require.NoError(t, err)
 
-	cap.Content = cmd.Captcha
+	cap.Code = cmd.Captcha
 
 	// Set up the mock captcha repository to return an expired captcha
 	err = s.Handle(mQueue, cmd)
