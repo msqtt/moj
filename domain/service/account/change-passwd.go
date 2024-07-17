@@ -5,7 +5,6 @@ import (
 	"moj/domain/account"
 	"moj/domain/captcha"
 	"moj/domain/pkg/queue"
-	"time"
 )
 
 var ErrFailedToChangePasswd = errors.New("failed to change password")
@@ -15,6 +14,7 @@ type ChangePasswdCmd struct {
 	Email     string
 	Password  string
 	Captcha   string
+	Time      int64
 }
 
 type ChangePasswdService struct {
@@ -39,14 +39,14 @@ func (s *ChangePasswdService) Handle(queue queue.EventQueue, cmd ChangePasswdCmd
 	if cap == nil {
 		return ErrCaptchaNotFound
 	}
-	if cap.IsExpired(time.Now().Unix()) {
+	if cap.IsExpired(cmd.Time) {
 		return ErrCaptchaAlreadyExpired
 	}
 
 	changePasswdAccountCmd := account.ChangePasswdAccountCmd{
 		AccountID: cmd.AccountID,
 		Password:  cmd.Password,
-		Time:      time.Now().Unix(),
+		Time:      cmd.Time,
 	}
 	err = s.changePasswdAccountCmdHandler.Handle(queue, changePasswdAccountCmd)
 	if err != nil {
