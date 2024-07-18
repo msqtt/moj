@@ -52,6 +52,10 @@ func TestRegister(t *testing.T) {
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(cap, nil)
 
+	mCRepo.EXPECT().
+		Save(gomock.Eq(cap)).
+		Return(nil)
+
 	mCryp.EXPECT().
 		Encrypt(gomock.Eq(cmd.Password)).
 		Return(cmd.Password)
@@ -74,11 +78,13 @@ func TestRegister(t *testing.T) {
 	err = s.Handle(mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)
 
-	// Test case 3: Captcha expired
+	// // Test case 3: Captcha expired
 	cap, err = captcha.NewCaptcha(0, cmd.Email, captcha.CaptchaTypeRegister,
 		"IP_ADDRESS", 0, time.Now().Unix()-1000)
 	require.NoError(t, err)
 	require.NotNil(t, cap)
+
+	cap.Code = cmd.Captcha
 
 	mCRepo.EXPECT().
 		FindLatestCaptcha(gomock.Eq(cmd.Email),
@@ -95,6 +101,8 @@ func TestRegister(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, cap)
 
+	cap.Code = cmd.Captcha
+
 	mCryp.EXPECT().
 		Encrypt(gomock.Eq(cmd.Password)).
 		Return(cmd.Password)
@@ -103,6 +111,8 @@ func TestRegister(t *testing.T) {
 		FindLatestCaptcha(gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(cap, nil)
+
+	mCRepo.EXPECT().Save(gomock.Eq(cap)).Return(nil)
 
 	mARepo.EXPECT().
 		Save(gomock.Any()).

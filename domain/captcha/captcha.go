@@ -27,6 +27,7 @@ type Captcha struct {
 	Email      string
 	Type       CaptchaType
 	IpAddr     string
+	Enabled    bool
 	Duration   int64
 	CreateTime int64
 	ExpireTime int64
@@ -52,6 +53,7 @@ func NewCaptcha(
 		Email:      email,
 		Type:       captchaType,
 		IpAddr:     ipAddr,
+		Enabled:    true,
 		Duration:   duration,
 		CreateTime: time,
 		ExpireTime: time + duration,
@@ -59,6 +61,9 @@ func NewCaptcha(
 }
 
 func (c *Captcha) IsExpired(time int64) bool {
+	if !c.Enabled {
+		return false
+	}
 	return c.ExpireTime < time
 }
 

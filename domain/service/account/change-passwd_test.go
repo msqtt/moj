@@ -49,6 +49,8 @@ func TestChangePasswd(t *testing.T) {
 		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(cap, nil)
 
+	mCRepo.EXPECT().Save(gomock.Eq(cap)).Return(nil)
+
 	mARepo.EXPECT().
 		FindAccountByID(cmd.AccountID).
 		Return(&account.Account{
@@ -96,6 +98,8 @@ func TestChangePasswd(t *testing.T) {
 	mCRepo.EXPECT().
 		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(cap, nil)
+
+	mCRepo.EXPECT().Save(gomock.Eq(cap)).Return(nil)
 
 	mARepo.EXPECT().
 		FindAccountByID(cmd.AccountID).
