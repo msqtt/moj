@@ -1,6 +1,6 @@
 package account
 
-import "moj/domain/pkg/queue"
+import "github.com/msqtt/moj/domain/pkg/queue"
 
 type SetAdminAccountCmd struct {
 	AccountID int

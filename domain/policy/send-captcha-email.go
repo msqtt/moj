@@ -2,7 +2,7 @@ package policy
 
 import (
 	"errors"
-	"moj/domain/captcha"
+	"github.com/msqtt/moj/domain/captcha"
 )
 
 type SendCaptchaEmailPolicy struct {

@@ -1,6 +1,6 @@
 package judgement
 
-import "moj/domain/pkg/queue"
+import "github.com/msqtt/moj/domain/pkg/queue"
 
 type Case struct {
 	Number       int

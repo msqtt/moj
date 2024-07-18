@@ -2,7 +2,7 @@ package game
 
 import (
 	"errors"
-	"moj/domain/pkg/queue"
+	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
 type GameQuestion struct {

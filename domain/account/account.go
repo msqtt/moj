@@ -2,9 +2,9 @@ package account
 
 import (
 	"errors"
-	"moj/domain/pkg/common"
-	"moj/domain/pkg/crypt"
-	"moj/domain/pkg/queue"
+	"github.com/msqtt/moj/domain/pkg/common"
+	"github.com/msqtt/moj/domain/pkg/crypt"
+	"github.com/msqtt/moj/domain/pkg/queue"
 	"regexp"
 	"strings"
 	"unicode"

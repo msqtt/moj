@@ -2,9 +2,9 @@ package policy
 
 import (
 	"errors"
-	"moj/domain/judgement"
-	"moj/domain/pkg/queue"
-	"moj/domain/record"
+	"github.com/msqtt/moj/domain/judgement"
+	"github.com/msqtt/moj/domain/pkg/queue"
+	"github.com/msqtt/moj/domain/record"
 	"time"
 )
 

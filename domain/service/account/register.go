@@ -2,9 +2,9 @@ package account
 
 import (
 	"errors"
-	"moj/domain/account"
-	"moj/domain/captcha"
-	"moj/domain/pkg/queue"
+	"github.com/msqtt/moj/domain/account"
+	"github.com/msqtt/moj/domain/captcha"
+	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
 var (

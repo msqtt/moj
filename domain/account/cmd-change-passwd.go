@@ -1,8 +1,8 @@
 package account
 
 import (
-	"moj/domain/pkg/crypt"
-	"moj/domain/pkg/queue"
+	"github.com/msqtt/moj/domain/pkg/crypt"
+	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
 type ChangePasswdAccountCmd struct {

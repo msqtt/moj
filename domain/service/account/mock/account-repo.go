@@ -10,7 +10,7 @@
 package mock_account
 
 import (
-	account "moj/domain/account"
+	account "github.com/msqtt/moj/domain/account"
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"

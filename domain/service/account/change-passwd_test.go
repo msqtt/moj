@@ -1,10 +1,10 @@
 package account_test
 
 import (
-	"moj/domain/account"
-	"moj/domain/captcha"
-	saccount "moj/domain/service/account"
-	mock_account "moj/domain/service/account/mock"
+	"github.com/msqtt/moj/domain/account"
+	"github.com/msqtt/moj/domain/captcha"
+	saccount "github.com/msqtt/moj/domain/service/account"
+	mock_account "github.com/msqtt/moj/domain/service/account/mock"
 	"testing"
 	"time"
 

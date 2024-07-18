@@ -1,4 +1,4 @@
-module moj
+module github.com/msqtt/moj
 
 go 1.22.3
 

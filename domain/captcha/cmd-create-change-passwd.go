@@ -1,6 +1,6 @@
 package captcha
 
-import "moj/domain/pkg/queue"
+import "github.com/msqtt/moj/domain/pkg/queue"
 
 type CreateChangePasswdCaptchaCmd struct {
 	AccountID int
