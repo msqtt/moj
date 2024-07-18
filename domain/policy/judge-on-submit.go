@@ -13,19 +13,14 @@ var (
 	ErrFailedToExecuteCode error = errors.New("failed to execute code")
 )
 
-type CaseFileReader interface {
-	Read(fileName string) (string, error)
-	ReadAllCaseFile(caseFiles []question.Case) ([]judgement.Case, error)
-}
-
 type JudgeOnSubmitPolicy struct {
-	caseFileReader      CaseFileReader
+	caseFileReader      CaseFileService
 	executionCmdHandler judgement.ExecutionCmdHandler
 	questionRepository  question.QuestionRepository
 	queue               queue.EventQueue
 }
 
-func NewJudgeOnSubmitPolicy(caseFileReader CaseFileReader,
+func NewJudgeOnSubmitPolicy(caseFileReader CaseFileService,
 	executionCmdHandler judgement.ExecutionCmdHandler,
 	questionRepository question.QuestionRepository,
 	queue queue.EventQueue,
