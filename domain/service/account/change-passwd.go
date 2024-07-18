@@ -43,7 +43,7 @@ func (s *ChangePasswdService) Handle(queue queue.EventQueue, cmd ChangePasswdCmd
 		return ErrCaptchaAlreadyExpired
 	}
 
-	cap.Enabled = false
+	cap.SetDisable()
 	s.captchaRepository.Save(cap)
 
 	changePasswdAccountCmd := account.ChangePasswdAccountCmd{

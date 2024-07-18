@@ -3,6 +3,7 @@ package captcha
 import (
 	"errors"
 	"moj/domain/pkg/common"
+	"moj/domain/pkg/queue"
 )
 
 type CaptchaType int
@@ -19,6 +20,7 @@ func (c CaptchaType) IsValid() bool {
 var (
 	ErrInValidEmail       = errors.New("invalid email")
 	ErrInValidCaptchaType = errors.New("invalid captcha type")
+	ErrExpiredCaptcha     = errors.New("captcha expired")
 )
 
 type Captcha struct {
@@ -69,4 +71,38 @@ func (c *Captcha) IsExpired(time int64) bool {
 
 func generateRandomCaptcha() string {
 	return common.RandomStr(6)
+}
+
+func (c *Captcha) SetDisable() {
+	c.Enabled = false
+}
+
+func (c *Captcha) sendEmail(queue queue.EventQueue) error {
+	if !c.Enabled {
+		return ErrExpiredCaptcha
+	}
+
+	var event any
+	switch c.Type {
+	case CaptchaTypeRegister:
+		event = RegisterCaptchaEvent{
+			Code:       c.Code,
+			Email:      c.Email,
+			IpAddr:     c.IpAddr,
+			Duration:   c.Duration,
+			CreateTime: c.CreateTime,
+		}
+	case CaptchaTypeChangePasswd:
+		event = RegisterCaptchaEvent{
+			Code:       c.Code,
+			Email:      c.Email,
+			IpAddr:     c.IpAddr,
+			Duration:   c.Duration,
+			CreateTime: c.CreateTime,
+		}
+	default:
+		return ErrInValidCaptchaType
+	}
+
+	return queue.EnQueue(event)
 }

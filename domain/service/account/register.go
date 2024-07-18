@@ -44,7 +44,7 @@ func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd)
 		return ErrCaptchaAlreadyExpired
 	}
 
-	cap.Enabled = false
+	cap.SetDisable()
 	s.captchaRepository.Save(cap)
 
 	cmdCreateAccount := account.CreateAccountCmd{

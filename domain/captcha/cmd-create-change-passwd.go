@@ -1,5 +1,7 @@
 package captcha
 
+import "moj/domain/pkg/queue"
+
 type CreateChangePasswdCaptchaCmd struct {
 	AccountID int
 	Email     string
@@ -18,11 +20,15 @@ func NewCreateChangePasswdCaptchaCmdHandler(repo CaptchaRepository) *CreateChang
 	}
 }
 
-func (h *CreateChangePasswdCaptchaCmdHandler) Handle(cmd *CreateChangePasswdCaptchaCmd) error {
+func (h *CreateChangePasswdCaptchaCmdHandler) Handle(queue queue.EventQueue, cmd *CreateChangePasswdCaptchaCmd) error {
 	cap, err := NewCaptcha(cmd.AccountID,
 		cmd.Email, CaptchaTypeChangePasswd, cmd.IpAddr, cmd.Duration, cmd.Time)
 	if err != nil {
 		return err
 	}
-	return h.repo.Save(cap)
+	err = h.repo.Save(cap)
+	if err != nil {
+		return err
+	}
+	return cap.sendEmail(queue)
 }
