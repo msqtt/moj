@@ -2,12 +2,13 @@ package account_test
 
 import (
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/msqtt/moj/domain/account"
 	"github.com/msqtt/moj/domain/captcha"
 	saccount "github.com/msqtt/moj/domain/service/account"
 	mock_account "github.com/msqtt/moj/domain/service/account/mock"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -58,7 +59,7 @@ func TestRegister(t *testing.T) {
 
 	mCryp.EXPECT().
 		Encrypt(gomock.Eq(cmd.Password)).
-		Return(cmd.Password)
+		Return(cmd.Password, nil)
 
 	mARepo.EXPECT().
 		Save(gomock.Any()).
@@ -105,7 +106,7 @@ func TestRegister(t *testing.T) {
 
 	mCryp.EXPECT().
 		Encrypt(gomock.Eq(cmd.Password)).
-		Return(cmd.Password)
+		Return(cmd.Password, nil)
 
 	mCRepo.EXPECT().
 		FindLatestCaptcha(gomock.Eq(cmd.Email),

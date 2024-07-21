@@ -1,12 +1,13 @@
 package account_test
 
 import (
+	"testing"
+	"time"
+
 	"github.com/msqtt/moj/domain/account"
 	"github.com/msqtt/moj/domain/captcha"
 	saccount "github.com/msqtt/moj/domain/service/account"
 	mock_account "github.com/msqtt/moj/domain/service/account/mock"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -61,7 +62,7 @@ func TestChangePasswd(t *testing.T) {
 
 	mCryp.EXPECT().
 		Encrypt(gomock.Eq(cmd.Password)).
-		Return(cmd.Password)
+		Return(cmd.Password, nil)
 
 	mQueue.EXPECT().
 		EnQueue(gomock.Eq(event)).

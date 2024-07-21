@@ -2,12 +2,13 @@ package account
 
 import (
 	"errors"
-	"github.com/msqtt/moj/domain/pkg/common"
-	"github.com/msqtt/moj/domain/pkg/crypt"
-	"github.com/msqtt/moj/domain/pkg/queue"
 	"regexp"
 	"strings"
 	"unicode"
+
+	"github.com/msqtt/moj/domain/pkg/common"
+	"github.com/msqtt/moj/domain/pkg/crypt"
+	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
 var (
@@ -42,6 +43,8 @@ func NewAccount(cry crypt.Cryptor, email, passwd, nickName string) (acc *Account
 		err = errors.Join(err, ErrInValidNickName)
 	}
 
+	newPasswd, err := cry.Encrypt(passwd)
+
 	// avoid unnecessary hash operations
 	if err != nil {
 		return
@@ -49,7 +52,7 @@ func NewAccount(cry crypt.Cryptor, email, passwd, nickName string) (acc *Account
 
 	acc = &Account{
 		Email:      email,
-		Password:   cry.Encrypt(passwd),
+		Password:   newPasswd,
 		AvatarLink: "",
 		NickName:   nickName,
 		Enabled:    true,
@@ -108,7 +111,12 @@ func (a *Account) changePasswd(cry crypt.Cryptor, queue queue.EventQueue,
 		return ErrInValidPasswd
 	}
 
-	a.Password = cry.Encrypt(cmd.Password)
+	var err error
+	a.Password, err = cry.Encrypt(cmd.Password)
+
+	if err != nil {
+		return err
+	}
 
 	event := ChangePasswdAccountEvent{
 		AccountID:  a.AccountID,
