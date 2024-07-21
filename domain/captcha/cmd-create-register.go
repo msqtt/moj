@@ -20,7 +20,7 @@ func NewCreateRegisterCaptchaCmdHandler(repo CaptchaRepository) *CreateRegisterC
 }
 
 func (h *CreateRegisterCaptchaCmdHandler) Handle(queue queue.EventQueue, cmd *CreateRegisterCaptchaCmd) error {
-	cap, err := NewCaptcha(0, cmd.Email, CaptchaTypeRegister, cmd.IpAddr, cmd.Duration, cmd.Time)
+	cap, err := NewCaptcha("", cmd.Email, CaptchaTypeRegister, cmd.IpAddr, cmd.Duration, cmd.Time)
 	if err != nil {
 		return err
 	}

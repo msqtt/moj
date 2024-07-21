@@ -2,6 +2,7 @@ package account
 
 import (
 	"errors"
+
 	"github.com/msqtt/moj/domain/account"
 	"github.com/msqtt/moj/domain/captcha"
 	"github.com/msqtt/moj/domain/pkg/queue"
@@ -10,7 +11,7 @@ import (
 var ErrFailedToChangePasswd = errors.New("failed to change password")
 
 type ChangePasswdCmd struct {
-	AccountID int
+	AccountID string
 	Email     string
 	Password  string
 	Captcha   string

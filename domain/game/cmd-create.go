@@ -5,7 +5,7 @@ import "github.com/msqtt/moj/domain/pkg/queue"
 type CreateGameCmd struct {
 	Title        string
 	Description  string
-	AccountID    int
+	AccountID    string
 	StartTime    int64
 	EndTime      int64
 	QuestionList []GameQuestion

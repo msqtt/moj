@@ -2,6 +2,7 @@ package captcha
 
 import (
 	"errors"
+
 	"github.com/msqtt/moj/domain/pkg/common"
 	"github.com/msqtt/moj/domain/pkg/queue"
 )
@@ -24,7 +25,7 @@ var (
 )
 
 type Captcha struct {
-	AccountID  int
+	AccountID  string
 	Code       string
 	Email      string
 	Type       CaptchaType
@@ -36,7 +37,7 @@ type Captcha struct {
 }
 
 func NewCaptcha(
-	accountID int,
+	accountID string,
 	email string, captchaType CaptchaType, ipAddr string, duration int64, time int64) (*Captcha, error) {
 
 	if !common.IsEmail(email) {

@@ -1,6 +1,6 @@
 package account
 
 type SetStatusAccountEvent struct {
-	AccountID int
+	AccountID string
 	Enabled   bool
 }

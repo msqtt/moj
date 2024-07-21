@@ -1,7 +1,7 @@
 package judgement
 
 type JudgementRepository interface {
-	FindJudgementByID(id int) (*Judgement, error)
-	FindJudgementByHash(questionID int, hash string, questionTime int64) (*Judgement, error)
+	FindJudgementByID(id string) (*Judgement, error)
+	FindJudgementByHash(questionID string, hash string, questionTime int64) (*Judgement, error)
 	Save(judgement *Judgement) error
 }

@@ -1,7 +1,7 @@
 package account
 
 type ModifyAccountInfoEvent struct {
-	AccountID  int
+	AccountID  string
 	NickName   string
 	AvatarLink string
 }

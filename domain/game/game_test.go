@@ -22,30 +22,30 @@ func TestCalculateScore(t *testing.T) {
 
 	// Create a Game instance
 	g := &Game{
-		GameID:         1,
-		SignUpUserList: []SignUpAccount{{AccountID: 1}},
-		QuestionList:   []GameQuestion{{QuestionID: 1, Score: 100}},
+		GameID:         "1",
+		SignUpUserList: []SignUpAccount{{AccountID: "1"}},
+		QuestionList:   []GameQuestion{{QuestionID: "1", Score: 100}},
 	}
 
 	// Test case 1: Account does not exist
 	cmd1 := CalculateScoreCmd{
-		AccountID: 2,
+		AccountID: "2",
 	}
 	err1 := g.calculate(&mockQueue, cmd1)
 	require.ErrorIs(t, err1, ErrAccountNotExist, "Error: %w", err1)
 
 	// Test case 2: Question does not exist
 	cmd2 := CalculateScoreCmd{
-		AccountID:  1,
-		QuestionID: 2,
+		AccountID:  "1",
+		QuestionID: "2",
 	}
 	err2 := g.calculate(&mockQueue, cmd2)
 	require.ErrorIs(t, err2, ErrQuestionNotExist, "Error: %w", err2)
 
 	// Test case 3: Normal calculation
 	cmd3 := CalculateScoreCmd{
-		AccountID:        1,
-		QuestionID:       1,
+		AccountID:        "1",
+		QuestionID:       "1",
 		NumberFinishedAt: 10,
 		LastFinishedAt:   5,
 		TotalQuestion:    20,

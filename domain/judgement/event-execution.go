@@ -1,7 +1,7 @@
 package judgement
 
 type ExecutionFinishEvent struct {
-	RecordID         int
+	RecordID         string
 	CodeHash         string
 	JudgeStatus      string
 	NumberFinishedAt int

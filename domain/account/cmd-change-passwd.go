@@ -6,7 +6,7 @@ import (
 )
 
 type ChangePasswdAccountCmd struct {
-	AccountID int
+	AccountID string
 	Password  string
 	Time      int64
 }

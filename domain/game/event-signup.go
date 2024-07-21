@@ -1,7 +1,7 @@
 package game
 
 type SignUpGameEvent struct {
-	GameID     int
-	AccountID  int
+	GameID     string
+	AccountID  string
 	SignUpTime int64
 }

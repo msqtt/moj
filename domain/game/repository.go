@@ -1,8 +1,8 @@
 package game
 
 type GameRepository interface {
-	FindGameByID(gameID int) (*Game, error)
+	FindGameByID(gameID string) (*Game, error)
 	Save(game *Game) error
-	InsertSignUpAccount(GameID, accountID int, time int64) error
-	DeletSignUpAccount(GameID, accountID int) error
+	InsertSignUpAccount(GameID, accountID string, time int64) error
+	DeletSignUpAccount(GameID, accountID string) error
 }

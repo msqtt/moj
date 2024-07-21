@@ -3,9 +3,9 @@ package record
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type SubmitRecordCmd struct {
-	AccountID  int
-	GameID     int
-	QuestionID int
+	AccountID  string
+	GameID     string
+	QuestionID string
 	Language   string
 	Code       string
 	Time       int64

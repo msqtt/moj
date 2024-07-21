@@ -3,7 +3,7 @@ package account
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type DeleteAccountCmd struct {
-	AccountID int
+	AccountID string
 	Time      int64
 }
 

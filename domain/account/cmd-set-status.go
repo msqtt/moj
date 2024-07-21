@@ -3,7 +3,7 @@ package account
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type SetStatusAccountCmd struct {
-	AccountID int
+	AccountID string
 	Enabled   bool
 }
 

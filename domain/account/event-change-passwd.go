@@ -1,6 +1,6 @@
 package account
 
 type ChangePasswdAccountEvent struct {
-	AccountID  int
+	AccountID  string
 	ChangeTime int64
 }

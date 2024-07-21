@@ -3,7 +3,7 @@ package account
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type ModifyInfoAccountCmd struct {
-	AccountID  int
+	AccountID  string
 	NickName   string
 	AvatarLink string
 }

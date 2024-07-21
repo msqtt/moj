@@ -2,6 +2,7 @@ package policy
 
 import (
 	"errors"
+
 	"github.com/msqtt/moj/domain/game"
 	"github.com/msqtt/moj/domain/pkg/queue"
 	"github.com/msqtt/moj/domain/record"
@@ -33,7 +34,7 @@ func (p *CalculateScorePolicy) OnEvent(event any) error {
 		return nil
 	}
 
-	if evt.GameID == 0 {
+	if evt.GameID == "" {
 		return nil
 	}
 

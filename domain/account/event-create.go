@@ -1,7 +1,7 @@
 package account
 
 type CreateAccountEvent struct {
-	AccountID    int
+	AccountID    string
 	Email        string
 	NickName     string
 	RegisterTime int64

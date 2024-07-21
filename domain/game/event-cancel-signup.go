@@ -1,7 +1,7 @@
 package game
 
 type CancelSignUpGameEvent struct {
-	GameID     int
-	AccountID  int
+	GameID     string
+	AccountID  string
 	CancelTime int64
 }

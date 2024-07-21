@@ -1,6 +1,6 @@
 package account
 
 type SetAdminAccountEvent struct {
-	AccountID int
+	AccountID string
 	IsAdmin   bool
 }

@@ -3,8 +3,8 @@ package game
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type CancelSignUpGameCmd struct {
-	GameID    int
-	AccountID int
+	GameID    string
+	AccountID string
 	Time      int64
 }
 

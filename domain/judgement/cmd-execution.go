@@ -9,8 +9,8 @@ type Case struct {
 }
 
 type ExecutionCmd struct {
-	RecordID           int
-	QuestionID         int
+	RecordID           string
+	QuestionID         string
 	QuestionModifyTime int64
 	Cases              []Case
 	Language           string

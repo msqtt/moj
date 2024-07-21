@@ -1,7 +1,7 @@
 package account
 
 type DeleteAccountEvent struct {
-	AccountID  int
+	AccountID  string
 	DeleteTime int64
 	Enabled    bool
 }

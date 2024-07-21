@@ -2,16 +2,17 @@ package game
 
 import (
 	"errors"
+
 	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
 type GameQuestion struct {
-	QuestionID int
+	QuestionID string
 	Score      int
 }
 
 type SignUpAccount struct {
-	AccountID  int
+	AccountID  string
 	SignUpTime int64
 }
 
@@ -24,8 +25,8 @@ var (
 )
 
 type Game struct {
-	GameID         int
-	AccountID      int
+	GameID         string
+	AccountID      string
 	Title          string
 	Description    string
 	CreateTime     int64
@@ -35,7 +36,7 @@ type Game struct {
 	SignUpUserList []SignUpAccount
 }
 
-func NewGame(userID int, title, desc string,
+func NewGame(userID string, title, desc string,
 	time, startTime, endTime int64, ques []GameQuestion) (*Game, error) {
 
 	if !isValidTimeRange(startTime, endTime) {
@@ -71,7 +72,7 @@ func (g *Game) modify(cmd ModifyGameCmd) error {
 	return nil
 }
 
-func (g *Game) findSignedUp(accountID int) int {
+func (g *Game) findSignedUp(accountID string) int {
 	for id, user := range g.SignUpUserList {
 		if user.AccountID == accountID {
 			return id
@@ -80,7 +81,7 @@ func (g *Game) findSignedUp(accountID int) int {
 	return -1
 }
 
-func (g *Game) findQuestion(questionID int) int {
+func (g *Game) findQuestion(questionID string) int {
 	for id, ques := range g.QuestionList {
 		if ques.QuestionID == questionID {
 			return id
@@ -118,7 +119,7 @@ func getScore(num, deno, gross int) int {
 	return num * gross / deno
 }
 
-func (g *Game) signUp(queue queue.EventQueue, insertArrayFn func(gid, aid int, time int64) error,
+func (g *Game) signUp(queue queue.EventQueue, insertArrayFn func(gid, aid string, time int64) error,
 	cmd SignUpGameCmd) error {
 	if g.findSignedUp(cmd.AccountID) > -1 {
 		return ErrAccountAlreadyExist
@@ -137,7 +138,7 @@ func (g *Game) signUp(queue queue.EventQueue, insertArrayFn func(gid, aid int, t
 	return queue.EnQueue(event)
 }
 
-func (g *Game) cancelSignUp(queue queue.EventQueue, deleteArrayFn func(gid, aid int) error,
+func (g *Game) cancelSignUp(queue queue.EventQueue, deleteArrayFn func(gid, aid string) error,
 	cmd CancelSignUpGameCmd) error {
 	accId := g.findSignedUp(cmd.AccountID)
 	if accId == -1 {

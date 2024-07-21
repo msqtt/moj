@@ -1,7 +1,7 @@
 package account
 
 type LoginAccountEvent struct {
-	AccountID   int
+	AccountID   string
 	LoginIPAddr string
 	LoginDevice string
 	LoginTime   int64

@@ -3,10 +3,10 @@ package game
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type CalculateScoreCmd struct {
-	GameID           int
-	RecordID         int
-	AccountID        int
-	QuestionID       int
+	GameID           string
+	RecordID         string
+	AccountID        string
+	QuestionID       string
 	NumberFinishedAt int
 	LastFinishedAt   int
 	TotalQuestion    int

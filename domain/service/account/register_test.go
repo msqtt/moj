@@ -33,7 +33,7 @@ func TestRegister(t *testing.T) {
 		Captcha:  "123456",
 		Time:     time.Now().Unix(),
 	}
-	cap, err := captcha.NewCaptcha(0, cmd.Email, captcha.CaptchaTypeRegister,
+	cap, err := captcha.NewCaptcha("", cmd.Email, captcha.CaptchaTypeRegister,
 		"IP_ADDRESS", 10000, time.Now().Unix())
 	require.NoError(t, err)
 	require.NotNil(t, cap)
@@ -41,7 +41,7 @@ func TestRegister(t *testing.T) {
 	cap.Code = cmd.Captcha
 
 	event := account.CreateAccountEvent{
-		AccountID:    0,
+		AccountID:    "",
 		Email:        cmd.Email,
 		NickName:     cmd.NickName,
 		RegisterTime: cmd.Time,
@@ -80,7 +80,7 @@ func TestRegister(t *testing.T) {
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)
 
 	// // Test case 3: Captcha expired
-	cap, err = captcha.NewCaptcha(0, cmd.Email, captcha.CaptchaTypeRegister,
+	cap, err = captcha.NewCaptcha("", cmd.Email, captcha.CaptchaTypeRegister,
 		"IP_ADDRESS", 0, time.Now().Unix()-1000)
 	require.NoError(t, err)
 	require.NotNil(t, cap)
@@ -96,7 +96,7 @@ func TestRegister(t *testing.T) {
 	require.ErrorIs(t, err, saccount.ErrCaptchaAlreadyExpired)
 
 	// Test case 4: Failed to create account
-	cap, err = captcha.NewCaptcha(0, cmd.Email, captcha.CaptchaTypeRegister,
+	cap, err = captcha.NewCaptcha("", cmd.Email, captcha.CaptchaTypeRegister,
 		"IP_ADDRESS", 10000, time.Now().Unix())
 
 	require.NoError(t, err)

@@ -3,7 +3,7 @@ package account
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type LoginAccountCmd struct {
-	AccountID int
+	AccountID string
 	Device    string
 	IPAddr    string
 	Time      int64

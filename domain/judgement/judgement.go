@@ -2,6 +2,7 @@ package judgement
 
 import (
 	"errors"
+
 	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
@@ -18,10 +19,10 @@ const (
 )
 
 type Judgement struct {
-	JudgementID      int
+	JudgementID      string
 	JudgeStatus      JudgeStatusType
-	RecordID         int
-	QuestionID       int
+	RecordID         string
+	QuestionID       string
 	Language         string
 	Code             string
 	CodeHash         string
@@ -36,7 +37,7 @@ type Judgement struct {
 
 var ErrEmptyCase = errors.New("empty case")
 
-func NewJudgement(recordID, questionID, total int,
+func NewJudgement(recordID, questionID string, total int,
 	lang, code, codeHash string, time int64) *Judgement {
 	return &Judgement{
 		RecordID:      recordID,

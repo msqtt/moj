@@ -3,7 +3,7 @@ package game
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type ModifyGameCmd struct {
-	GameID       int
+	GameID       string
 	Title        string
 	Descirption  string
 	StartTime    int64

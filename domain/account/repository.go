@@ -1,6 +1,6 @@
 package account
 
 type AccountRepository interface {
-	FindAccountByID(accountID int) (*Account, error)
+	FindAccountByID(accountID string) (*Account, error)
 	Save(*Account) error
 }

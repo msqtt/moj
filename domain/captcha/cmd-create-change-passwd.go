@@ -3,7 +3,7 @@ package captcha
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type CreateChangePasswdCaptchaCmd struct {
-	AccountID int
+	AccountID string
 	Email     string
 	Time      int64
 	IpAddr    string

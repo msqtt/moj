@@ -1,10 +1,10 @@
 package record
 
 type SubmitRecordEvent struct {
-	RecordID   int
-	AccountID  int
-	QuestionID int
-	GameID     int
+	RecordID   string
+	AccountID  string
+	QuestionID string
+	GameID     string
 	Language   string
 	Code       string
 	CodeHash   string

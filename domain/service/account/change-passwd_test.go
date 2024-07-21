@@ -28,7 +28,7 @@ func TestChangePasswd(t *testing.T) {
 	cmd := saccount.ChangePasswdCmd{
 		Email:     "test@example.com",
 		Captcha:   "123456",
-		AccountID: 1,
+		AccountID: "1",
 		Password:  "newPassword!@#123",
 		Time:      time.Now().Unix(),
 	}

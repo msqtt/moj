@@ -1,7 +1,7 @@
 package question
 
 type ModifyQuestionCmd struct {
-	QuestionID       int
+	QuestionID       string
 	Enabled          bool
 	Title            string
 	Text             string

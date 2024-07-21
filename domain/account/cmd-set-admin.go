@@ -3,7 +3,7 @@ package account
 import "github.com/msqtt/moj/domain/pkg/queue"
 
 type SetAdminAccountCmd struct {
-	AccountID int
+	AccountID string
 	IsAdmin   bool
 }
 

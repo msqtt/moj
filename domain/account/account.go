@@ -21,7 +21,7 @@ var (
 )
 
 type Account struct {
-	AccountID  int
+	AccountID  string
 	Email      string
 	Password   string
 	AvatarLink string
@@ -43,11 +43,11 @@ func NewAccount(cry crypt.Cryptor, email, passwd, nickName string) (acc *Account
 		err = errors.Join(err, ErrInValidNickName)
 	}
 
-	newPasswd, err := cry.Encrypt(passwd)
+	newPasswd, err1 := cry.Encrypt(passwd)
 
 	// avoid unnecessary hash operations
-	if err != nil {
-		return
+	if err1 != nil {
+		err = errors.Join(err, err1)
 	}
 
 	acc = &Account{

@@ -2,6 +2,7 @@ package record
 
 import (
 	"errors"
+
 	"github.com/msqtt/moj/domain/pkg/common"
 	"github.com/msqtt/moj/domain/pkg/queue"
 )
@@ -9,10 +10,10 @@ import (
 var ErrRecordNotFound = errors.New("record not found")
 
 type Record struct {
-	RecordID         int
-	AccountID        int
-	GameID           int
-	QuestionID       int
+	RecordID         string
+	AccountID        string
+	GameID           string
+	QuestionID       string
 	Language         string
 	Code             string
 	CodeHash         string
@@ -27,7 +28,7 @@ type Record struct {
 	CPUTimeUsed      int
 }
 
-func NewRecord(accountID, gameID, questionID int, lang, code string, time int64) *Record {
+func NewRecord(accountID, gameID, questionID, lang, code string, time int64) *Record {
 	codeHash := common.Sha1(code)
 	return &Record{
 		AccountID:  accountID,
