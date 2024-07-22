@@ -54,12 +54,11 @@ func (mr *MockCryptorMockRecorder) Encrypt(arg0 any) *gomock.Call {
 }
 
 // Valid mocks base method.
-func (m *MockCryptor) Valid(raw, hashed string) (bool, error) {
+func (m *MockCryptor) Valid(raw, hashed string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Valid", raw, hashed)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Valid indicates an expected call of Valid.

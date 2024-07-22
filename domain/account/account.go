@@ -72,7 +72,7 @@ func (a *Account) create(queue queue.EventQueue, cmd CreateAccountCmd) error {
 	return queue.EnQueue(event)
 }
 
-func (a *Account) ValidPasswd(cry crypt.Cryptor, passwd string) (bool, error) {
+func (a *Account) ValidPasswd(cry crypt.Cryptor, passwd string) error {
 	return cry.Valid(passwd, a.Password)
 }
 
