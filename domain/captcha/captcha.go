@@ -7,15 +7,20 @@ import (
 	"github.com/msqtt/moj/domain/pkg/queue"
 )
 
-type CaptchaType int
+type CaptchaType string
 
 const (
-	CaptchaTypeRegister CaptchaType = iota
-	CaptchaTypeChangePasswd
+	CaptchaTypeRegister     CaptchaType = "register"
+	CaptchaTypeChangePasswd CaptchaType = "change password"
 )
 
 func (c CaptchaType) IsValid() bool {
-	return c >= CaptchaTypeRegister && c <= CaptchaTypeChangePasswd
+	switch c {
+	case CaptchaTypeRegister, CaptchaTypeChangePasswd:
+		return true
+	default:
+		return false
+	}
 }
 
 var (
