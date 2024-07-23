@@ -23,9 +23,6 @@ func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyI
 	if err != nil {
 		return err
 	}
-	if acc == nil {
-		return ErrAccountNotFound
-	}
 	err = acc.modifyInfo(queue, cmd)
 	if err != nil {
 		return err

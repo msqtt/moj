@@ -29,9 +29,6 @@ func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) error {
 	if err != nil {
 		return err
 	}
-	if ques == nil {
-		return ErrQuestionNotFound
-	}
 	ques2, err := NewQuestion(ques.QuestionID, cmd.Title, cmd.Text, cmd.Level,
 		cmd.AllowedLanguages, cmd.TimeLimit, cmd.MemoryLimit, cmd.Tags,
 		ques.CreateTime, cmd.Time, cmd.Cases)

@@ -35,7 +35,10 @@ type Judgement struct {
 	FailedReason     string
 }
 
-var ErrEmptyCase = errors.New("empty case")
+var (
+	ErrJudgementNotFound = errors.New("judgement not found")
+	ErrEmptyCase         = errors.New("empty case")
+)
 
 func NewJudgement(recordID, questionID string, total int,
 	lang, code, codeHash string, time int64) *Judgement {

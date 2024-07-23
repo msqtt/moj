@@ -24,8 +24,5 @@ func (l *LoginAccountCmdHandler) Handle(queue queue.EventQueue, cmd LoginAccount
 	if err != nil {
 		return err
 	}
-	if acc == nil {
-		return ErrAccountNotFound
-	}
 	return acc.login(queue, cmd)
 }

@@ -26,9 +26,6 @@ func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd)
 	if err != nil {
 		return err
 	}
-	if game == nil {
-		return ErrGameNotFound
-	}
 	err = game.modify(cmd)
 	if err != nil {
 		return err

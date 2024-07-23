@@ -27,8 +27,5 @@ func (h *CalculateScoreCmdHandler) Handle(queue queue.EventQueue, cmd CalculateS
 	if err != nil {
 		return err
 	}
-	if game == nil {
-		return ErrGameNotFound
-	}
 	return game.calculate(queue, cmd)
 }

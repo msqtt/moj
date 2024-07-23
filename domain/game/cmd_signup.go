@@ -23,8 +23,5 @@ func (h *SignupGameCmdHandler) Handle(queue queue.EventQueue, cmd SignUpGameCmd)
 	if err != nil {
 		return err
 	}
-	if game == nil {
-		return ErrGameNotFound
-	}
 	return game.signUp(queue, h.repo.InsertSignUpAccount, cmd)
 }

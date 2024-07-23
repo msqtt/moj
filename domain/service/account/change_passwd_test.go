@@ -74,7 +74,7 @@ func TestChangePasswd(t *testing.T) {
 	// Test case 2: Captcha not found
 	mCRepo.EXPECT().
 		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
-		Return(nil, nil)
+		Return(nil, saccount.ErrCaptchaNotFound)
 
 	err = s.Handle(mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)
@@ -104,7 +104,7 @@ func TestChangePasswd(t *testing.T) {
 
 	mARepo.EXPECT().
 		FindAccountByID(cmd.AccountID).
-		Return(nil, nil)
+		Return(nil, account.ErrAccountNotFound)
 
 	err = s.Handle(mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrFailedToChangePasswd)

@@ -22,11 +22,6 @@ func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccou
 	if err != nil {
 		return err
 	}
-
-	if acc == nil {
-		return ErrAccountNotFound
-	}
-
 	err = acc.delete(queue, cmd)
 	if err != nil {
 		return err

@@ -23,8 +23,5 @@ func (h *CancelSignUpGameCmdHandler) Handle(queue queue.EventQueue, cmd CancelSi
 	if err != nil {
 		return err
 	}
-	if game == nil {
-		return ErrGameNotFound
-	}
 	return game.cancelSignUp(queue, h.repo.DeletSignUpAccount, cmd)
 }

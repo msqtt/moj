@@ -37,9 +37,6 @@ func (s *ChangePasswdService) Handle(queue queue.EventQueue, cmd ChangePasswdCmd
 	if err != nil {
 		return err
 	}
-	if cap == nil {
-		return ErrCaptchaNotFound
-	}
 	if cap.IsExpired(cmd.Time) {
 		return ErrCaptchaAlreadyExpired
 	}

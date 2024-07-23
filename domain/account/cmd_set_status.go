@@ -23,9 +23,6 @@ func (s *SetStatusAccountCmdHandler) Handle(queue queue.EventQueue,
 	if err != nil {
 		return err
 	}
-	if acc == nil {
-		return ErrAccountNotFound
-	}
 	err = acc.SetStatus(queue, cmd)
 	if err != nil {
 		return err

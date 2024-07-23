@@ -23,9 +23,6 @@ func (s *SetAdminAccountCmdHandler) Handle(queue queue.EventQueue,
 	if err != nil {
 		return err
 	}
-	if acc == nil {
-		return ErrAccountNotFound
-	}
 	err = acc.SetAdmin(queue, cmd)
 	if err != nil {
 		return err

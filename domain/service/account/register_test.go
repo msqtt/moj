@@ -74,7 +74,7 @@ func TestRegister(t *testing.T) {
 	mCRepo.EXPECT().
 		FindLatestCaptcha(gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
-		Return(nil, nil)
+		Return(nil, saccount.ErrCaptchaNotFound)
 
 	err = s.Handle(mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)

@@ -37,9 +37,6 @@ func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd)
 	if err != nil {
 		return err
 	}
-	if cap == nil {
-		return ErrCaptchaNotFound
-	}
 	if cap.IsExpired(cmd.Time) {
 		return ErrCaptchaAlreadyExpired
 	}
