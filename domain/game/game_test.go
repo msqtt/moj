@@ -16,6 +16,10 @@ func (m *MockEventQueue) EnQueue(event any) error {
 	return m.err
 }
 
+func (m *MockEventQueue) Queue() []any {
+	return nil
+}
+
 func TestCalculateScore(t *testing.T) {
 	// Create a mock EventQueue
 	mockQueue := MockEventQueue{}
