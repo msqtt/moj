@@ -1,6 +1,6 @@
 package game
 
-import "github.com/msqtt/moj/domain/pkg/queue"
+import "moj/domain/pkg/queue"
 
 type CancelSignUpGameCmd struct {
 	GameID    string

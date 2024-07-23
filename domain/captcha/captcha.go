@@ -3,8 +3,8 @@ package captcha
 import (
 	"errors"
 
-	"github.com/msqtt/moj/domain/pkg/common"
-	"github.com/msqtt/moj/domain/pkg/queue"
+	"moj/domain/pkg/common"
+	"moj/domain/pkg/queue"
 )
 
 type CaptchaType string

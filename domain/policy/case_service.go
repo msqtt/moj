@@ -1,8 +1,8 @@
 package policy
 
 import (
-	"github.com/msqtt/moj/domain/judgement"
-	"github.com/msqtt/moj/domain/question"
+	"moj/domain/judgement"
+	"moj/domain/question"
 )
 
 type CaseFileService interface {

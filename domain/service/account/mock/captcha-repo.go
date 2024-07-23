@@ -10,9 +10,9 @@
 package mock_account
 
 import (
+	captcha "moj/domain/captcha"
 	reflect "reflect"
 
-	captcha "github.com/msqtt/moj/domain/captcha"
 	gomock "go.uber.org/mock/gomock"
 )
 

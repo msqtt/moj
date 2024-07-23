@@ -3,9 +3,9 @@ package policy
 import (
 	"errors"
 
-	"github.com/msqtt/moj/domain/game"
-	"github.com/msqtt/moj/domain/pkg/queue"
-	"github.com/msqtt/moj/domain/record"
+	"moj/domain/game"
+	"moj/domain/pkg/queue"
+	"moj/domain/record"
 )
 
 var ErrFailedToCalculateScore error = errors.New("failed to calculate score")

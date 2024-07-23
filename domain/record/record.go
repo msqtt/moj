@@ -3,8 +3,8 @@ package record
 import (
 	"errors"
 
-	"github.com/msqtt/moj/domain/pkg/common"
-	"github.com/msqtt/moj/domain/pkg/queue"
+	"moj/domain/pkg/common"
+	"moj/domain/pkg/queue"
 )
 
 var ErrRecordNotFound = errors.New("record not found")

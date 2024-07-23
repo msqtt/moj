@@ -1,6 +1,6 @@
 package account
 
-import "github.com/msqtt/moj/domain/pkg/queue"
+import "moj/domain/pkg/queue"
 
 type DeleteAccountCmd struct {
 	AccountID string

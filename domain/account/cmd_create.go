@@ -1,8 +1,8 @@
 package account
 
 import (
-	"github.com/msqtt/moj/domain/pkg/crypt"
-	"github.com/msqtt/moj/domain/pkg/queue"
+	"moj/domain/pkg/crypt"
+	"moj/domain/pkg/queue"
 )
 
 type CreateAccountCmd struct {

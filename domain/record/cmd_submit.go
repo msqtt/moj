@@ -1,6 +1,6 @@
 package record
 
-import "github.com/msqtt/moj/domain/pkg/queue"
+import "moj/domain/pkg/queue"
 
 type SubmitRecordCmd struct {
 	AccountID  string

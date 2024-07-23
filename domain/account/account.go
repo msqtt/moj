@@ -6,9 +6,9 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/msqtt/moj/domain/pkg/common"
-	"github.com/msqtt/moj/domain/pkg/crypt"
-	"github.com/msqtt/moj/domain/pkg/queue"
+	"moj/domain/pkg/common"
+	"moj/domain/pkg/crypt"
+	"moj/domain/pkg/queue"
 )
 
 var (

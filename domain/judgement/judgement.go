@@ -3,7 +3,7 @@ package judgement
 import (
 	"errors"
 
-	"github.com/msqtt/moj/domain/pkg/queue"
+	"moj/domain/pkg/queue"
 )
 
 type JudgeStatusType string

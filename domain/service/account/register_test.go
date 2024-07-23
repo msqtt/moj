@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/msqtt/moj/domain/account"
-	"github.com/msqtt/moj/domain/captcha"
-	saccount "github.com/msqtt/moj/domain/service/account"
-	mock_account "github.com/msqtt/moj/domain/service/account/mock"
+	"moj/domain/account"
+	"moj/domain/captcha"
+	saccount "moj/domain/service/account"
+	mock_account "moj/domain/service/account/mock"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"

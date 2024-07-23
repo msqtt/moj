@@ -1,7 +1,7 @@
 package common_test
 
 import (
-	"github.com/msqtt/moj/domain/pkg/common"
+	"moj/domain/pkg/common"
 	"testing"
 
 	"github.com/stretchr/testify/require"
