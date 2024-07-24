@@ -96,6 +96,7 @@ func TestChangePasswd(t *testing.T) {
 	require.ErrorIs(t, err, saccount.ErrCaptchaAlreadyExpired)
 
 	// Test case 4: Failed to change password
+	cap.Enabled = true
 	mCRepo.EXPECT().
 		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(cap, nil)

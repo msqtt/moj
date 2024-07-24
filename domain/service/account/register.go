@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	ErrCaptchaNotFound       = errors.New("captcha not found")
-	ErrCaptchaAlreadyExpired = errors.Join(domain_err.ErrExpired, errors.New("captcha already expired"))
-	ErrFailedToCreateAccount = errors.New("failed to create account")
+	ErrAccountAlreadyRegistered = errors.Join(domain_err.ErrDuplicated, errors.New("account already been registered"))
+	ErrCaptchaNotFound          = errors.New("captcha not found")
+	ErrCaptchaAlreadyExpired    = errors.Join(domain_err.ErrExpired, errors.New("captcha already expired"))
+	ErrFailedToCreateAccount    = errors.New("failed to create account")
 )
 
 type RegisterCmd struct {
@@ -25,15 +26,29 @@ type RegisterCmd struct {
 type AccountRegisterService struct {
 	createAccountCmdHandler *account.CreateAccountCmdHandler
 	captchaRepository       captcha.CaptchaRepository
+	accountRepository       account.AccountRepository
 }
 
 func NewAccountRegisterService(createAccountCmdHandler *account.CreateAccountCmdHandler,
-	captchaRepository captcha.CaptchaRepository) *AccountRegisterService {
-	return &AccountRegisterService{createAccountCmdHandler: createAccountCmdHandler,
-		captchaRepository: captchaRepository}
+	captchaRepository captcha.CaptchaRepository,
+	accountRepository account.AccountRepository,
+) *AccountRegisterService {
+	return &AccountRegisterService{
+		createAccountCmdHandler: createAccountCmdHandler,
+		captchaRepository:       captchaRepository,
+		accountRepository:       accountRepository,
+	}
 }
 
 func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd) error {
+	// check the account by email
+	_, err := s.accountRepository.FindAccountByEmail(cmd.Email)
+	if err == nil {
+		return ErrAccountAlreadyRegistered
+	} else if !errors.Is(err, account.ErrAccountNotFound) {
+		return err
+	}
+
 	cap, err := s.captchaRepository.FindLatestCaptcha(cmd.Email, cmd.Captcha,
 		captcha.CaptchaTypeRegister)
 	if err != nil {

@@ -10,9 +10,9 @@
 package mock_account
 
 import (
+	account "moj/domain/account"
 	reflect "reflect"
 
-	account "moj/domain/account"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -37,6 +37,21 @@ func NewMockAccountRepository(ctrl *gomock.Controller) *MockAccountRepository {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAccountRepository) EXPECT() *MockAccountRepositoryMockRecorder {
 	return m.recorder
+}
+
+// FindAccountByEmail mocks base method.
+func (m *MockAccountRepository) FindAccountByEmail(email string) (*account.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAccountByEmail", email)
+	ret0, _ := ret[0].(*account.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAccountByEmail indicates an expected call of FindAccountByEmail.
+func (mr *MockAccountRepositoryMockRecorder) FindAccountByEmail(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAccountByEmail", reflect.TypeOf((*MockAccountRepository)(nil).FindAccountByEmail), email)
 }
 
 // FindAccountByID mocks base method.

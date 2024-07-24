@@ -23,7 +23,7 @@ func TestRegister(t *testing.T) {
 
 	// Create a new AccountRegisterService
 	accHandler := account.NewCreateAccountCmdHandler(mARepo, mCryp)
-	s := saccount.NewAccountRegisterService(accHandler, mCRepo)
+	s := saccount.NewAccountRegisterService(accHandler, mCRepo, mARepo)
 
 	// Test case 1: Successful registration
 	cmd := saccount.RegisterCmd{
@@ -65,12 +65,15 @@ func TestRegister(t *testing.T) {
 		Save(gomock.Any()).
 		Return(nil)
 
+	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
+
 	mQueue.EXPECT().EnQueue(gomock.Eq(event)).Return(nil)
 
 	err = s.Handle(mQueue, cmd)
 	require.NoError(t, err)
 
 	// Test case 2: Captcha not found
+	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
 	mCRepo.EXPECT().
 		FindLatestCaptcha(gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
@@ -87,6 +90,7 @@ func TestRegister(t *testing.T) {
 
 	cap.Code = cmd.Captcha
 
+	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
 	mCRepo.EXPECT().
 		FindLatestCaptcha(gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
@@ -119,6 +123,7 @@ func TestRegister(t *testing.T) {
 		Save(gomock.Any()).
 		Return(errors.New("Failed to create account"))
 
+	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
 	err = s.Handle(mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrFailedToCreateAccount)
 }
