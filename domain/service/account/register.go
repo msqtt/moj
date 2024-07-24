@@ -22,11 +22,11 @@ type RegisterCmd struct {
 }
 
 type AccountRegisterService struct {
-	createAccountCmdHandler account.CreateAccountCmdHandler
+	createAccountCmdHandler *account.CreateAccountCmdHandler
 	captchaRepository       captcha.CaptchaRepository
 }
 
-func NewAccountRegisterService(createAccountCmdHandler account.CreateAccountCmdHandler,
+func NewAccountRegisterService(createAccountCmdHandler *account.CreateAccountCmdHandler,
 	captchaRepository captcha.CaptchaRepository) *AccountRegisterService {
 	return &AccountRegisterService{createAccountCmdHandler: createAccountCmdHandler, captchaRepository: captchaRepository}
 }

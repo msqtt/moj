@@ -23,7 +23,7 @@ func TestRegister(t *testing.T) {
 
 	// Create a new AccountRegisterService
 	accHandler := account.NewCreateAccountCmdHandler(mARepo, mCryp)
-	s := saccount.NewAccountRegisterService(*accHandler, mCRepo)
+	s := saccount.NewAccountRegisterService(accHandler, mCRepo)
 
 	// Test case 1: Successful registration
 	cmd := saccount.RegisterCmd{
