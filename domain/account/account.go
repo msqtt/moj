@@ -8,16 +8,17 @@ import (
 
 	"moj/domain/pkg/common"
 	"moj/domain/pkg/crypt"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 )
 
 var (
 	ErrAccountNotFound   = errors.New("account not found")
-	ErrInValidAvatarLink = errors.New("invalid avatar link")
-	ErrInValidNickName   = errors.New("invalid nickname")
-	ErrInValidEmail      = errors.New("invalid email")
-	ErrInValidPasswd     = errors.New("invalid password")
-	ErrDuplicateRemoval  = errors.New("duplicate removal")
+	ErrInValidAvatarLink = errors.Join(domain_err.ErrInValided, errors.New("invalid avatar link"))
+	ErrInValidNickName   = errors.Join(domain_err.ErrInValided, errors.New("invalid nickname"))
+	ErrInValidEmail      = errors.Join(domain_err.ErrInValided, errors.New("invalid email"))
+	ErrInValidPasswd     = errors.Join(domain_err.ErrInValided, errors.New("invalid password"))
+	ErrDuplicateRemoval  = errors.Join(domain_err.ErrDuplicated, errors.New("invalid removal"))
 )
 
 type Account struct {

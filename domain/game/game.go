@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 )
 
@@ -17,11 +18,11 @@ type SignUpAccount struct {
 }
 
 var (
-	ErrGameNotFound        = errors.New("game do not exist")
-	ErrInvalidTimeRange    = errors.New("invalid time range")
-	ErrAccountNotExist     = errors.New("account do not exist")
-	ErrAccountAlreadyExist = errors.New("account already exist")
-	ErrQuestionNotExist    = errors.New("question do not exist")
+	ErrGameNotFound        = errors.New("game not found")
+	ErrAccountNotFound     = errors.New("sign up account not found")
+	ErrQuestionNotFound    = errors.New("collect question not found")
+	ErrAccountAlreadyExist = errors.Join(domain_err.ErrDuplicated, errors.New("account already sign up"))
+	ErrInvalidTimeRange    = errors.Join(domain_err.ErrInValided, errors.New("invalid time range"))
 )
 
 type Game struct {
@@ -92,12 +93,12 @@ func (g *Game) findQuestion(questionID string) int {
 
 func (g *Game) calculate(queue queue.EventQueue, cmd CalculateScoreCmd) error {
 	if g.findSignedUp(cmd.AccountID) == -1 {
-		return ErrAccountNotExist
+		return ErrAccountNotFound
 	}
 
 	queId := g.findQuestion(cmd.QuestionID)
 	if queId == -1 {
-		return ErrQuestionNotExist
+		return ErrQuestionNotFound
 	}
 
 	gross := g.QuestionList[queId].Score
@@ -142,7 +143,7 @@ func (g *Game) cancelSignUp(queue queue.EventQueue, deleteArrayFn func(gid, aid 
 	cmd CancelSignUpGameCmd) error {
 	accId := g.findSignedUp(cmd.AccountID)
 	if accId == -1 {
-		return ErrAccountNotExist
+		return ErrAccountNotFound
 	}
 
 	err := deleteArrayFn(g.GameID, cmd.AccountID)

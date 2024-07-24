@@ -36,7 +36,7 @@ func TestCalculateScore(t *testing.T) {
 		AccountID: "2",
 	}
 	err1 := g.calculate(&mockQueue, cmd1)
-	require.ErrorIs(t, err1, ErrAccountNotExist, "Error: %w", err1)
+	require.ErrorIs(t, err1, ErrAccountNotFound, "Error: %w", err1)
 
 	// Test case 2: Question does not exist
 	cmd2 := CalculateScoreCmd{
@@ -44,7 +44,7 @@ func TestCalculateScore(t *testing.T) {
 		QuestionID: "2",
 	}
 	err2 := g.calculate(&mockQueue, cmd2)
-	require.ErrorIs(t, err2, ErrQuestionNotExist, "Error: %w", err2)
+	require.ErrorIs(t, err2, ErrQuestionNotFound, "Error: %w", err2)
 
 	// Test case 3: Normal calculation
 	cmd3 := CalculateScoreCmd{

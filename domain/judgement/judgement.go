@@ -3,6 +3,7 @@ package judgement
 import (
 	"errors"
 
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 )
 
@@ -37,7 +38,7 @@ type Judgement struct {
 
 var (
 	ErrJudgementNotFound = errors.New("judgement not found")
-	ErrEmptyCase         = errors.New("empty case")
+	ErrEmptyCase         = errors.Join(domain_err.ErrInValided, errors.New("empty case"))
 )
 
 func NewJudgement(recordID, questionID string, total int,

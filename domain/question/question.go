@@ -3,6 +3,7 @@ package question
 import (
 	"errors"
 	"fmt"
+	domain_err "moj/domain/pkg/error"
 )
 
 type QuestionLevel int
@@ -35,9 +36,9 @@ func (q QuestionLanguage) IsValid() bool {
 
 var (
 	ErrQuestionNotFound        = errors.New("question not found")
-	ErrInValidQuestionLanguage = errors.New("invalid language")
-	ErrInvalidQuestionLevel    = errors.New("invalid level")
-	ErrEmpltyCases             = errors.New("empty cases")
+	ErrInValidQuestionLanguage = errors.Join(domain_err.ErrInValided, errors.New("invalid language"))
+	ErrInvalidQuestionLevel    = errors.Join(domain_err.ErrInValided, errors.New("invalid level"))
+	ErrEmpltyCases             = errors.Join(domain_err.ErrInValided, errors.New("empty cases"))
 )
 
 type Question struct {

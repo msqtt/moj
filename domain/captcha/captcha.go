@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"moj/domain/pkg/common"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 )
 
@@ -24,9 +25,9 @@ func (c CaptchaType) IsValid() bool {
 }
 
 var (
-	ErrInValidEmail       = errors.New("invalid email")
-	ErrInValidCaptchaType = errors.New("invalid captcha type")
-	ErrExpiredCaptcha     = errors.New("captcha expired")
+	ErrInValidEmail       = errors.Join(domain_err.ErrInValided, errors.New("invalid email"))
+	ErrInValidCaptchaType = errors.Join(domain_err.ErrInValided, errors.New("invalid captcha type"))
+	ErrExpiredCaptcha     = errors.Join(domain_err.ErrExpired, errors.New("captcha expired"))
 )
 
 type Captcha struct {
