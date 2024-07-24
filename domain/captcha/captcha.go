@@ -31,6 +31,7 @@ var (
 )
 
 type Captcha struct {
+	CaptchaID  string
 	AccountID  string
 	Code       string
 	Email      string
@@ -71,7 +72,7 @@ func NewCaptcha(
 
 func (c *Captcha) IsExpired(time int64) bool {
 	if !c.Enabled {
-		return false
+		return true
 	}
 	return c.ExpireTime < time
 }
