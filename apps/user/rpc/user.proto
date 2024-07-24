@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./user_pb";
+
+service UserService {
+    rpc Login(LoginRequest) returns (LoginResponse) {}
+    rpc Register(RegisterRequest) returns (RegisterResponse) {}
+    // rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {}
+    // rpc GetUserList(GetUserListRequest) returns (GetUserListResponse) {}
+    // rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
+    // rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (UpdateUserPasswordResponse) {}
+    // rpc SetAdmin(SetAdminRequest) returns (SetAdminResponse) {}
+    // rpc SetStatus(SetStatusRequest) returns (SetStatusResponse) {}
+    // rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+}
+
+message LoginRequest {
+    string accountID = 1;
+    string device = 2;
+    string ipAddr = 3;
+}
+
+message LoginResponse {
+    int64 time = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string nickName = 2;
+    string password = 3;
+    string captcha = 4;
+}
+
+message RegisterResponse {
+    int64 time = 1;
+}
+
+
+service CaptchaService {
+    rpc SendRegisterCaptcha(SendRegisterCaptchaRequest) returns (SendRegisterCaptchaResponse) {}
+    rpc SendChangePasswdCaptcha(SendChangePasswdCaptchaRequest) returns (SendChangePasswdCaptchaResponse) {}
+}
+
+message SendRegisterCaptchaRequest {
+    string email = 1;
+    string ipAddr = 2;
+}
+
+message SendRegisterCaptchaResponse {
+    int64 time = 1;
+}
+
+
+message SendChangePasswdCaptchaRequest {
+    string accountID = 1;
+    string email = 2;
+    string ipAddr = 3;
+}
+
+message SendChangePasswdCaptchaResponse {
+    int64 time = 1;
+}
