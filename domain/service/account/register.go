@@ -4,12 +4,13 @@ import (
 	"errors"
 	"moj/domain/account"
 	"moj/domain/captcha"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 )
 
 var (
 	ErrCaptchaNotFound       = errors.New("captcha not found")
-	ErrCaptchaAlreadyExpired = errors.New("captcha already expired")
+	ErrCaptchaAlreadyExpired = errors.Join(domain_err.ErrExpired, errors.New("captcha already expired"))
 	ErrFailedToCreateAccount = errors.New("failed to create account")
 )
 
@@ -28,7 +29,8 @@ type AccountRegisterService struct {
 
 func NewAccountRegisterService(createAccountCmdHandler *account.CreateAccountCmdHandler,
 	captchaRepository captcha.CaptchaRepository) *AccountRegisterService {
-	return &AccountRegisterService{createAccountCmdHandler: createAccountCmdHandler, captchaRepository: captchaRepository}
+	return &AccountRegisterService{createAccountCmdHandler: createAccountCmdHandler,
+		captchaRepository: captchaRepository}
 }
 
 func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd) error {
