@@ -18,7 +18,7 @@ var (
 	ErrInValidNickName   = errors.Join(domain_err.ErrInValided, errors.New("invalid nickname"))
 	ErrInValidEmail      = errors.Join(domain_err.ErrInValided, errors.New("invalid email"))
 	ErrInValidPasswd     = errors.Join(domain_err.ErrInValided, errors.New("invalid password"))
-	ErrDuplicateRemoval  = errors.Join(domain_err.ErrDuplicated, errors.New("invalid removal"))
+	ErrDuplicateRemoval  = errors.Join(domain_err.ErrDuplicated, errors.New("duplicated removal"))
 )
 
 type Account struct {
