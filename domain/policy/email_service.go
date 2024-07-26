@@ -8,6 +8,6 @@ type CaptchaEmailCmd struct {
 }
 
 type EmailService interface {
-	SendRegisterEmail(CaptchaEmailCmd) error
-	SendChangePassword(CaptchaEmailCmd) error
+	SendRegisterEmail(*CaptchaEmailCmd) error
+	SendChangePasswordEmail(*CaptchaEmailCmd) error
 }

@@ -20,15 +20,15 @@ func NewSendCaptchaEmailPolicy(emailService EmailService) *SendCaptchaEmailPolic
 func (p *SendCaptchaEmailPolicy) OnEvent(event any) (err error) {
 	switch v := event.(type) {
 	case captcha.ChangePasswdCaptchaEvent:
-		cmd := CaptchaEmailCmd{
+		cmd := &CaptchaEmailCmd{
 			Email:    v.Email,
 			IpAddr:   v.IpAddr,
 			Time:     v.CreateTime,
 			Duration: v.Duration,
 		}
-		err = p.emailService.SendChangePassword(cmd)
+		err = p.emailService.SendChangePasswordEmail(cmd)
 	case captcha.RegisterCaptchaEvent:
-		cmd := CaptchaEmailCmd{
+		cmd := &CaptchaEmailCmd{
 			Email:    v.Email,
 			IpAddr:   v.IpAddr,
 			Time:     v.CreateTime,
