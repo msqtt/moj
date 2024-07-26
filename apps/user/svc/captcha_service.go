@@ -38,7 +38,7 @@ func (s *Server) SendRegisterCaptcha(ctx context.Context, req *user_pb.SendRegis
 		Duration: s.conf.CaptchaLiveDuration,
 	}
 	slog.Info("invoking send register captcha command", "cmd", cmd)
-	err = s.commandInvoker.Invoker(func(eq queue.EventQueue) error {
+	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
 		return s.createRegisterCaptchaCmdHandler.Handle(eq, cmd)
 	})
 	if err != nil {
@@ -56,9 +56,9 @@ func (s *Server) SendChangePasswdCaptcha(ctx context.Context, req *user_pb.SendC
 	slog.Debug("send change password request", "req", req)
 
 	// check the account by email
-	_, err = s.accountViewDAO.FindLatestByEmail(req.GetEmail())
+	_, err = s.accountViewDAO.FindByAccountID(req.GetAccountID())
 	if err != nil {
-		slog.Error("failed to find account by email", "err", err)
+		slog.Error("failed to find account view by id", "err", err)
 		if errors.Is(err, db.ErrAccountViewNotFound) {
 			return nil, responseStatusError(err)
 		}
@@ -74,7 +74,7 @@ func (s *Server) SendChangePasswdCaptcha(ctx context.Context, req *user_pb.SendC
 		Duration:  s.conf.CaptchaLiveDuration,
 	}
 	slog.Info("invoking send change password captcha command", "cmd", cmd)
-	err = s.commandInvoker.Invoker(func(eq queue.EventQueue) error {
+	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
 		return s.createChangePasswdCaptchaCmdHandler.Handle(eq, cmd)
 	})
 	if err != nil {

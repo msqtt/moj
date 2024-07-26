@@ -13,6 +13,10 @@ type Config struct {
 	CaptchaLiveDuration int64  `mapstructure:"CAPTCHA_LIVE_DURATION"`
 	TLS                 bool
 	Debug               bool
+	EmailFromAddr       string `mapstructure:"EMAIL_FROM_ADDR"`
+	EmailSmtpHost       string `mapstructure:"EMAIL_SMTP_HOST"`
+	EmailSmtpPort       int    `mapstructure:"EMAIL_SMTP_PORT"`
+	EmailsmtpScrt       string `mapstructure:"EMAIL_SMTP_SCRT"`
 }
 
 func NewAppConfig() *Config {

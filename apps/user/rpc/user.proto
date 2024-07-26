@@ -7,13 +7,13 @@ option go_package = "./user_pb";
 service UserService {
     rpc Login(LoginRequest) returns (LoginResponse) {}
     rpc Register(RegisterRequest) returns (RegisterResponse) {}
-    // rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {}
-    // rpc GetUserList(GetUserListRequest) returns (GetUserListResponse) {}
-    // rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
-    // rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (UpdateUserPasswordResponse) {}
-    // rpc SetAdmin(SetAdminRequest) returns (SetAdminResponse) {}
-    // rpc SetStatus(SetStatusRequest) returns (SetStatusResponse) {}
-    // rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+    rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {}
+    rpc GetUserPage(GetUserPageRequest) returns (GetUserPageResponse) {}
+    rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
+    rpc ChangeUserPassword(ChangeUserPasswordRequest) returns (ChangeUserPasswordResponse) {}
+    rpc SetAdmin(SetAdminRequest) returns (SetAdminResponse) {}
+    rpc SetStatus(SetStatusRequest) returns (SetStatusResponse) {}
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
 }
 
 message LoginRequest {
@@ -37,6 +37,99 @@ message RegisterResponse {
     int64 time = 1;
 }
 
+message UserInfo {
+	string accountID = 1;
+	string email = 2;
+	string avatarLink = 3;
+	string nickName = 4;
+	bool enabled = 5;
+	bool isAdmin = 6;
+	int64 lastLoginTime = 7;
+	string lastLoginIPAddr = 8;
+	string lastLoginDevice = 9;
+	int64 lastPasswdChangeTime = 10;
+	int64 registerTime = 11;
+	int64 deleteTime = 12;
+}
+
+message GetUserInfoRequest {
+    string accountID = 1;
+}
+
+message GetUserInfoResponse {
+    UserInfo userInfo = 1;
+}
+
+message UserView {
+	string accountID = 1;
+	string email = 2;
+	string avatarLink = 3;
+	string nickName = 4;
+	bool enabled = 5;
+	bool isAdmin = 6;
+	int64 registerTime = 7;
+	int64 deleteTime = 8;
+}
+
+
+message GetUserPageRequest {
+    string word = 1;
+    string cursor = 2;
+    int32 pageSize = 3;
+}
+
+
+message GetUserPageResponse{
+    repeated UserView userView = 1;
+    string nextCursor = 2;
+}
+
+message UpdateUserInfoRequest {
+    string accountID = 1;
+    string nickName = 2;
+    string avatarLink = 3;
+}
+
+message UpdateUserInfoResponse {
+    int64 time = 1;
+}
+
+message ChangeUserPasswordRequest {
+    string accountID = 1;
+    string email = 2;
+    string password = 3;
+    string captcha = 4;
+}
+
+message ChangeUserPasswordResponse {
+    int64 time = 1;
+}
+
+message SetAdminRequest {
+    string accountID = 1;
+    bool isAdmin = 2;
+}
+
+message SetAdminResponse{
+    int64 time = 1;
+}
+
+message SetStatusRequest {
+    string accountID = 1;
+    bool enabled = 2;
+}
+
+message SetStatusResponse{
+    int64 time = 1;
+}
+
+message DeleteUserRequest {
+    string accountID = 1;
+}
+
+message DeleteUserResponse{
+    int64 time = 1;
+}
 
 service CaptchaService {
     rpc SendRegisterCaptcha(SendRegisterCaptchaRequest) returns (SendRegisterCaptchaResponse) {}

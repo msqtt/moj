@@ -68,3 +68,7 @@ func (a *App) Start() {
 	log.Println("starting server at", addr)
 	log.Fatalln(grpcServer.Serve(lis))
 }
+
+func (a *App) Stop() {
+	a.mongodb.Close()
+}

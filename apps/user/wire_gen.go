@@ -12,9 +12,11 @@ import (
 	"moj/apps/user/domain"
 	"moj/apps/user/etc"
 	"moj/apps/user/listener"
+	"moj/apps/user/mail"
 	"moj/apps/user/svc"
 	"moj/domain/account"
 	"moj/domain/captcha"
+	"moj/domain/policy"
 	account2 "moj/domain/service/account"
 )
 
@@ -23,33 +25,43 @@ import (
 func InitializeApplication() *App {
 	config := etc.NewAppConfig()
 	mongoDB := db.NewMongoDB(config)
+	transactionManager := db.NewMongoDBTransactionManager(mongoDB)
+	accountViewDAO := db.NewMongoDBAccountViewDAO(config, mongoDB)
+	emailService := mail.NewEmailServer(config)
+	eventDispatcher := ProvideEventDispatcher(accountViewDAO, emailService)
+	commandInvoker := domain.NewTransactionCommandInvoker(transactionManager, eventDispatcher)
 	accountRepository := domain.NewMongoDBAccountRepository(config, mongoDB)
 	loginAccountCmdHandler := account.NewLoginAccountCmdHandler(accountRepository)
+	setAdminAccountCmdHandler := account.NewSetAdminAccountCmdHandler(accountRepository)
+	setStatusAccountCmdHandler := account.NewSetStatusAccountCmdHandler(accountRepository)
+	deleteAccountCmdHandler := account.NewDeleteAccountCmdHandler(accountRepository)
+	modifyInfoAccountCmdHandler := account.NewModifyInfoAccountCmdHandler(accountRepository)
 	cryptor := domain.NewBCryptor()
 	createAccountCmdHandler := account.NewCreateAccountCmdHandler(accountRepository, cryptor)
 	captchaRepository := domain.NewMongoDBCaptchaRepository(config, mongoDB)
 	accountRegisterService := account2.NewAccountRegisterService(createAccountCmdHandler, captchaRepository, accountRepository)
+	changePasswdAccountCmdHandler := account.NewChangePasswdAccountCmdHandler(accountRepository, cryptor)
+	changePasswdService := account2.NewChangePasswdService(changePasswdAccountCmdHandler, captchaRepository)
 	createChangePasswdCaptchaCmdHandler := captcha.NewCreateChangePasswdCaptchaCmdHandler(captchaRepository)
 	createRegisterCaptchaCmdHandler := captcha.NewCreateRegisterCaptchaCmdHandler(captchaRepository)
-	transactionManager := db.NewMongoDBTransactionManager(mongoDB)
-	accountViewDAO := db.NewMongoDBAccountViewDAO(config, mongoDB)
-	eventDispatcher := ProvideEventDispatcher(accountViewDAO)
-	commandInvoker := domain.NewTransactionCommandInvoker(transactionManager, eventDispatcher)
-	server := svc.NewServer(loginAccountCmdHandler, accountRegisterService, createChangePasswdCaptchaCmdHandler, createRegisterCaptchaCmdHandler, commandInvoker, config, accountViewDAO)
+	server := svc.NewServer(config, commandInvoker, accountViewDAO, loginAccountCmdHandler, setAdminAccountCmdHandler, setStatusAccountCmdHandler, deleteAccountCmdHandler, modifyInfoAccountCmdHandler, accountRegisterService, changePasswdService, createChangePasswdCaptchaCmdHandler, createRegisterCaptchaCmdHandler)
 	app := NewApp(server, mongoDB, config)
 	return app
 }
 
 // wire.go:
 
-func ProvideEventDispatcher(accountViewDAO db.AccountViewDAO) domain.EventDispatcher {
-	return domain.NewSyncEventDispatcher(listener.NewAccountViewListener(accountViewDAO))
+func ProvideEventDispatcher(
+	accountViewDAO db.AccountViewDAO,
+	emailServer policy.EmailService,
+) domain.EventDispatcher {
+	return domain.NewSyncEventDispatcher(listener.NewAccountViewListener(accountViewDAO), policy.NewSendCaptchaEmailPolicy(emailServer))
 }
 
 var (
-	serverSet = wire.NewSet(svc.NewServer, account.NewLoginAccountCmdHandler, account.NewCreateAccountCmdHandler, account2.NewAccountRegisterService, captcha.NewCreateChangePasswdCaptchaCmdHandler, captcha.NewCreateRegisterCaptchaCmdHandler)
+	serverSet = wire.NewSet(svc.NewServer, account.NewLoginAccountCmdHandler, account.NewCreateAccountCmdHandler, account.NewSetAdminAccountCmdHandler, account.NewSetStatusAccountCmdHandler, account.NewDeleteAccountCmdHandler, account.NewModifyInfoAccountCmdHandler, account.NewChangePasswdAccountCmdHandler, account2.NewAccountRegisterService, account2.NewChangePasswdService, captcha.NewCreateChangePasswdCaptchaCmdHandler, captcha.NewCreateRegisterCaptchaCmdHandler)
 	dbSet     = wire.NewSet(db.NewMongoDB, db.NewMongoDBTransactionManager, domain.NewMongoDBAccountRepository, domain.NewMongoDBCaptchaRepository, db.NewMongoDBAccountViewDAO)
-	otherSet  = wire.NewSet(domain.NewBCryptor, domain.NewSimpleEventQueue, domain.NewTransactionCommandInvoker, etc.NewAppConfig, ProvideEventDispatcher)
+	otherSet  = wire.NewSet(domain.NewBCryptor, domain.NewSimpleEventQueue, domain.NewTransactionCommandInvoker, mail.NewEmailServer, etc.NewAppConfig, ProvideEventDispatcher)
 )
 
 var providers = wire.NewSet(serverSet, dbSet, otherSet)

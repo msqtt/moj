@@ -8,16 +8,24 @@ import (
 	"moj/apps/user/domain"
 	"moj/apps/user/etc"
 	"moj/apps/user/listener"
+	"moj/apps/user/mail"
 	service "moj/apps/user/svc"
 	"moj/domain/account"
 	"moj/domain/captcha"
+	"moj/domain/policy"
 	svc_account "moj/domain/service/account"
 
 	"github.com/google/wire"
 )
 
-func ProvideEventDispatcher(accountViewDAO db.AccountViewDAO) domain.EventDispatcher {
-	return domain.NewSyncEventDispatcher(listener.NewAccountViewListener(accountViewDAO))
+func ProvideEventDispatcher(
+	accountViewDAO db.AccountViewDAO,
+	emailServer policy.EmailService,
+) domain.EventDispatcher {
+	return domain.NewSyncEventDispatcher(
+		listener.NewAccountViewListener(accountViewDAO),
+		policy.NewSendCaptchaEmailPolicy(emailServer),
+	)
 }
 
 var (
@@ -25,7 +33,13 @@ var (
 		service.NewServer,
 		account.NewLoginAccountCmdHandler,
 		account.NewCreateAccountCmdHandler,
+		account.NewSetAdminAccountCmdHandler,
+		account.NewSetStatusAccountCmdHandler,
+		account.NewDeleteAccountCmdHandler,
+		account.NewModifyInfoAccountCmdHandler,
+		account.NewChangePasswdAccountCmdHandler,
 		svc_account.NewAccountRegisterService,
+		svc_account.NewChangePasswdService,
 		captcha.NewCreateChangePasswdCaptchaCmdHandler,
 		captcha.NewCreateRegisterCaptchaCmdHandler,
 	)
@@ -40,6 +54,7 @@ var (
 		domain.NewBCryptor,
 		domain.NewSimpleEventQueue,
 		domain.NewTransactionCommandInvoker,
+		mail.NewEmailServer,
 		etc.NewAppConfig,
 		ProvideEventDispatcher,
 	)
