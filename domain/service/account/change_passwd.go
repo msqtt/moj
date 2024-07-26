@@ -19,11 +19,11 @@ type ChangePasswdCmd struct {
 }
 
 type ChangePasswdService struct {
-	changePasswdAccountCmdHandler account.ChangePasswdAccountCmdHandler
+	changePasswdAccountCmdHandler *account.ChangePasswdAccountCmdHandler
 	captchaRepository             captcha.CaptchaRepository
 }
 
-func NewChangePasswdService(changePasswdAccountCmdHandler account.ChangePasswdAccountCmdHandler,
+func NewChangePasswdService(changePasswdAccountCmdHandler *account.ChangePasswdAccountCmdHandler,
 	captchaRepository captcha.CaptchaRepository) *ChangePasswdService {
 	return &ChangePasswdService{
 		changePasswdAccountCmdHandler: changePasswdAccountCmdHandler,

@@ -22,7 +22,7 @@ func TestChangePasswd(t *testing.T) {
 
 	// Create a new AccountRegisterService
 	accHandler := account.NewChangePasswdAccountCmdHandler(mARepo, mCryp)
-	s := saccount.NewChangePasswdService(*accHandler, mCRepo)
+	s := saccount.NewChangePasswdService(accHandler, mCRepo)
 
 	// Test case 1: Successful handling
 	cmd := saccount.ChangePasswdCmd{
