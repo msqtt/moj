@@ -42,7 +42,8 @@ var (
 )
 
 type Question struct {
-	QuestionID      int
+	QuestionID      string
+	AccountID       string
 	Enabled         bool
 	Title           string
 	Text            string
@@ -56,7 +57,7 @@ type Question struct {
 	ModifyTime      int64
 }
 
-func NewQuestion(questionID int, title, text string, level QuestionLevel,
+func NewQuestion(questionID, accountID string, title, text string, level QuestionLevel,
 	langs []QuestionLanguage, timeLimit, memoryLimit int,
 	tags []string, createTime, modifyTime int64, cases []Case) (que *Question, err error) {
 
@@ -80,6 +81,7 @@ func NewQuestion(questionID int, title, text string, level QuestionLevel,
 
 	que = &Question{
 		QuestionID:      questionID,
+		AccountID:       accountID,
 		Enabled:         false,
 		Title:           title,
 		Text:            text,

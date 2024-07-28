@@ -1,6 +1,7 @@
 package question
 
 type CreateQuestionCmd struct {
+	AccountID        string
 	Title            string
 	Text             string
 	Level            QuestionLevel
@@ -23,7 +24,7 @@ func NewCreateQuestionCmdHandler(repo QuestionRepository) *CreateQuestionCmdHand
 }
 
 func (h *CreateQuestionCmdHandler) Handle(cmd CreateQuestionCmd) error {
-	ques, err := NewQuestion(0, cmd.Title, cmd.Text, cmd.Level, cmd.AllowedLanguages,
+	ques, err := NewQuestion("", cmd.AccountID, cmd.Title, cmd.Text, cmd.Level, cmd.AllowedLanguages,
 		cmd.TimeLimit, cmd.MemoryLimit, cmd.Tags, cmd.Time, 0, cmd.Cases)
 	if err != nil {
 		return err
