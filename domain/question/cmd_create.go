@@ -3,7 +3,7 @@ package question
 type CreateQuestionCmd struct {
 	AccountID        string
 	Title            string
-	Text             string
+	Content          string
 	Level            QuestionLevel
 	AllowedLanguages []QuestionLanguage
 	TimeLimit        int
@@ -23,11 +23,11 @@ func NewCreateQuestionCmdHandler(repo QuestionRepository) *CreateQuestionCmdHand
 	}
 }
 
-func (h *CreateQuestionCmdHandler) Handle(cmd CreateQuestionCmd) error {
-	ques, err := NewQuestion("", cmd.AccountID, cmd.Title, cmd.Text, cmd.Level, cmd.AllowedLanguages,
+func (h *CreateQuestionCmdHandler) Handle(cmd CreateQuestionCmd) (result any, err error) {
+	ques, err := NewQuestion("", cmd.AccountID, cmd.Title, cmd.Content, cmd.Level, cmd.AllowedLanguages,
 		cmd.TimeLimit, cmd.MemoryLimit, cmd.Tags, cmd.Time, 0, cmd.Cases)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return h.repo.Save(ques)
 }

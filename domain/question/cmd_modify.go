@@ -4,7 +4,7 @@ type ModifyQuestionCmd struct {
 	QuestionID       string
 	Enabled          bool
 	Title            string
-	Text             string
+	Content          string
 	Level            QuestionLevel
 	AllowedLanguages []QuestionLanguage
 	TimeLimit        int
@@ -24,16 +24,16 @@ func NewModifyQuestionCmdHandler(repo QuestionRepository) *ModifyQuestionCmdHand
 	}
 }
 
-func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) error {
+func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) (any, error) {
 	ques, err := h.repo.FindQuestionByID(cmd.QuestionID)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	ques2, err := NewQuestion(ques.QuestionID, ques.AccountID, cmd.Title, cmd.Text, cmd.Level,
+	ques2, err := NewQuestion(ques.QuestionID, ques.AccountID, cmd.Title, cmd.Content, cmd.Level,
 		cmd.AllowedLanguages, cmd.TimeLimit, cmd.MemoryLimit, cmd.Tags,
 		ques.CreateTime, cmd.Time, cmd.Cases)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return h.repo.Save(ques2)
 }

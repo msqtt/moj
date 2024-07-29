@@ -36,25 +36,25 @@ func (q QuestionLanguage) IsValid() bool {
 
 var (
 	ErrQuestionNotFound        = errors.New("question not found")
-	ErrInValidQuestionLanguage = errors.Join(domain_err.ErrInValided, errors.New("invalid language"))
+	ErrInValidQuestionLanguage = errors.New("invalid language")
 	ErrInvalidQuestionLevel    = errors.Join(domain_err.ErrInValided, errors.New("invalid level"))
 	ErrEmpltyCases             = errors.Join(domain_err.ErrInValided, errors.New("empty cases"))
 )
 
 type Question struct {
-	QuestionID      string
-	AccountID       string
-	Enabled         bool
-	Title           string
-	Text            string
-	Level           QuestionLevel
-	AllowedLanguage []QuestionLanguage
-	Case            []Case
-	TimeLimit       int
-	MemoryLimit     int
-	Tags            []string
-	CreateTime      int64
-	ModifyTime      int64
+	QuestionID       string
+	AccountID        string
+	Enabled          bool
+	Title            string
+	Content          string
+	Level            QuestionLevel
+	AllowedLanguages []QuestionLanguage
+	Cases            []Case
+	TimeLimit        int
+	MemoryLimit      int
+	Tags             []string
+	CreateTime       int64
+	ModifyTime       int64
 }
 
 func NewQuestion(questionID, accountID string, title, text string, level QuestionLevel,
@@ -71,7 +71,8 @@ func NewQuestion(questionID, accountID string, title, text string, level Questio
 
 	for _, lang := range langs {
 		if !lang.IsValid() {
-			err = errors.Join(err, fmt.Errorf("%w: %s", ErrInValidQuestionLanguage, lang))
+			err = errors.Join(err, errors.Join(domain_err.ErrInValided,
+				fmt.Errorf("%w: %s", ErrInValidQuestionLanguage, lang)))
 		}
 	}
 
@@ -80,19 +81,19 @@ func NewQuestion(questionID, accountID string, title, text string, level Questio
 	}
 
 	que = &Question{
-		QuestionID:      questionID,
-		AccountID:       accountID,
-		Enabled:         false,
-		Title:           title,
-		Text:            text,
-		Level:           level,
-		AllowedLanguage: langs,
-		TimeLimit:       timeLimit,
-		MemoryLimit:     memoryLimit,
-		Tags:            tags,
-		CreateTime:      createTime,
-		ModifyTime:      modifyTime,
-		Case:            cases,
+		QuestionID:       questionID,
+		AccountID:        accountID,
+		Enabled:          false,
+		Title:            title,
+		Content:          text,
+		Level:            level,
+		AllowedLanguages: langs,
+		TimeLimit:        timeLimit,
+		MemoryLimit:      memoryLimit,
+		Tags:             tags,
+		CreateTime:       createTime,
+		ModifyTime:       modifyTime,
+		Cases:            cases,
 	}
 	return
 }

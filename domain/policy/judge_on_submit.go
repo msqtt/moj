@@ -42,7 +42,7 @@ func (p *JudgeOnSubmitPolicy) OnEvent(event any) error {
 	if err != nil {
 		return err
 	}
-	cases, err := p.caseFileReader.ReadAllCaseFile(que.Case)
+	cases, err := p.caseFileReader.ReadAllCaseFile(que.Cases)
 	if err != nil {
 		return err
 	}
