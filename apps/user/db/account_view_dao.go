@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log/slog"
 
-	"moj/apps/user/etc"
 	inter_error "moj/apps/user/pkg/app_err"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -24,21 +23,17 @@ type AccountViewDAO interface {
 }
 
 type MongoDBAccountViewDAO struct {
-	conf                  *etc.Config
 	mongodb               *MongoDB
 	accountViewCollection *mongo.Collection
 }
 
 func NewMongoDBAccountViewDAO(
-	conf *etc.Config,
 	mongodb *MongoDB,
 ) AccountViewDAO {
 	accountVieweCollection := mongodb.
-		Client().
-		Database(conf.DatabaseName).
+		Database().
 		Collection("view_account")
 	return &MongoDBAccountViewDAO{
-		conf:                  conf,
 		mongodb:               mongodb,
 		accountViewCollection: accountVieweCollection,
 	}

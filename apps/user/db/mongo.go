@@ -32,3 +32,7 @@ func (m *MongoDB) Close() {
 func (m *MongoDB) Client() *mongo.Client {
 	return m.client
 }
+
+func (m *MongoDB) Database() *mongo.Database {
+	return m.client.Database(m.conf.MongoDBName)
+}

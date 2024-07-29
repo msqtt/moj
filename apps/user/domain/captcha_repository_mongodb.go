@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"moj/apps/user/db"
-	"moj/apps/user/etc"
 	inter_error "moj/apps/user/pkg/app_err"
 	"moj/domain/captcha"
 	svc_account "moj/domain/service/account"
@@ -22,18 +21,15 @@ var (
 )
 
 type MongoDBCaptchaRepository struct {
-	conf              *etc.Config
 	mongodb           *db.MongoDB
 	captchaCollection *mongo.Collection
 }
 
 func NewMongoDBCaptchaRepository(
-	conf *etc.Config,
 	mongodb *db.MongoDB,
 ) captcha.CaptchaRepository {
-	captchaCollection := mongodb.Client().Database(conf.DatabaseName).Collection("captcha")
+	captchaCollection := mongodb.Database().Collection("captcha")
 	return &MongoDBCaptchaRepository{
-		conf:              conf,
 		mongodb:           mongodb,
 		captchaCollection: captchaCollection,
 	}
@@ -73,7 +69,6 @@ func (m *MongoDBCaptchaRepository) FindLatestCaptcha(email string, code string, 
 // Save implements captcha.CaptchaRepository.
 func (m *MongoDBCaptchaRepository) Save(captcha *captcha.Captcha) (err error) {
 	model := db.NewCaptchaFromAggregate(captcha)
-	slog.Debug("save captcha aggreation", "captcha", captcha)
 	slog.Debug("save captcha model", "model", model)
 	var result any
 	if model.ID.IsZero() {

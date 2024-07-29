@@ -17,15 +17,13 @@ import (
 )
 
 type MongoDBAccountRepository struct {
-	conf              *etc.Config
 	mongodb           *db.MongoDB
 	accountCollection *mongo.Collection
 }
 
 func NewMongoDBAccountRepository(conf *etc.Config, mongodb *db.MongoDB) account.AccountRepository {
-	accountCollection := mongodb.Client().Database(conf.DatabaseName).Collection("account")
+	accountCollection := mongodb.Database().Collection("account")
 	return &MongoDBAccountRepository{
-		conf:              conf,
 		mongodb:           mongodb,
 		accountCollection: accountCollection,
 	}
