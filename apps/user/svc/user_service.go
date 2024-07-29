@@ -226,7 +226,20 @@ func (s *Server) GetUserPage(ctx context.Context,
 	req *user_pb.GetUserPageRequest) (resp *user_pb.GetUserPageResponse, err error) {
 	slog.Debug("get user page request", "req", req)
 
-	views, err := s.accountViewDAO.FindByPage(int(req.GetPageSize()), req.GetCursor(), req.GetWord())
+	m := make(map[string]any)
+	if req.FilterOptions != nil {
+		if req.FilterOptions.Word != nil {
+			m["word"] = req.FilterOptions.Word
+		}
+		if req.FilterOptions.Enabled != nil {
+			m["enabled"] = req.FilterOptions.Enabled
+		}
+		if req.FilterOptions.IsAdmin != nil {
+			m["is_admin"] = req.FilterOptions.IsAdmin
+		}
+	}
+
+	views, err := s.accountViewDAO.FindByPage(int(req.GetPageSize()), req.GetCursor(), m)
 	if err != nil {
 		slog.Error("failed to find user page", "err", err)
 		err = responseStatusError(err)

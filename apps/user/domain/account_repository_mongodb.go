@@ -57,7 +57,6 @@ func (m *MongoDBAccountRepository) FindAccountByID(accountID string) (*account.A
 func (m *MongoDBAccountRepository) Save(acc *account.Account) (err error) {
 	model := db.NewAccountModelFromAggregate(acc)
 	slog.Debug("save account aggreation", "acc", acc)
-	slog.Debug("save account model", "model", model)
 
 	var result any
 	if model.ID.IsZero() {

@@ -73,9 +73,14 @@ message UserView {
 
 
 message GetUserPageRequest {
-    string word = 1;
-    string cursor = 2;
-    int32 pageSize = 3;
+    string cursor = 1;
+    int32 pageSize = 2;
+    message Option {
+        optional string word = 1;
+        optional bool enabled = 2;
+        optional bool isAdmin = 3;
+    }
+    optional Option filterOptions = 3;
 }
 
 

@@ -18,7 +18,7 @@ var ErrAccountViewNotFound = errors.New("account view not found")
 type AccountViewDAO interface {
 	FindByAccountID(id string) (*AccountViewModel, error)
 	FindLatestByEmail(email string) (*AccountViewModel, error)
-	FindByPage(pageSize int, cursor, word string) ([]*AccountViewModel, error)
+	FindByPage(pageSize int, cursor string, filter map[string]any) ([]*AccountViewModel, error)
 	Insert(accountView *AccountViewModel) error
 	Update(accountView *AccountViewModel) error
 }
@@ -116,22 +116,27 @@ func (a *MongoDBAccountViewDAO) FindLatestByEmail(email string) (*AccountViewMod
 
 // FindByPage implements AccountViewDAO.
 func (a *MongoDBAccountViewDAO) FindByPage(pageSize int,
-	cursor, word string) ([]*AccountViewModel, error) {
-	reg := bson.M{"$regex": word, "$options": "i"}
-	filter := bson.D{
-		{Key: "$or", Value: bson.A{
-			bson.M{"account_id": reg},
-			bson.M{"nick_name": reg},
-			bson.M{"email": reg},
-		}},
+	cursor string, f map[string]any) ([]*AccountViewModel, error) {
+	filter := bson.D{}
+
+	if cursor != "" {
+		filter = append(filter, bson.E{Key: "account_id", Value: bson.M{"$gt": cursor}})
+	}
+
+	for k, v := range f {
+		if k == "word" {
+			reg := bson.M{"$regex": f["word"], "$options": "i"}
+			filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+				bson.M{"account_id": reg},
+				bson.M{"nick_name": reg},
+				bson.M{"email": reg},
+			}})
+			continue
+		}
+		filter = append(filter, bson.E{Key: k, Value: v})
 	}
 
 	opts := options.Find().SetSort(bson.M{"account_id": 1}).SetLimit(int64(pageSize))
-
-	if cursor != "" {
-		filter = append(filter, bson.E{Key: "account_id", Value: bson.M{"$lt": cursor}})
-	}
-
 	slog.Debug("find account view by page", "filter", filter, "options", opts)
 
 	cur, err := a.accountViewCollection.Find(context.TODO(), filter, opts)
