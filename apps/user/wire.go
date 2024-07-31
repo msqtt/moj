@@ -19,12 +19,12 @@ import (
 )
 
 func ProvideEventDispatcher(
-	accountViewDAO db.AccountViewDAO,
-	emailServer policy.EmailService,
+	emailPolicy *policy.SendCaptchaEmailPolicy,
+	avDao db.AccountViewDAO,
 ) domain.EventDispatcher {
 	return domain.NewSyncEventDispatcher(
-		listener.NewAccountViewListener(accountViewDAO),
-		policy.NewSendCaptchaEmailPolicy(emailServer),
+		listener.NewEmailListener(emailPolicy),
+		listener.NewAccountViewListener(avDao),
 	)
 }
 
@@ -54,6 +54,7 @@ var (
 		domain.NewBCryptor,
 		domain.NewSimpleEventQueue,
 		domain.NewTransactionCommandInvoker,
+		policy.NewSendCaptchaEmailPolicy,
 		mail.NewEmailServer,
 		etc.NewAppConfig,
 		ProvideEventDispatcher,

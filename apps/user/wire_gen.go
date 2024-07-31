@@ -26,9 +26,10 @@ func InitializeApplication() *App {
 	config := etc.NewAppConfig()
 	mongoDB := db.NewMongoDB(config)
 	transactionManager := db.NewMongoDBTransactionManager(mongoDB)
-	accountViewDAO := db.NewMongoDBAccountViewDAO(mongoDB)
 	emailService := mail.NewEmailServer(config)
-	eventDispatcher := ProvideEventDispatcher(accountViewDAO, emailService)
+	sendCaptchaEmailPolicy := policy.NewSendCaptchaEmailPolicy(emailService)
+	accountViewDAO := db.NewMongoDBAccountViewDAO(mongoDB)
+	eventDispatcher := ProvideEventDispatcher(sendCaptchaEmailPolicy, accountViewDAO)
 	commandInvoker := domain.NewTransactionCommandInvoker(transactionManager, eventDispatcher)
 	accountRepository := domain.NewMongoDBAccountRepository(config, mongoDB)
 	loginAccountCmdHandler := account.NewLoginAccountCmdHandler(accountRepository)
@@ -52,16 +53,16 @@ func InitializeApplication() *App {
 // wire.go:
 
 func ProvideEventDispatcher(
-	accountViewDAO db.AccountViewDAO,
-	emailServer policy.EmailService,
+	emailPolicy *policy.SendCaptchaEmailPolicy,
+	avDao db.AccountViewDAO,
 ) domain.EventDispatcher {
-	return domain.NewSyncEventDispatcher(listener.NewAccountViewListener(accountViewDAO), policy.NewSendCaptchaEmailPolicy(emailServer))
+	return domain.NewSyncEventDispatcher(listener.NewEmailListener(emailPolicy), listener.NewAccountViewListener(avDao))
 }
 
 var (
 	serverSet = wire.NewSet(svc.NewServer, account.NewLoginAccountCmdHandler, account.NewCreateAccountCmdHandler, account.NewSetAdminAccountCmdHandler, account.NewSetStatusAccountCmdHandler, account.NewDeleteAccountCmdHandler, account.NewModifyInfoAccountCmdHandler, account.NewChangePasswdAccountCmdHandler, account2.NewAccountRegisterService, account2.NewChangePasswdService, captcha.NewCreateChangePasswdCaptchaCmdHandler, captcha.NewCreateRegisterCaptchaCmdHandler)
 	dbSet     = wire.NewSet(db.NewMongoDB, db.NewMongoDBTransactionManager, domain.NewMongoDBAccountRepository, domain.NewMongoDBCaptchaRepository, db.NewMongoDBAccountViewDAO)
-	otherSet  = wire.NewSet(domain.NewBCryptor, domain.NewSimpleEventQueue, domain.NewTransactionCommandInvoker, mail.NewEmailServer, etc.NewAppConfig, ProvideEventDispatcher)
+	otherSet  = wire.NewSet(domain.NewBCryptor, domain.NewSimpleEventQueue, domain.NewTransactionCommandInvoker, policy.NewSendCaptchaEmailPolicy, mail.NewEmailServer, etc.NewAppConfig, ProvideEventDispatcher)
 )
 
 var providers = wire.NewSet(serverSet, dbSet, otherSet)
