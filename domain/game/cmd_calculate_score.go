@@ -3,13 +3,13 @@ package game
 import "moj/domain/pkg/queue"
 
 type CalculateScoreCmd struct {
-	GameID           string
-	RecordID         string
-	AccountID        string
-	QuestionID       string
-	NumberFinishedAt int
-	LastFinishedAt   int
-	TotalQuestion    int
+	GameID             string
+	RecordID           string
+	AccountID          string
+	QuestionID         string
+	NumberFinishedAt   int
+	LastMostFinishedAt int
+	TotalQuestion      int
 }
 
 type CalculateScoreCmdHandler struct {
@@ -23,7 +23,7 @@ func NewCalculateScoreCmdHandler(repo GameRepository) *CalculateScoreCmdHandler 
 }
 
 func (h *CalculateScoreCmdHandler) Handle(queue queue.EventQueue, cmd CalculateScoreCmd) error {
-	game, err := h.repo.FindGameByID(cmd.AccountID)
+	game, err := h.repo.FindGameByID(cmd.GameID)
 	if err != nil {
 		return err
 	}

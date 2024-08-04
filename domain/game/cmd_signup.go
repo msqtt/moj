@@ -12,7 +12,7 @@ type SignupGameCmdHandler struct {
 	repo GameRepository
 }
 
-func NewSignupGameCmdHandler(repo GameRepository) *SignupGameCmdHandler {
+func NewSignUpGameCmdHandler(repo GameRepository) *SignupGameCmdHandler {
 	return &SignupGameCmdHandler{
 		repo: repo,
 	}

@@ -22,11 +22,11 @@ func NewCreateGameCmdHandler(repo GameRepository) *CreateGameCmdHandler {
 	}
 }
 
-func (h *CreateGameCmdHandler) Handle(queue queue.EventQueue, cmd CreateGameCmd) error {
+func (h *CreateGameCmdHandler) Handle(queue queue.EventQueue, cmd CreateGameCmd) (any, error) {
 	game, err := NewGame(cmd.AccountID, cmd.Title, cmd.Description, cmd.Time,
 		cmd.StartTime, cmd.EndTime, cmd.QuestionList)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return h.repo.Save(game)
 }

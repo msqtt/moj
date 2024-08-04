@@ -48,11 +48,11 @@ func TestCalculateScore(t *testing.T) {
 
 	// Test case 3: Normal calculation
 	cmd3 := CalculateScoreCmd{
-		AccountID:        "1",
-		QuestionID:       "1",
-		NumberFinishedAt: 10,
-		LastFinishedAt:   5,
-		TotalQuestion:    20,
+		AccountID:          "1",
+		QuestionID:         "1",
+		NumberFinishedAt:   10,
+		LastMostFinishedAt: 5,
+		TotalQuestion:      20,
 	}
 	err3 := g.calculate(&mockQueue, cmd3)
 	require.NoError(t, err3, "Error: %w", err3)

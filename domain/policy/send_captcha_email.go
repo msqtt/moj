@@ -36,6 +36,7 @@ func (p *SendCaptchaEmailPolicy) OnEvent(event any) (err error) {
 		}
 		err = p.emailService.SendRegisterEmail(cmd)
 	default:
+		return errors.New("invalid event type")
 	}
 	if err != nil {
 		err = errors.Join(ErrFailedToSendEmail, err)

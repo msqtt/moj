@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package game;
+
+option go_package = "./game_pb";
+
+service GameService {
+    rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {};
+    rpc GetGameInfo(GetGameInfoRequest) returns (GetGameInfoResponse) {};
+    rpc GetGamePage(GetGamePageRequest) returns (GetGamePageResponse) {};
+    rpc GetScore(GetScoreRequest) returns (GetScoreResponse) {};
+    rpc GetScorePage(GetScorePageRequest) returns (GetScorePageResponse) {};
+    rpc UpdateGame(UpdateGameRequest) returns (UpdateGameResponse) {};
+    rpc SignUpGame(SignUpGameRequest) returns (SignUpGameResponse) {};
+    rpc CancelSignUpGame(CancelSignUpGameRequest) returns (CancelSignUpGameResponse) {};
+}
+
+message GameQuestion {
+    string questionID = 1;    
+    int64 score = 2;
+}
+
+message CreateGameRequest {
+    string title = 1;
+    string desc= 2;
+    string accountID = 3;
+    int64 startTime = 4;
+    int64 endTime = 5;
+    repeated GameQuestion questionList = 6;
+}
+
+message CreateGameResponse {
+    string gameID = 1;
+    int64 time = 2;
+}
+
+message UpdateGameRequest {
+    string gameID = 1;
+    string title = 2;    
+    string desc= 3;
+    int64 startTime = 4;
+    int64 endTime = 5;
+    repeated GameQuestion questionList = 6;
+}
+
+message UpdateGameResponse {
+    int64 time = 1;
+}
+
+message SignUpGameRequest {
+    string gameID = 1;
+    string accountID = 2;
+}
+
+message SignUpGameResponse {
+    int64 time = 1;
+}
+
+message CancelSignUpGameRequest {
+    string gameID = 1;
+    string accountID = 2;
+}
+
+message CancelSignUpGameResponse {
+    int64 time = 1;
+}
+
+message GetGameInfoRequest {
+    string gameID = 1;
+}
+
+message SignUpAccount {
+    string accountID = 1;
+    int64 signUpTime = 2;
+}
+
+message GameInfo {
+    string gameID = 1;
+    string accountID = 2;
+    string title = 3;
+    string desc= 4;
+    int64 startTime = 5;
+    int64 endTime = 6;
+    int64 createTime = 7;
+    repeated GameQuestion questionList = 8;
+    repeated SignUpAccount signUpAccountList = 9;
+}
+
+message GetGameInfoResponse {
+   GameInfo gameInfo = 1; 
+}
+
+
+message GetGamePageRequest {
+    string cursor = 1;
+    int64 pageSize = 2;
+    message Option {
+       optional string word = 1; 
+       optional int64 time = 2; // during time
+    }
+    optional Option filterOptions = 3;
+}
+
+message GameView {
+    string gameID = 1;
+    string accountID = 2;
+    string title = 3;
+    string desc= 4;
+    int64 startTime = 5;
+    int64 endTime = 6;
+}
+
+message GetGamePageResponse {
+    repeated GameView gameView = 1;
+    string cursor = 2;
+}
+
+message GetScoreRequest {
+    string gameID = 1;
+    string accountID = 2;
+}   
+
+message GetScoreResponse {
+    string accountID = 1;
+    int64 score = 2;
+    int64 signUpTime = 3;
+}
+
+message GetScorePageRequest {
+    string gameID = 1;
+    int64 page = 2;
+    int64 pageSize = 3;
+}
+
+message ScoreView {
+    string accountID = 1;
+    int64 score = 2;
+    int64 signUpTime = 3;
+}
+
+message GetScorePageResponse {
+    repeated ScoreView scoreView = 1;
+    int64 total = 2;
+}

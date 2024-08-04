@@ -27,7 +27,7 @@ func NewModifyRecordAfterExecutionPolicy(modifyRecordCmdHandler record.ModifyRec
 func (p *ModifyRecordPolicy) OnEvent(event any) error {
 	evt, ok := event.(judgement.ExecutionFinishEvent)
 	if !ok {
-		return nil
+		return errors.New("invalid event type")
 	}
 
 	cmd := record.ModifyRecordCmd{

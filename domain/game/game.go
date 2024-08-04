@@ -102,7 +102,7 @@ func (g *Game) calculate(queue queue.EventQueue, cmd CalculateScoreCmd) error {
 	}
 
 	gross := g.QuestionList[queId].Score
-	num := cmd.NumberFinishedAt - cmd.LastFinishedAt
+	num := cmd.NumberFinishedAt - cmd.LastMostFinishedAt
 	deno := cmd.TotalQuestion
 
 	score := getScore(num, deno, gross)

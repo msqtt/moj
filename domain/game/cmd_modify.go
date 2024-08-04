@@ -21,14 +21,14 @@ func NewModifyGameCmdHandler(repo GameRepository) *ModifyGameCmdHandler {
 	}
 }
 
-func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd) error {
+func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd) (any, error) {
 	game, err := h.repo.FindGameByID(cmd.GameID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = game.modify(cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return h.repo.Save(game)

@@ -36,7 +36,7 @@ func NewJudgeOnSubmitPolicy(caseFileReader CaseFileService,
 func (p *JudgeOnSubmitPolicy) OnEvent(event any) error {
 	evt, ok := event.(record.SubmitRecordEvent)
 	if !ok {
-		return nil
+		return errors.New("invalid event type")
 	}
 	que, err := p.questionRepository.FindQuestionByID(evt.QuestionID)
 	if err != nil {
