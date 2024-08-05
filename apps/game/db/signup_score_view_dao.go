@@ -68,7 +68,8 @@ func (m *MongoDBSignUpScoreDao) FindByID(gameID, accountID string) (*SignUpScore
 
 // FindPage implements SignUpScoreDao.
 func (m *MongoDBSignUpScoreDao) FindPage(gameID string, page int, pageSize int) ([]*SignUpScoreViewModel, int64, error) {
-	total, err := m.collection.CountDocuments(context.TODO(), bson.M{"game_id": gameID})
+	filter := bson.M{"game_id": gameID}
+	total, err := m.collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal, errors.New("failed to count signup score"), err)
 		return nil, 0, err
@@ -83,7 +84,7 @@ func (m *MongoDBSignUpScoreDao) FindPage(gameID string, page int, pageSize int) 
 		SetLimit(int64(pageSize)).
 		SetSort(bson.M{"sign_up_time": 1})
 
-	cur, err := m.collection.Find(context.TODO(), bson.M{"game_id": gameID}, opts)
+	cur, err := m.collection.Find(context.TODO(), filter, opts)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(
