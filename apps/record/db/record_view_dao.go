@@ -1,0 +1,107 @@
+package db
+
+import (
+	"context"
+	"errors"
+	"log/slog"
+	"moj/apps/record/pkg/app_err"
+	"moj/domain/record"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type RecordViewDao interface {
+	FindPage(questionID, accountID string, page, pageSize int, filter map[string]any) (
+		[]*RecordViewModel, int64, error)
+	FindAllUnFinished() ([]*RecordModel, error)
+}
+
+type MongoDBRecordViewDao struct {
+	mongodb    *MongoDB
+	collection *mongo.Collection
+}
+
+// FindAllUnFinished implements RecordViewDao.
+func (m *MongoDBRecordViewDao) FindAllUnFinished() ([]*RecordModel, error) {
+	filter := bson.M{"$or": bson.A{
+		bson.M{"judge_status": bson.M{"$exists": false}},
+		bson.M{"judge_status": bson.M{"$eq": ""}},
+		bson.M{"judge_status": nil},
+	}}
+
+	cur, err := m.collection.Find(context.TODO(), filter)
+	if err != nil {
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("failed to find unfinished record view"), err)
+		return nil, err
+	}
+	var ret []*RecordModel
+	err = cur.All(context.TODO(), &ret)
+	if err != nil {
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("failed to get unfinished record view"), err)
+		return nil, err
+	}
+	return ret, nil
+}
+
+// FindPage implements RecordViewDao.
+func (m *MongoDBRecordViewDao) FindPage(questionID string,
+	accountID string, page int, pageSize int, f map[string]any) ([]*RecordViewModel, int64, error) {
+	filter := bson.D{
+		bson.E{Key: "game_id", Value: questionID},
+		bson.E{Key: "account_id", Value: accountID},
+	}
+
+	for k, v := range f {
+		filter = append(filter, bson.E{Key: k, Value: v})
+	}
+
+	if page < 1 {
+		page = 1
+	}
+
+	total, err := m.collection.CountDocuments(context.TODO(), filter)
+	if err != nil {
+		err = errors.Join(app_err.ErrServerInternal, errors.New("failed to count record view"), err)
+		return nil, total, err
+	}
+
+	opts := options.Find().SetSkip(int64(page-1) * int64(pageSize)).
+		SetLimit(int64(pageSize)).
+		SetSort(bson.D{{Key: "create_time", Value: -1}})
+
+	slog.Debug("find record view page", "filter", filter, "opts", opts)
+
+	var ret []*RecordViewModel
+	cur, err := m.collection.Find(context.TODO(), filter, opts)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			err = errors.Join(
+				app_err.ErrModelNotFound, record.ErrRecordNotFound, err)
+			return nil, 0, err
+		}
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("failed to find question view"), err)
+		return nil, 0, err
+	}
+	defer cur.Close(context.TODO())
+
+	err = cur.All(context.TODO(), &ret)
+	if err != nil {
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("failed to get all game view"), err)
+		return nil, 0, err
+	}
+	return ret, total, err
+}
+
+func NewMongoDBRecordViewDao(mongodb *MongoDB) RecordViewDao {
+	collection := mongodb.Database().Collection("record")
+	return &MongoDBRecordViewDao{
+		mongodb:    mongodb,
+		collection: collection,
+	}
+}

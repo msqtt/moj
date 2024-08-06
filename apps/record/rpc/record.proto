@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package record;
+
+option go_package = "./red_pb";
+
+service RecordService {
+    rpc SubmitRecord(SubmitRecordRequest) returns (SubmitRecordResponse);
+    rpc ModifyRecord(ModifyRecordRequest) returns (ModifyRecordResponse);
+    rpc GetRecordInfo(GetRecordInfoRequest) returns (GetRecordInfoResponse);
+    rpc GetRecordPage(GetRecordPageRequest) returns (GetRecordPageResponse);
+}
+
+message SubmitRecordRequest {
+    string accountID = 1;
+    string questionID = 2;
+    optional string gameID = 3;
+    string language = 4;
+    string code = 5;
+}
+
+message SubmitRecordResponse {
+    string recordID = 1;
+    int64 time = 2;
+}
+
+message ModifyRecordRequest {
+    string recordID = 1;
+    string judgeStatus = 2;
+    string failedReason = 3;
+    int64 numberFinishAt = 4;
+    int64 totalQuestion = 5;
+    int64 memoryUsed = 6;
+    int64 timeUsed = 7;
+    int64 cpuTimeUsed = 8;
+}
+
+message ModifyRecordResponse {
+    int64 time = 1;
+}
+
+message GetRecordInfoRequest {
+    string recordID = 1;
+}
+
+message RecordInfo {
+    string recordID = 1;
+    string accountID = 2;
+    optional string gameID = 3;
+    string questionID = 4;
+    string language = 5;
+    string code = 6;
+    string codeHash = 7;
+    string judgeStatus = 8;
+    optional string failedReason = 9;
+    int64 numberFinishedAt = 10;
+    int64 totalQuestion = 11;
+    int64 createTime = 12;
+    int64 finishTime = 13;
+    int64 memoryUsed = 14;
+    int64 timeUsed = 15;
+    int64 cpuTimeUsed = 16;
+}
+
+message GetRecordInfoResponse {
+    RecordInfo recordInfo = 1;
+}
+
+message GetRecordPageRequest {
+    string questionID = 1;
+    string accountID = 2;
+    optional string gameID = 3;
+    int32 page = 4;
+    int32 pageSize = 5;
+}
+
+message RecordView {
+    string recordID = 1;
+    optional string gameID = 2;
+    string language = 3;
+    string codeHash = 4;
+    string judgeStatus = 5;
+    int64 numberFinishedAt = 6;
+    int64 totalQuestion = 7;
+    int64 createTime = 8;
+    int64 memoryUsed = 9;
+    int64 timeUsed = 10;
+}
+
+message GetRecordPageResponse {
+    repeated RecordView recordView = 1;
+    int64 total = 2;
+}
