@@ -11,14 +11,14 @@ import (
 var ErrFailedToModifyRecord error = errors.New("failed to modify record")
 
 type ModifyRecordPolicy struct {
-	modifyRecordCmdHandler record.ModifyRecordCmdHandler
+	modifyRecordCmdHandler *record.ModifyRecordCmdHandler
 	queue                  queue.EventQueue
 }
 
-func NewModifyRecordAfterExecutionPolicy(modifyRecordCmdHandler record.ModifyRecordCmdHandler,
+func NewModifyRecordAfterExecutionPolicy(modifyRecordCmdHandler *record.ModifyRecordCmdHandler,
 	queue queue.EventQueue,
-) ModifyRecordPolicy {
-	return ModifyRecordPolicy{
+) *ModifyRecordPolicy {
+	return &ModifyRecordPolicy{
 		modifyRecordCmdHandler: modifyRecordCmdHandler,
 		queue:                  queue,
 	}
@@ -42,7 +42,7 @@ func (p *ModifyRecordPolicy) OnEvent(event any) error {
 		Time:           time.Now().Unix(),
 	}
 
-	err := p.modifyRecordCmdHandler.Handle(p.queue, cmd)
+	_, err := p.modifyRecordCmdHandler.Handle(p.queue, cmd)
 	if err != nil {
 		return errors.Join(ErrFailedToModifyRecord, err)
 	}
