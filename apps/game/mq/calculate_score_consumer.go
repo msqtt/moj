@@ -19,7 +19,6 @@ type NsqCalculateScoreConsumer struct {
 	dispatcher domain.EventDispatcher
 }
 
-// RegisterListener implements Consumer.
 func (n *NsqCalculateScoreConsumer) RegisterListener() {
 	fn := func(msg *nsq.Message) error {
 		if len(msg.Body) == 0 {
