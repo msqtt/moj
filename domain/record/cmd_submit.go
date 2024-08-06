@@ -21,11 +21,11 @@ func NewSubmitRecordCmdHandler(repo RecordRepository) *SubmitRecordCmdHandler {
 	}
 }
 
-func (s *SubmitRecordCmdHandler) Handle(queue queue.EventQueue, cmd SubmitRecordCmd) error {
+func (s *SubmitRecordCmdHandler) Handle(queue queue.EventQueue, cmd SubmitRecordCmd) (string, error) {
 	rec := NewRecord(cmd.AccountID, cmd.GameID, cmd.QuestionID, cmd.Language, cmd.Code, cmd.Time)
-	err := s.repo.Save(rec)
+	id, err := s.repo.Save(rec)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return rec.submit(queue)
+	return id, rec.submit(queue)
 }

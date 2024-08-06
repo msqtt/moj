@@ -58,22 +58,27 @@ func (r *Record) submit(queue queue.EventQueue) error {
 func (r *Record) modify(queue queue.EventQueue, cmd ModifyRecordCmd) error {
 	r.JudgeStatus = cmd.JudgeStatus
 	r.FailedReason = cmd.FailedReason
-	r.NumberFinishedAt = cmd.NumberFinishAt
 	r.TotalQuestion = cmd.TotalQuestion
 	r.FinishTime = cmd.Time
 	r.MemoryUsed = cmd.MemoryUsed
 	r.TimeUsed = cmd.TimeUsed
 	r.CPUTimeUsed = cmd.CPUTimeUsed
 
+	tmp := r.NumberFinishedAt
+	if r.NumberFinishedAt < cmd.NumberFinishAt {
+		r.NumberFinishedAt = cmd.NumberFinishAt
+	}
+
 	event := ModifyRecordEvent{
-		RecordID:         r.RecordID,
-		AccountID:        r.AccountID,
-		QuestionID:       r.QuestionID,
-		GameID:           r.GameID,
-		JudgeStatus:      r.JudgeStatus,
-		NumberFinishedAt: r.NumberFinishedAt,
-		TotalQuestion:    r.TotalQuestion,
-		FinishTime:       r.FinishTime,
+		RecordID:           r.RecordID,
+		AccountID:          r.AccountID,
+		QuestionID:         r.QuestionID,
+		GameID:             r.GameID,
+		JudgeStatus:        r.JudgeStatus,
+		NumberFinishedAt:   r.NumberFinishedAt,
+		LastMostFinishedAt: tmp,
+		TotalQuestion:      r.TotalQuestion,
+		FinishTime:         r.FinishTime,
 	}
 	return queue.EnQueue(event)
 }

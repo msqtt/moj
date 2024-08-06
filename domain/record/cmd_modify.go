@@ -24,10 +24,10 @@ func NewModifyRecordCmdHandler(repo RecordRepository) *ModifyRecordCmdHandler {
 	}
 }
 
-func (h *ModifyRecordCmdHandler) Handle(queue queue.EventQueue, cmd ModifyRecordCmd) error {
+func (h *ModifyRecordCmdHandler) Handle(queue queue.EventQueue, cmd ModifyRecordCmd) (any, error) {
 	rec, err := h.repo.FindRecordByID(cmd.RecordID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	rec.modify(queue, cmd)
 
