@@ -28,7 +28,7 @@ func (t *TransactionCommandInvoker) Invoke(run func(queue.EventQueue) (any, erro
 	return t.transactionManager.Do(context.Background(), func(ctx context.Context) (any, error) {
 		queue := NewSimpleEventQueue()
 		res, err1 := run(queue)
-		t.eventDispatcher.Dispatch(queue)
+		go t.eventDispatcher.Dispatch(queue)
 		return res, err1
 	})
 }
