@@ -2,7 +2,6 @@ package consumer
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"moj/apps/record/domain"
 	"moj/apps/record/etc"
@@ -25,7 +24,6 @@ func (c *NsqFinishRecordConsumer) Close() {
 }
 
 func (n *NsqFinishRecordConsumer) Start() {
-	fmt.Println(n.conf.NsqLookUpAddr)
 	err := n.consumer.ConnectToNSQLookupd(n.conf.NsqLookUpAddr)
 	if err != nil {
 		log.Fatal(err)
