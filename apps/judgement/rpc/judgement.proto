@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package judgement;
+
+option go_package = "./jud_pb";
+
+service JudgeService {
+    rpc ExecuteJudge(ExecuteJudgeRequest) returns (ExecuteJudgeResponse);
+}
+
+message Case {
+    int64 number = 1;
+    string inputFilePath = 2;
+    string outFilePath = 3;
+}
+
+message ExecuteJudgeRequest {
+    string recordID = 1;
+    string questionID = 2;
+    repeated Case cases = 3;
+    string language = 4;
+    string code = 5;
+    string codeHash = 6;
+}
+
+message ExecuteJudgeResponse {
+    int64 time = 1;
+}

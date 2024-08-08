@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package v1.judger;
+option go_package="./sb_pb";
+
+service Code {
+	// 运行代码
+	rpc RunCode(RunCodeRequest) returns (RunCodeResponse);
+	// 判题
+	rpc JudgeCode(JudgeCodeRequest) returns (JudgeCodeResponse);
+}
+
+
+message RunCodeRequest {
+	// 编程语言
+	Language lang = 1;
+	// 程序源代码
+	string code = 2;
+	// 程序输入内容
+	string input = 3;
+	// 限定运行时间(单位: ms [0, 2000])
+	uint32 time = 4;	
+	// 限定程序使用内存(单位: mb [1, 256])
+	uint32 memory = 5;
+	// 限定输出内容大小(0 表示使用默认值，单位: kb)
+  uint32 out_msg_limit = 6;
+}
+
+message RunCodeResponse {
+	// 程序输出
+	string out_put = 1;
+	// 程序运行Cpu耗时(ms)
+	double cpu_time_usage = 2;
+	// 程序运行总耗时(ms)
+	double real_time_usage = 3;
+	// 程序使用内存(kb)
+	double memory_usage = 4;
+  // 程序运行状态
+  State state = 5;
+}
+
+message CodeResult {
+  uint32 case_id = 1;
+	// 程序运行Cpu耗时(ms)
+	double cpu_time_usage = 2;
+	// 程序运行总耗时(ms)
+	double real_time_usage = 3;
+	// 程序使用内存(kb)
+	double memory_usage = 4;
+  State state = 5;
+}
+
+message JudgeCodeRequest {
+	// 编程语言
+	Language lang = 1;
+	// 程序源代码
+	string code = 2;
+	// 限定运行时间(单位: ms)
+	uint32 time = 3;	
+	// 限定程序使用内存(单位: mb)
+	uint32 memory = 4;
+	// 限定输出内容大小(0 表示使用默认值, 单位: kb)
+  uint32 out_msg_limit = 5;
+	repeated Case case = 6;
+}
+
+message JudgeCodeResponse {
+  // 程序状态
+	State state = 1;
+	// 程序使用最大时间(ms)
+	double max_time_usage = 2;
+	// 程序使用最大内存(byte)
+	double max_memory_usage = 3;
+	string out_put = 4;
+  repeated CodeResult code_results = 5;
+}
+
+
+message Case {
+	uint32 case_id = 1;
+	string in = 2;
+	string out = 3;
+}
+
+
+enum Language {
+	c = 0;
+	cpp = 1;
+	golang = 2;
+	java = 3;
+	python = 4;
+	rust = 5;
+}
+
+message Output {
+	uint32 case_id = 1;
+	uint32 cpu_time_usage = 2;
+	uint32 real_time_usage = 3;
+	uint32 memory_usage = 4;
+	State state = 5;
+	string out_put = 6;
+}
+
+message CollectOutput {
+	repeated Output case_outs = 1;
+}
+
+enum State {
+	CE = 0;
+	AC = 1;
+	WA = 2;
+	RE = 3;
+	TLE = 4;
+	MLE = 5;
+	UE = 6;
+}

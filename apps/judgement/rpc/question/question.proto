@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package question;
+
+option go_package = "./ques_pb";
+
+service QuestionService {
+    rpc UploadQuestion (UploadQuestionRequest) returns (UploadQuestionResponse);
+    rpc GetQuestionInfo (GetQuestionInfoRequest) returns (GetQuestionInfoResponse);
+    rpc GetQuestionPage (GetQuestionPageRequest) returns (GetQuestionPageResponse);
+    rpc UpdateQuestion (UpdateQuestionRequest) returns (UpdateQuestionResponse);
+}
+
+message Case {
+    int64 number = 1;
+    string inputFilePath = 2;
+    string outFilePath = 3;
+}
+
+enum QuestionLevel {
+    Eazy = 0;        
+    Normal = 1;
+    Hard = 2;
+};
+
+message UploadQuestionRequest {
+    string title = 1;
+    string accountID = 2;
+    string content = 3;
+    QuestionLevel level = 4;
+    repeated string allowedLanguages = 5;
+    int64 timeLimit = 6;
+    int64 memoryLimit = 7;
+    repeated string tags = 8;
+    repeated Case cases = 9;
+}
+
+message UploadQuestionResponse {
+    string questionID = 1;
+    int64 time = 2;
+}
+
+message UpdateQuestionRequest {
+    string questionID = 1;
+    string title = 2;
+    string content = 3;
+    QuestionLevel level = 4;
+    bool enabled = 5;
+    repeated string allowedLanguages = 6;
+    int64 timeLimit = 7;
+    int64 memoryLimit = 8;
+    repeated string tags = 9;
+    repeated Case cases = 10;
+}
+
+message UpdateQuestionResponse {
+    int64 time = 1;
+}
+
+message GetQuestionInfoRequest {
+    string questionID = 1;
+}
+
+message QuestionInfo {
+    string questionID = 1;    
+    string accountID = 2;
+    bool enabled = 3;
+    string title = 4;
+    string content = 5;
+    QuestionLevel level = 6;
+    repeated string allowedLanguages = 7;
+    repeated Case cases = 8;
+    int64 timeLimit = 9;
+    int64 memoryLimit = 10;
+    repeated string tags = 12;
+    int64 createTime = 13;
+    int64 modifyTime = 14;
+}
+
+message GetQuestionInfoResponse {
+     QuestionInfo questionInfo = 1;   
+}
+
+message  GetQuestionPageRequest {
+    string cursor = 1;
+    int64 pageSize = 2;
+    message Option {
+        optional string word = 1; // search title or tags or questionID 
+        optional bool enabled = 2;
+        optional QuestionLevel level = 3;
+        optional string language = 4;
+        optional string accountID = 5;
+    }
+    optional Option filterOptions = 3;
+}
+
+
+message QuestionView {
+    string questionID = 1; 
+    string accountID = 2;
+    string title = 3;
+    bool enabled = 4;
+    QuestionLevel level = 5;
+    repeated string tags = 6;
+    int64 totalCaseNumber = 7;
+    int64 createTime = 8;
+}
+
+message GetQuestionPageResponse {
+    repeated QuestionView questionView = 1;
+    string nextCursor = 2;
+}
