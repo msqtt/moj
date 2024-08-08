@@ -15,13 +15,13 @@ var (
 
 type JudgeOnSubmitPolicy struct {
 	caseFileReader      CaseFileService
-	executionCmdHandler judgement.ExecutionCmdHandler
+	executionCmdHandler *judgement.ExecutionCmdHandler
 	questionRepository  question.QuestionRepository
 	queue               queue.EventQueue
 }
 
 func NewJudgeOnSubmitPolicy(caseFileReader CaseFileService,
-	executionCmdHandler judgement.ExecutionCmdHandler,
+	executionCmdHandler *judgement.ExecutionCmdHandler,
 	questionRepository question.QuestionRepository,
 	queue queue.EventQueue,
 ) *JudgeOnSubmitPolicy {
@@ -55,6 +55,8 @@ func (p *JudgeOnSubmitPolicy) OnEvent(event any) error {
 		Language:           evt.Language,
 		Code:               evt.Code,
 		CodeHash:           evt.CodeHash,
+		TimeLimit:          int64(que.TimeLimit),
+		MemoryLimit:        int64(que.MemoryLimit),
 		Time:               time.Now().Unix(),
 	}
 
