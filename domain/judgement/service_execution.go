@@ -10,5 +10,5 @@ type ExecuteResult struct {
 }
 
 type ExecutionService interface {
-	execute(ExecutionCmd) (ExecuteResult, error)
+	Execute(ExecutionCmd) (ExecuteResult, error)
 }

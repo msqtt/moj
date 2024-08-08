@@ -61,7 +61,7 @@ func (j *Judgement) execute(queue queue.EventQueue,
 	}
 
 	// start to execute code
-	result, err := exeService.execute(cmd)
+	result, err := exeService.Execute(cmd)
 	if err != nil {
 		return err
 	}

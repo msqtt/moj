@@ -19,6 +19,8 @@ type ExecutionCmd struct {
 	Language           string
 	Code               string
 	CodeHash           string
+	TimeLimit          int64
+	MemoryLimit        int64
 	Time               int64
 }
 
