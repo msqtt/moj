@@ -14,7 +14,7 @@ import (
 )
 
 type GameViewDao interface {
-	FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameView, err error)
+	FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameModel, err error)
 }
 
 type MongoDBGameViewDao struct {
@@ -30,7 +30,7 @@ func NewMongoDBGameViewDao(m *MongoDB) GameViewDao {
 }
 
 // FindGamePage implements GameDao.
-func (m *MongoDBGameViewDao) FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameView, err error) {
+func (m *MongoDBGameViewDao) FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameModel, err error) {
 	filter := bson.D{}
 
 	id, _ := primitive.ObjectIDFromHex(cursor)
@@ -58,7 +58,7 @@ func (m *MongoDBGameViewDao) FindGamePage(ctx context.Context, cursor string, pa
 
 	slog.Debug("find game view by page", "filter", filter, "opts", opts)
 
-	games = []*GameView{}
+	games = []*GameModel{}
 	cur, err := m.collection.Find(ctx, filter, opts)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {

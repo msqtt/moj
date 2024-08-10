@@ -6,7 +6,7 @@ option go_package = "./game_pb";
 
 service GameService {
     rpc CreateGame(CreateGameRequest) returns (CreateGameResponse) {};
-    rpc GetGameInfo(GetGameInfoRequest) returns (GetGameInfoResponse) {};
+    rpc GetGame(GetGameRequest) returns (GetGameResponse) {};
     rpc GetGamePage(GetGamePageRequest) returns (GetGamePageResponse) {};
     rpc GetScore(GetScoreRequest) returns (GetScoreResponse) {};
     rpc GetScorePage(GetScorePageRequest) returns (GetScorePageResponse) {};
@@ -65,7 +65,7 @@ message CancelSignUpGameResponse {
     int64 time = 1;
 }
 
-message GetGameInfoRequest {
+message GetGameRequest {
     string gameID = 1;
 }
 
@@ -74,7 +74,7 @@ message SignUpAccount {
     int64 signUpTime = 2;
 }
 
-message GameInfo {
+message Game {
     string gameID = 1;
     string accountID = 2;
     string title = 3;
@@ -86,8 +86,8 @@ message GameInfo {
     repeated SignUpAccount signUpAccountList = 9;
 }
 
-message GetGameInfoResponse {
-   GameInfo gameInfo = 1; 
+message GetGameResponse {
+   Game game = 1; 
 }
 
 
@@ -101,17 +101,8 @@ message GetGamePageRequest {
     optional Option filterOptions = 3;
 }
 
-message GameView {
-    string gameID = 1;
-    string accountID = 2;
-    string title = 3;
-    string desc= 4;
-    int64 startTime = 5;
-    int64 endTime = 6;
-}
-
 message GetGamePageResponse {
-    repeated GameView gameView = 1;
+    repeated Game games = 1;
     string cursor = 2;
 }
 
@@ -121,9 +112,7 @@ message GetScoreRequest {
 }   
 
 message GetScoreResponse {
-    string accountID = 1;
-    int64 score = 2;
-    int64 signUpTime = 3;
+    Score score = 1;
 }
 
 message GetScorePageRequest {
@@ -132,13 +121,13 @@ message GetScorePageRequest {
     int64 pageSize = 3;
 }
 
-message ScoreView {
+message Score {
     string accountID = 1;
     int64 score = 2;
     int64 signUpTime = 3;
 }
 
 message GetScorePageResponse {
-    repeated ScoreView scoreView = 1;
+    repeated Score scores = 1;
     int64 total = 2;
 }

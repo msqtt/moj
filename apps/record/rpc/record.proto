@@ -7,7 +7,7 @@ option go_package = "./red_pb";
 service RecordService {
     rpc SubmitRecord(SubmitRecordRequest) returns (SubmitRecordResponse);
     rpc ModifyRecord(ModifyRecordRequest) returns (ModifyRecordResponse);
-    rpc GetRecordInfo(GetRecordInfoRequest) returns (GetRecordInfoResponse);
+    rpc GetRecord(GetRecordRequest) returns (GetRecordResponse);
     rpc GetRecordPage(GetRecordPageRequest) returns (GetRecordPageResponse);
 }
 
@@ -39,11 +39,11 @@ message ModifyRecordResponse {
     int64 time = 1;
 }
 
-message GetRecordInfoRequest {
+message GetRecordRequest {
     string recordID = 1;
 }
 
-message RecordInfo {
+message Record {
     string recordID = 1;
     string accountID = 2;
     optional string gameID = 3;
@@ -62,8 +62,8 @@ message RecordInfo {
     int64 cpuTimeUsed = 16;
 }
 
-message GetRecordInfoResponse {
-    RecordInfo recordInfo = 1;
+message GetRecordResponse {
+    Record record = 1;
 }
 
 message GetRecordPageRequest {
@@ -74,20 +74,7 @@ message GetRecordPageRequest {
     int32 pageSize = 5;
 }
 
-message RecordView {
-    string recordID = 1;
-    optional string gameID = 2;
-    string language = 3;
-    string codeHash = 4;
-    string judgeStatus = 5;
-    int64 numberFinishedAt = 6;
-    int64 totalQuestion = 7;
-    int64 createTime = 8;
-    int64 memoryUsed = 9;
-    int64 timeUsed = 10;
-}
-
 message GetRecordPageResponse {
-    repeated RecordView recordView = 1;
+    repeated Record records = 1;
     int64 total = 2;
 }

@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-// GetQuestionInfo implements ques_pb.QuestionServiceServer.
-func (s *Server) GetQuestionInfo(ctx context.Context, req *ques_pb.GetQuestionInfoRequest) (
-	resp *ques_pb.GetQuestionInfoResponse, err error) {
+// GetQuestion implements ques_pb.QuestionServiceServer.
+func (s *Server) GetQuestion(ctx context.Context, req *ques_pb.GetQuestionRequest) (
+	resp *ques_pb.GetQuestionResponse, err error) {
 	slog.Debug("get question info", "req", req)
 	ques, err := s.questionRepository.FindQuestionByID(ctx, req.QuestionID)
 
@@ -24,8 +24,8 @@ func (s *Server) GetQuestionInfo(ctx context.Context, req *ques_pb.GetQuestionIn
 	langs := db.FromQuestionLangs(ques.AllowedLanguages)
 	cases := FromQuestionCases(ques.Cases)
 
-	resp = &ques_pb.GetQuestionInfoResponse{
-		QuestionInfo: &ques_pb.QuestionInfo{
+	resp = &ques_pb.GetQuestionResponse{
+		Question: &ques_pb.Question{
 			QuestionID:       ques.QuestionID,
 			AccountID:        ques.AccountID,
 			Enabled:          ques.Enabled,
@@ -76,17 +76,22 @@ func (s *Server) GetQuestionPage(ctx context.Context, req *ques_pb.GetQuestionPa
 	}
 
 	var nextCursor string
-	quesView := make([]*ques_pb.QuestionView, len(ques))
+	quesView := make([]*ques_pb.Question, len(ques))
 	for i, q := range ques {
-		quesView[i] = &ques_pb.QuestionView{
-			QuestionID:      q.QuestionID,
-			AccountID:       q.AccountID,
-			Title:           q.Title,
-			Enabled:         q.Enabled,
-			Level:           ques_pb.QuestionLevel(q.Level),
-			Tags:            q.Tags,
-			TotalCaseNumber: int64(q.TotalCaseNumber),
-			CreateTime:      q.CreateTime.Unix(),
+		quesView[i] = &ques_pb.Question{
+			QuestionID:       q.ID.Hex(),
+			AccountID:        q.AccountID,
+			Enabled:          q.Enabled,
+			Title:            q.Title,
+			Content:          q.Content,
+			Level:            ques_pb.QuestionLevel(q.Level),
+			AllowedLanguages: q.AllowedLanguages,
+			Cases:            FromModelCases(q.Cases),
+			TimeLimit:        int64(q.TimeLimit),
+			MemoryLimit:      int64(q.MemoryLimit),
+			Tags:             q.Tags,
+			CreateTime:       q.CreateTime.Unix(),
+			ModifyTime:       q.ModifyTime.Unix(),
 		}
 	}
 	if len(quesView) > 0 {
@@ -94,8 +99,8 @@ func (s *Server) GetQuestionPage(ctx context.Context, req *ques_pb.GetQuestionPa
 	}
 
 	resp = &ques_pb.GetQuestionPageResponse{
-		QuestionView: quesView,
-		NextCursor:   nextCursor,
+		Questions:  quesView,
+		NextCursor: nextCursor,
 	}
 	return
 }
@@ -181,6 +186,18 @@ func ToQuestionCases(cases []*ques_pb.Case) []question.Case {
 }
 
 func FromQuestionCases(cases []question.Case) []*ques_pb.Case {
+	ret := make([]*ques_pb.Case, len(cases))
+	for i, c := range cases {
+		ret[i] = &ques_pb.Case{
+			Number:        int64(c.Number),
+			InputFilePath: c.InputFilePath,
+			OutFilePath:   c.OutputFilePath,
+		}
+	}
+	return ret
+}
+
+func FromModelCases(cases []db.Case) []*ques_pb.Case {
 	ret := make([]*ques_pb.Case, len(cases))
 	for i, c := range cases {
 		ret[i] = &ques_pb.Case{

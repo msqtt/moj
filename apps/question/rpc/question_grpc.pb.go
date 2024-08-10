@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QuestionServiceClient interface {
 	UploadQuestion(ctx context.Context, in *UploadQuestionRequest, opts ...grpc.CallOption) (*UploadQuestionResponse, error)
-	GetQuestionInfo(ctx context.Context, in *GetQuestionInfoRequest, opts ...grpc.CallOption) (*GetQuestionInfoResponse, error)
+	GetQuestion(ctx context.Context, in *GetQuestionRequest, opts ...grpc.CallOption) (*GetQuestionResponse, error)
 	GetQuestionPage(ctx context.Context, in *GetQuestionPageRequest, opts ...grpc.CallOption) (*GetQuestionPageResponse, error)
 	UpdateQuestion(ctx context.Context, in *UpdateQuestionRequest, opts ...grpc.CallOption) (*UpdateQuestionResponse, error)
 }
@@ -45,9 +45,9 @@ func (c *questionServiceClient) UploadQuestion(ctx context.Context, in *UploadQu
 	return out, nil
 }
 
-func (c *questionServiceClient) GetQuestionInfo(ctx context.Context, in *GetQuestionInfoRequest, opts ...grpc.CallOption) (*GetQuestionInfoResponse, error) {
-	out := new(GetQuestionInfoResponse)
-	err := c.cc.Invoke(ctx, "/question.QuestionService/GetQuestionInfo", in, out, opts...)
+func (c *questionServiceClient) GetQuestion(ctx context.Context, in *GetQuestionRequest, opts ...grpc.CallOption) (*GetQuestionResponse, error) {
+	out := new(GetQuestionResponse)
+	err := c.cc.Invoke(ctx, "/question.QuestionService/GetQuestion", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *questionServiceClient) UpdateQuestion(ctx context.Context, in *UpdateQu
 // for forward compatibility
 type QuestionServiceServer interface {
 	UploadQuestion(context.Context, *UploadQuestionRequest) (*UploadQuestionResponse, error)
-	GetQuestionInfo(context.Context, *GetQuestionInfoRequest) (*GetQuestionInfoResponse, error)
+	GetQuestion(context.Context, *GetQuestionRequest) (*GetQuestionResponse, error)
 	GetQuestionPage(context.Context, *GetQuestionPageRequest) (*GetQuestionPageResponse, error)
 	UpdateQuestion(context.Context, *UpdateQuestionRequest) (*UpdateQuestionResponse, error)
 	mustEmbedUnimplementedQuestionServiceServer()
@@ -90,8 +90,8 @@ type UnimplementedQuestionServiceServer struct {
 func (UnimplementedQuestionServiceServer) UploadQuestion(context.Context, *UploadQuestionRequest) (*UploadQuestionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadQuestion not implemented")
 }
-func (UnimplementedQuestionServiceServer) GetQuestionInfo(context.Context, *GetQuestionInfoRequest) (*GetQuestionInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetQuestionInfo not implemented")
+func (UnimplementedQuestionServiceServer) GetQuestion(context.Context, *GetQuestionRequest) (*GetQuestionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetQuestion not implemented")
 }
 func (UnimplementedQuestionServiceServer) GetQuestionPage(context.Context, *GetQuestionPageRequest) (*GetQuestionPageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuestionPage not implemented")
@@ -130,20 +130,20 @@ func _QuestionService_UploadQuestion_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QuestionService_GetQuestionInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetQuestionInfoRequest)
+func _QuestionService_GetQuestion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetQuestionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QuestionServiceServer).GetQuestionInfo(ctx, in)
+		return srv.(QuestionServiceServer).GetQuestion(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/question.QuestionService/GetQuestionInfo",
+		FullMethod: "/question.QuestionService/GetQuestion",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuestionServiceServer).GetQuestionInfo(ctx, req.(*GetQuestionInfoRequest))
+		return srv.(QuestionServiceServer).GetQuestion(ctx, req.(*GetQuestionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -196,8 +196,8 @@ var QuestionService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QuestionService_UploadQuestion_Handler,
 		},
 		{
-			MethodName: "GetQuestionInfo",
-			Handler:    _QuestionService_GetQuestionInfo_Handler,
+			MethodName: "GetQuestion",
+			Handler:    _QuestionService_GetQuestion_Handler,
 		},
 		{
 			MethodName: "GetQuestionPage",

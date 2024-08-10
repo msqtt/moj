@@ -6,7 +6,7 @@ option go_package = "./ques_pb";
 
 service QuestionService {
     rpc UploadQuestion (UploadQuestionRequest) returns (UploadQuestionResponse);
-    rpc GetQuestionInfo (GetQuestionInfoRequest) returns (GetQuestionInfoResponse);
+    rpc GetQuestion (GetQuestionRequest) returns (GetQuestionResponse);
     rpc GetQuestionPage (GetQuestionPageRequest) returns (GetQuestionPageResponse);
     rpc UpdateQuestion (UpdateQuestionRequest) returns (UpdateQuestionResponse);
 }
@@ -57,11 +57,11 @@ message UpdateQuestionResponse {
     int64 time = 1;
 }
 
-message GetQuestionInfoRequest {
+message GetQuestionRequest {
     string questionID = 1;
 }
 
-message QuestionInfo {
+message Question {
     string questionID = 1;    
     string accountID = 2;
     bool enabled = 3;
@@ -77,8 +77,8 @@ message QuestionInfo {
     int64 modifyTime = 14;
 }
 
-message GetQuestionInfoResponse {
-     QuestionInfo questionInfo = 1;   
+message GetQuestionResponse {
+     Question question = 1;   
 }
 
 message  GetQuestionPageRequest {
@@ -94,19 +94,7 @@ message  GetQuestionPageRequest {
     optional Option filterOptions = 3;
 }
 
-
-message QuestionView {
-    string questionID = 1; 
-    string accountID = 2;
-    string title = 3;
-    bool enabled = 4;
-    QuestionLevel level = 5;
-    repeated string tags = 6;
-    int64 totalCaseNumber = 7;
-    int64 createTime = 8;
-}
-
 message GetQuestionPageResponse {
-    repeated QuestionView questionView = 1;
+    repeated Question questions = 1;
     string nextCursor = 2;
 }

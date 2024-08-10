@@ -111,9 +111,9 @@ func (s *Server) CreateGame(ctx context.Context, req *game_pb.CreateGameRequest)
 	return
 }
 
-// GetGameInfo implements game_pb.GameServiceServer.
-func (s *Server) GetGameInfo(ctx context.Context, req *game_pb.GetGameInfoRequest) (
-	resp *game_pb.GetGameInfoResponse, err error) {
+// GetGame implements game_pb.GameServiceServer.
+func (s *Server) GetGame(ctx context.Context, req *game_pb.GetGameRequest) (
+	resp *game_pb.GetGameResponse, err error) {
 	slog.Debug("get game info", "req", req)
 
 	game, err := s.gameRepository.FindGameByID(ctx, req.GameID)
@@ -126,8 +126,8 @@ func (s *Server) GetGameInfo(ctx context.Context, req *game_pb.GetGameInfoReques
 	gameList := toGameQuestionListPb(game.QuestionList)
 	signUpList := toSignUpPb(game.SignUpUserList)
 
-	resp = &game_pb.GetGameInfoResponse{
-		GameInfo: &game_pb.GameInfo{
+	resp = &game_pb.GetGameResponse{
+		Game: &game_pb.Game{
 			GameID:            game.GameID,
 			AccountID:         game.AccountID,
 			Title:             game.Title,
@@ -164,15 +164,18 @@ func (s *Server) GetGamePage(ctx context.Context, req *game_pb.GetGamePageReques
 		return
 	}
 	var nextCursor string
-	gameView := make([]*game_pb.GameView, len(games))
+	gameView := make([]*game_pb.Game, len(games))
 	for i, q := range games {
-		gameView[i] = &game_pb.GameView{
-			GameID:    q.ID.Hex(),
-			AccountID: q.AccountID,
-			Title:     q.Title,
-			Desc:      q.Description,
-			StartTime: q.StartTime.Unix(),
-			EndTime:   q.EndTime.Unix(),
+		gameView[i] = &game_pb.Game{
+			GameID:            q.ID.Hex(),
+			AccountID:         q.AccountID,
+			Title:             q.Title,
+			Desc:              q.Description,
+			StartTime:         q.StartTime.Unix(),
+			EndTime:           q.EndTime.Unix(),
+			CreateTime:        q.CreateTime.Unix(),
+			QuestionList:      toGameQuestionListPb(q.ToAggreation().QuestionList),
+			SignUpAccountList: toSignUpPb(q.ToAggreation().SignUpUserList),
 		}
 	}
 	if len(gameView) > 0 {
@@ -180,8 +183,8 @@ func (s *Server) GetGamePage(ctx context.Context, req *game_pb.GetGamePageReques
 	}
 
 	resp = &game_pb.GetGamePageResponse{
-		GameView: gameView,
-		Cursor:   nextCursor,
+		Games:  gameView,
+		Cursor: nextCursor,
 	}
 	return
 }
@@ -198,9 +201,11 @@ func (s *Server) GetScore(ctx context.Context, req *game_pb.GetScoreRequest) (
 	}
 
 	resp = &game_pb.GetScoreResponse{
-		AccountID:  score.AccountID,
-		Score:      int64(score.Score),
-		SignUpTime: score.SignUpTime.Unix(),
+		Score: &game_pb.Score{
+			AccountID:  score.AccountID,
+			Score:      int64(score.Score),
+			SignUpTime: score.SignUpTime.Unix(),
+		},
 	}
 	return
 }
@@ -216,9 +221,9 @@ func (s *Server) GetScorePage(ctx context.Context, req *game_pb.GetScorePageRequ
 		err = responseStatusError(err)
 	}
 
-	scoreView := make([]*game_pb.ScoreView, len(scores))
+	scoreView := make([]*game_pb.Score, len(scores))
 	for i, score := range scores {
-		scoreView[i] = &game_pb.ScoreView{
+		scoreView[i] = &game_pb.Score{
 			AccountID:  score.AccountID,
 			Score:      int64(score.Score),
 			SignUpTime: score.SignUpTime.Unix(),
@@ -226,8 +231,8 @@ func (s *Server) GetScorePage(ctx context.Context, req *game_pb.GetScorePageRequ
 	}
 
 	resp = &game_pb.GetScorePageResponse{
-		ScoreView: scoreView,
-		Total:     total,
+		Scores: scoreView,
+		Total:  total,
 	}
 	return
 }

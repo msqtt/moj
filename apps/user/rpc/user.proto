@@ -7,7 +7,7 @@ option go_package = "./user_pb";
 service UserService {
     rpc Login(LoginRequest) returns (LoginResponse) {}
     rpc Register(RegisterRequest) returns (RegisterResponse) {}
-    rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {}
+    rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
     rpc GetUserPage(GetUserPageRequest) returns (GetUserPageResponse) {}
     rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
     rpc ChangeUserPassword(ChangeUserPasswordRequest) returns (ChangeUserPasswordResponse) {}
@@ -37,7 +37,7 @@ message RegisterResponse {
     int64 time = 1;
 }
 
-message UserInfo {
+message User {
 	string accountID = 1;
 	string email = 2;
 	string avatarLink = 3;
@@ -52,25 +52,13 @@ message UserInfo {
 	int64 deleteTime = 12;
 }
 
-message GetUserInfoRequest {
+message GetUserRequest {
     string accountID = 1;
 }
 
-message GetUserInfoResponse {
-    UserInfo userInfo = 1;
+message GetUserResponse {
+    User user = 1;
 }
-
-message UserView {
-	string accountID = 1;
-	string email = 2;
-	string avatarLink = 3;
-	string nickName = 4;
-	bool enabled = 5;
-	bool isAdmin = 6;
-	int64 registerTime = 7;
-	int64 deleteTime = 8;
-}
-
 
 message GetUserPageRequest {
     string cursor = 1;
@@ -85,7 +73,7 @@ message GetUserPageRequest {
 
 
 message GetUserPageResponse{
-    repeated UserView userView = 1;
+    repeated User users = 1;
     string nextCursor = 2;
 }
 

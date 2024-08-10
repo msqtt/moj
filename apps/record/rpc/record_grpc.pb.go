@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type RecordServiceClient interface {
 	SubmitRecord(ctx context.Context, in *SubmitRecordRequest, opts ...grpc.CallOption) (*SubmitRecordResponse, error)
 	ModifyRecord(ctx context.Context, in *ModifyRecordRequest, opts ...grpc.CallOption) (*ModifyRecordResponse, error)
-	GetRecordInfo(ctx context.Context, in *GetRecordInfoRequest, opts ...grpc.CallOption) (*GetRecordInfoResponse, error)
+	GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error)
 	GetRecordPage(ctx context.Context, in *GetRecordPageRequest, opts ...grpc.CallOption) (*GetRecordPageResponse, error)
 }
 
@@ -54,9 +54,9 @@ func (c *recordServiceClient) ModifyRecord(ctx context.Context, in *ModifyRecord
 	return out, nil
 }
 
-func (c *recordServiceClient) GetRecordInfo(ctx context.Context, in *GetRecordInfoRequest, opts ...grpc.CallOption) (*GetRecordInfoResponse, error) {
-	out := new(GetRecordInfoResponse)
-	err := c.cc.Invoke(ctx, "/record.RecordService/GetRecordInfo", in, out, opts...)
+func (c *recordServiceClient) GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
+	out := new(GetRecordResponse)
+	err := c.cc.Invoke(ctx, "/record.RecordService/GetRecord", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (c *recordServiceClient) GetRecordPage(ctx context.Context, in *GetRecordPa
 type RecordServiceServer interface {
 	SubmitRecord(context.Context, *SubmitRecordRequest) (*SubmitRecordResponse, error)
 	ModifyRecord(context.Context, *ModifyRecordRequest) (*ModifyRecordResponse, error)
-	GetRecordInfo(context.Context, *GetRecordInfoRequest) (*GetRecordInfoResponse, error)
+	GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
 	GetRecordPage(context.Context, *GetRecordPageRequest) (*GetRecordPageResponse, error)
 	mustEmbedUnimplementedRecordServiceServer()
 }
@@ -93,8 +93,8 @@ func (UnimplementedRecordServiceServer) SubmitRecord(context.Context, *SubmitRec
 func (UnimplementedRecordServiceServer) ModifyRecord(context.Context, *ModifyRecordRequest) (*ModifyRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyRecord not implemented")
 }
-func (UnimplementedRecordServiceServer) GetRecordInfo(context.Context, *GetRecordInfoRequest) (*GetRecordInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRecordInfo not implemented")
+func (UnimplementedRecordServiceServer) GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRecord not implemented")
 }
 func (UnimplementedRecordServiceServer) GetRecordPage(context.Context, *GetRecordPageRequest) (*GetRecordPageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecordPage not implemented")
@@ -148,20 +148,20 @@ func _RecordService_ModifyRecord_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RecordService_GetRecordInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRecordInfoRequest)
+func _RecordService_GetRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RecordServiceServer).GetRecordInfo(ctx, in)
+		return srv.(RecordServiceServer).GetRecord(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/record.RecordService/GetRecordInfo",
+		FullMethod: "/record.RecordService/GetRecord",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RecordServiceServer).GetRecordInfo(ctx, req.(*GetRecordInfoRequest))
+		return srv.(RecordServiceServer).GetRecord(ctx, req.(*GetRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -200,8 +200,8 @@ var RecordService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RecordService_ModifyRecord_Handler,
 		},
 		{
-			MethodName: "GetRecordInfo",
-			Handler:    _RecordService_GetRecordInfo_Handler,
+			MethodName: "GetRecord",
+			Handler:    _RecordService_GetRecord_Handler,
 		},
 		{
 			MethodName: "GetRecordPage",

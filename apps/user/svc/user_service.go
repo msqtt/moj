@@ -179,8 +179,8 @@ func (s *Server) ChangeUserPassword(ctx context.Context,
 	return
 }
 
-func (s *Server) GetUserInfo(ctx context.Context,
-	req *user_pb.GetUserInfoRequest) (resp *user_pb.GetUserInfoResponse, err error) {
+func (s *Server) GetUser(ctx context.Context,
+	req *user_pb.GetUserRequest) (resp *user_pb.GetUserResponse, err error) {
 	slog.Debug("get user info request", "req", req)
 
 	view, err := s.accountViewDAO.FindByAccountID(ctx, req.AccountID)
@@ -188,36 +188,26 @@ func (s *Server) GetUserInfo(ctx context.Context,
 		slog.Error("failed to find user info", "err", err)
 		err = responseStatusError(err)
 	}
-	resp = &user_pb.GetUserInfoResponse{
-		UserInfo: &user_pb.UserInfo{
-			AccountID:            view.AccountID,
-			Email:                view.Email,
-			AvatarLink:           view.AvatarLink,
-			NickName:             view.NickName,
-			Enabled:              view.Enabled,
-			IsAdmin:              view.IsAdmin,
-			LastLoginTime:        view.LastLoginTime.Unix(),
-			LastLoginIPAddr:      view.LastLoginIPAddr,
-			LastLoginDevice:      view.LastLoginDevice,
-			LastPasswdChangeTime: view.LastPasswdChangeTime.Unix(),
-			RegisterTime:         view.RegisterTime.Unix(),
-			DeleteTime:           view.DeleteTime.Unix(),
-		},
-	}
+	resp = &user_pb.GetUserResponse{
+		User: accountViewModelToUsers(view)}
 	return
 
 }
 
-func accountViewModelToUserView(m *db.AccountViewModel) *user_pb.UserView {
-	return &user_pb.UserView{
-		AccountID:    m.AccountID,
-		Email:        m.Email,
-		AvatarLink:   m.AvatarLink,
-		NickName:     m.NickName,
-		Enabled:      m.Enabled,
-		IsAdmin:      m.IsAdmin,
-		RegisterTime: m.RegisterTime.Unix(),
-		DeleteTime:   m.DeleteTime.Unix(),
+func accountViewModelToUsers(m *db.AccountViewModel) *user_pb.User {
+	return &user_pb.User{
+		AccountID:            m.AccountID,
+		Email:                m.Email,
+		AvatarLink:           m.AvatarLink,
+		NickName:             m.NickName,
+		Enabled:              m.Enabled,
+		IsAdmin:              m.IsAdmin,
+		LastLoginTime:        m.LastLoginTime.Unix(),
+		LastLoginIPAddr:      m.LastLoginIPAddr,
+		LastLoginDevice:      m.LastLoginDevice,
+		LastPasswdChangeTime: m.LastPasswdChangeTime.Unix(),
+		RegisterTime:         m.RegisterTime.Unix(),
+		DeleteTime:           m.DeleteTime.Unix(),
 	}
 
 }
@@ -245,16 +235,16 @@ func (s *Server) GetUserPage(ctx context.Context,
 		err = responseStatusError(err)
 	}
 
-	userViews := make([]*user_pb.UserView, 0)
+	users := make([]*user_pb.User, 0)
 	for _, view := range views {
-		userViews = append(userViews, accountViewModelToUserView(view))
+		users = append(users, accountViewModelToUsers(view))
 	}
 	var nexCursor string
-	if len(userViews) > 0 {
-		nexCursor = views[len(userViews)-1].AccountID
+	if len(users) > 0 {
+		nexCursor = views[len(users)-1].AccountID
 	}
 	resp = &user_pb.GetUserPageResponse{
-		UserView:   userViews,
+		Users:      users,
 		NextCursor: nexCursor,
 	}
 	return

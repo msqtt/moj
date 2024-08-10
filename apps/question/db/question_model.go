@@ -22,9 +22,9 @@ type QuestionModel struct {
 	Level            int
 	AllowedLanguages []string `bson:"allowed_languages"`
 	Cases            []Case
-	TimeLimit        int `bson:"time_limit"`
-	MemoryLimit      int `bson:"memory_limit"`
 	Tags             []string
+	TimeLimit        int       `bson:"time_limit"`
+	MemoryLimit      int       `bson:"memory_limit"`
 	CreateTime       time.Time `bson:"create_time"`
 	ModifyTime       time.Time `bson:"modify_time"`
 }

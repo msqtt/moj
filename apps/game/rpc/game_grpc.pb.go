@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GameServiceClient interface {
 	CreateGame(ctx context.Context, in *CreateGameRequest, opts ...grpc.CallOption) (*CreateGameResponse, error)
-	GetGameInfo(ctx context.Context, in *GetGameInfoRequest, opts ...grpc.CallOption) (*GetGameInfoResponse, error)
+	GetGame(ctx context.Context, in *GetGameRequest, opts ...grpc.CallOption) (*GetGameResponse, error)
 	GetGamePage(ctx context.Context, in *GetGamePageRequest, opts ...grpc.CallOption) (*GetGamePageResponse, error)
 	GetScore(ctx context.Context, in *GetScoreRequest, opts ...grpc.CallOption) (*GetScoreResponse, error)
 	GetScorePage(ctx context.Context, in *GetScorePageRequest, opts ...grpc.CallOption) (*GetScorePageResponse, error)
@@ -49,9 +49,9 @@ func (c *gameServiceClient) CreateGame(ctx context.Context, in *CreateGameReques
 	return out, nil
 }
 
-func (c *gameServiceClient) GetGameInfo(ctx context.Context, in *GetGameInfoRequest, opts ...grpc.CallOption) (*GetGameInfoResponse, error) {
-	out := new(GetGameInfoResponse)
-	err := c.cc.Invoke(ctx, "/game.GameService/GetGameInfo", in, out, opts...)
+func (c *gameServiceClient) GetGame(ctx context.Context, in *GetGameRequest, opts ...grpc.CallOption) (*GetGameResponse, error) {
+	out := new(GetGameResponse)
+	err := c.cc.Invoke(ctx, "/game.GameService/GetGame", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func (c *gameServiceClient) CancelSignUpGame(ctx context.Context, in *CancelSign
 // for forward compatibility
 type GameServiceServer interface {
 	CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error)
-	GetGameInfo(context.Context, *GetGameInfoRequest) (*GetGameInfoResponse, error)
+	GetGame(context.Context, *GetGameRequest) (*GetGameResponse, error)
 	GetGamePage(context.Context, *GetGamePageRequest) (*GetGamePageResponse, error)
 	GetScore(context.Context, *GetScoreRequest) (*GetScoreResponse, error)
 	GetScorePage(context.Context, *GetScorePageRequest) (*GetScorePageResponse, error)
@@ -134,8 +134,8 @@ type UnimplementedGameServiceServer struct {
 func (UnimplementedGameServiceServer) CreateGame(context.Context, *CreateGameRequest) (*CreateGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGame not implemented")
 }
-func (UnimplementedGameServiceServer) GetGameInfo(context.Context, *GetGameInfoRequest) (*GetGameInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGameInfo not implemented")
+func (UnimplementedGameServiceServer) GetGame(context.Context, *GetGameRequest) (*GetGameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGame not implemented")
 }
 func (UnimplementedGameServiceServer) GetGamePage(context.Context, *GetGamePageRequest) (*GetGamePageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGamePage not implemented")
@@ -186,20 +186,20 @@ func _GameService_CreateGame_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GameService_GetGameInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGameInfoRequest)
+func _GameService_GetGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GameServiceServer).GetGameInfo(ctx, in)
+		return srv.(GameServiceServer).GetGame(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/game.GameService/GetGameInfo",
+		FullMethod: "/game.GameService/GetGame",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GameServiceServer).GetGameInfo(ctx, req.(*GetGameInfoRequest))
+		return srv.(GameServiceServer).GetGame(ctx, req.(*GetGameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -324,8 +324,8 @@ var GameService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GameService_CreateGame_Handler,
 		},
 		{
-			MethodName: "GetGameInfo",
-			Handler:    _GameService_GetGameInfo_Handler,
+			MethodName: "GetGame",
+			Handler:    _GameService_GetGame_Handler,
 		},
 		{
 			MethodName: "GetGamePage",

@@ -14,7 +14,7 @@ import (
 
 type RecordViewDao interface {
 	FindPage(ctx context.Context, questionID, accountID string, page, pageSize int, filter map[string]any) (
-		[]*RecordViewModel, int64, error)
+		[]*RecordModel, int64, error)
 	FindAllUnFinished(context.Context) ([]*RecordModel, error)
 }
 
@@ -49,7 +49,7 @@ func (m *MongoDBRecordViewDao) FindAllUnFinished(ctx context.Context) ([]*Record
 
 // FindPage implements RecordViewDao.
 func (m *MongoDBRecordViewDao) FindPage(ctx context.Context, questionID string,
-	accountID string, page int, pageSize int, f map[string]any) ([]*RecordViewModel, int64, error) {
+	accountID string, page int, pageSize int, f map[string]any) ([]*RecordModel, int64, error) {
 	filter := bson.D{
 		bson.E{Key: "game_id", Value: questionID},
 		bson.E{Key: "account_id", Value: accountID},
@@ -75,7 +75,7 @@ func (m *MongoDBRecordViewDao) FindPage(ctx context.Context, questionID string,
 
 	slog.Debug("find record view page", "filter", filter, "opts", opts)
 
-	var ret []*RecordViewModel
+	var ret []*RecordModel
 	cur, err := m.collection.Find(ctx, filter, opts)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {

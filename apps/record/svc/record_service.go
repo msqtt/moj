@@ -74,20 +74,26 @@ func (s *Server) SubmitRecord(ctx context.Context, req *red_pb.SubmitRecordReque
 	return
 }
 
-func fromRecordView(rv []*db.RecordViewModel) []*red_pb.RecordView {
-	ret := make([]*red_pb.RecordView, len(rv))
+func fromRecord(rv []*db.RecordModel) []*red_pb.Record {
+	ret := make([]*red_pb.Record, len(rv))
 	for i, v := range rv {
-		ret[i] = &red_pb.RecordView{
+		ret[i] = &red_pb.Record{
 			RecordID:         v.ID.Hex(),
+			AccountID:        v.AccountID,
 			GameID:           &v.GameID,
+			QuestionID:       v.QuestionID,
 			Language:         v.Language,
+			Code:             v.Code,
 			CodeHash:         v.CodeHash,
 			JudgeStatus:      v.JudgeStatus,
+			FailedReason:     &v.FailedReason,
 			NumberFinishedAt: int64(v.NumberFinisheAt),
 			TotalQuestion:    int64(v.TotalQuestion),
 			CreateTime:       v.CreateTime.Unix(),
+			FinishTime:       v.FinishTime.Unix(),
 			MemoryUsed:       int64(v.MemoryUsed),
 			TimeUsed:         int64(v.TimeUsed),
+			CpuTimeUsed:      int64(v.CPUTimeUsed),
 		}
 	}
 	return ret
@@ -108,15 +114,15 @@ func (s *Server) GetRecordPage(ctx context.Context, req *red_pb.GetRecordPageReq
 	}
 
 	resp = &red_pb.GetRecordPageResponse{
-		RecordView: fromRecordView(res),
-		Total:      total,
+		Records: fromRecord(res),
+		Total:   total,
 	}
 	return
 }
 
-// GetRecordInfo implements red_pb.RecordServiceServer.
-func (s *Server) GetRecordInfo(ctx context.Context, req *red_pb.GetRecordInfoRequest) (
-	resp *red_pb.GetRecordInfoResponse, err error) {
+// GetRecord implements red_pb.RecordServiceServer.
+func (s *Server) GetRecord(ctx context.Context, req *red_pb.GetRecordRequest) (
+	resp *red_pb.GetRecordResponse, err error) {
 	slog.Debug("get record info request", "req", req)
 	rec, err := s.recordRepository.FindRecordByID(ctx, req.RecordID)
 	if err != nil {
@@ -124,8 +130,8 @@ func (s *Server) GetRecordInfo(ctx context.Context, req *red_pb.GetRecordInfoReq
 		err = responseStatusError(err)
 	}
 
-	resp = &red_pb.GetRecordInfoResponse{
-		RecordInfo: &red_pb.RecordInfo{
+	resp = &red_pb.GetRecordResponse{
+		Record: &red_pb.Record{
 			RecordID:         rec.RecordID,
 			AccountID:        rec.AccountID,
 			GameID:           &rec.GameID,
