@@ -1,8 +1,6 @@
 package etc
 
 import (
-	"time"
-
 	"github.com/spf13/viper"
 )
 
@@ -14,15 +12,14 @@ type Config struct {
 	CertFile                 string `mapstructure:"CERT_FILE"`
 	TLS                      bool
 	Debug                    bool
-	SbJudgerRPCAddr          string        `mapstructure:"SB_JUDGER_RPC_ADDR"`
-	QuestionRPCAddr          string        `mapstructure:"QUESTION_RPC_ADDR"`
-	OutPutMsgLimit           int           `mapstructure:"OUTPUT_MSG_LIMIT"`
-	NsqdAddr                 string        `mapstructure:"NSQD_ADDR"`
-	NsqLookUpAddr            string        `mapstructure:"NSQ_LOOKUP_ADDR"`
-	ExecuteJudgeTopic        string        `mapstructure:"EXECUTE_JUDGE_TOPIC"`
-	ExecuteJudgeTopicChannel string        `mapstructure:"EXECUTE_JUDGE_TOPIC_CHANNEL"`
-	FinishJudgementTopic     string        `mapstructure:"FINISH_RECORD_TOPIC"`
-	ScheduleRedoDuration     time.Duration `mapstructure:"SCHEDULE_REDO_SUBMIT_DURATION"`
+	SbJudgerRPCAddr          string `mapstructure:"SB_JUDGER_RPC_ADDR"`
+	QuestionRPCAddr          string `mapstructure:"QUESTION_RPC_ADDR"`
+	OutPutMsgLimit           int    `mapstructure:"OUTPUT_MSG_LIMIT"`
+	NsqdAddr                 string `mapstructure:"NSQD_ADDR"`
+	NsqLookUpAddr            string `mapstructure:"NSQ_LOOKUP_ADDR"`
+	ExecuteJudgeTopic        string `mapstructure:"EXECUTE_JUDGE_TOPIC"`
+	ExecuteJudgeTopicChannel string `mapstructure:"EXECUTE_JUDGE_TOPIC_CHANNEL"`
+	FinishJudgementTopic     string `mapstructure:"FINISH_RECORD_TOPIC"`
 }
 
 func NewAppConfig() *Config {
