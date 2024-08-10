@@ -6,7 +6,7 @@ import (
 	"log"
 	"moj/apps/judgement/etc"
 	"moj/apps/judgement/pkg/app_err"
-	ques_pb "moj/apps/judgement/rpc/question"
+	ques_pb "moj/apps/question/rpc"
 	"moj/domain/question"
 
 	"google.golang.org/grpc"
@@ -22,7 +22,7 @@ type RPCQuestionRepository struct {
 
 // FindQuestionByID implements question.QuestionRepository.
 func (r *RPCQuestionRepository) FindQuestionByID(ctx context.Context, questionID string) (*question.Question, error) {
-	resp, err := r.client.GetQuestionInfo(ctx, &ques_pb.GetQuestionInfoRequest{
+	resp, err := r.client.GetQuestion(ctx, &ques_pb.GetQuestionRequest{
 		QuestionID: questionID,
 	})
 
@@ -31,14 +31,14 @@ func (r *RPCQuestionRepository) FindQuestionByID(ctx context.Context, questionID
 		return nil, err
 	}
 
-	langs := make([]question.QuestionLanguage, len(resp.QuestionInfo.AllowedLanguages))
-	for id, l := range resp.QuestionInfo.AllowedLanguages {
+	langs := make([]question.QuestionLanguage, len(resp.Question.AllowedLanguages))
+	for id, l := range resp.Question.AllowedLanguages {
 		langs[id] = question.QuestionLanguage(l)
 	}
 
-	cases := make([]question.Case, len(resp.QuestionInfo.Cases))
+	cases := make([]question.Case, len(resp.Question.Cases))
 
-	for id, ca := range resp.QuestionInfo.Cases {
+	for id, ca := range resp.Question.Cases {
 		cases[id] = question.Case{
 			Number:         int(ca.Number),
 			InputFilePath:  ca.InputFilePath,
@@ -47,19 +47,19 @@ func (r *RPCQuestionRepository) FindQuestionByID(ctx context.Context, questionID
 	}
 
 	ret := &question.Question{
-		QuestionID:       resp.QuestionInfo.QuestionID,
-		AccountID:        resp.QuestionInfo.AccountID,
-		Enabled:          resp.QuestionInfo.Enabled,
-		Title:            resp.QuestionInfo.Title,
-		Content:          resp.QuestionInfo.Content,
-		Level:            question.QuestionLevel(resp.QuestionInfo.Level),
+		QuestionID:       resp.Question.QuestionID,
+		AccountID:        resp.Question.AccountID,
+		Enabled:          resp.Question.Enabled,
+		Title:            resp.Question.Title,
+		Content:          resp.Question.Content,
+		Level:            question.QuestionLevel(resp.Question.Level),
 		AllowedLanguages: langs,
 		Cases:            cases,
-		TimeLimit:        int(resp.QuestionInfo.TimeLimit),
-		MemoryLimit:      int(resp.QuestionInfo.MemoryLimit),
-		Tags:             resp.QuestionInfo.Tags,
-		CreateTime:       resp.QuestionInfo.CreateTime,
-		ModifyTime:       resp.QuestionInfo.ModifyTime,
+		TimeLimit:        int(resp.Question.TimeLimit),
+		MemoryLimit:      int(resp.Question.MemoryLimit),
+		Tags:             resp.Question.Tags,
+		CreateTime:       resp.Question.CreateTime,
+		ModifyTime:       resp.Question.ModifyTime,
 	}
 	return ret, err
 }
