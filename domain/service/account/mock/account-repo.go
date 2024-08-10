@@ -10,6 +10,7 @@
 package mock_account
 
 import (
+	context "context"
 	account "moj/domain/account"
 	reflect "reflect"
 
@@ -40,45 +41,45 @@ func (m *MockAccountRepository) EXPECT() *MockAccountRepositoryMockRecorder {
 }
 
 // FindAccountByEmail mocks base method.
-func (m *MockAccountRepository) FindAccountByEmail(email string) (*account.Account, error) {
+func (m *MockAccountRepository) FindAccountByEmail(ctx context.Context, email string) (*account.Account, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAccountByEmail", email)
+	ret := m.ctrl.Call(m, "FindAccountByEmail", ctx, email)
 	ret0, _ := ret[0].(*account.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAccountByEmail indicates an expected call of FindAccountByEmail.
-func (mr *MockAccountRepositoryMockRecorder) FindAccountByEmail(email any) *gomock.Call {
+func (mr *MockAccountRepositoryMockRecorder) FindAccountByEmail(ctx, email any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAccountByEmail", reflect.TypeOf((*MockAccountRepository)(nil).FindAccountByEmail), email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAccountByEmail", reflect.TypeOf((*MockAccountRepository)(nil).FindAccountByEmail), ctx, email)
 }
 
 // FindAccountByID mocks base method.
-func (m *MockAccountRepository) FindAccountByID(accountID string) (*account.Account, error) {
+func (m *MockAccountRepository) FindAccountByID(ctx context.Context, accountID string) (*account.Account, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAccountByID", accountID)
+	ret := m.ctrl.Call(m, "FindAccountByID", ctx, accountID)
 	ret0, _ := ret[0].(*account.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAccountByID indicates an expected call of FindAccountByID.
-func (mr *MockAccountRepositoryMockRecorder) FindAccountByID(accountID any) *gomock.Call {
+func (mr *MockAccountRepositoryMockRecorder) FindAccountByID(ctx, accountID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAccountByID", reflect.TypeOf((*MockAccountRepository)(nil).FindAccountByID), accountID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAccountByID", reflect.TypeOf((*MockAccountRepository)(nil).FindAccountByID), ctx, accountID)
 }
 
 // Save mocks base method.
-func (m *MockAccountRepository) Save(arg0 *account.Account) error {
+func (m *MockAccountRepository) Save(ctx context.Context, account *account.Account) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Save", arg0)
+	ret := m.ctrl.Call(m, "Save", ctx, account)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Save indicates an expected call of Save.
-func (mr *MockAccountRepositoryMockRecorder) Save(arg0 any) *gomock.Call {
+func (mr *MockAccountRepositoryMockRecorder) Save(ctx, account any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockAccountRepository)(nil).Save), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockAccountRepository)(nil).Save), ctx, account)
 }

@@ -10,6 +10,7 @@
 package mock_account
 
 import (
+	context "context"
 	captcha "moj/domain/captcha"
 	reflect "reflect"
 
@@ -40,30 +41,30 @@ func (m *MockCaptchaRepository) EXPECT() *MockCaptchaRepositoryMockRecorder {
 }
 
 // FindLatestCaptcha mocks base method.
-func (m *MockCaptchaRepository) FindLatestCaptcha(email, content string, captchaType captcha.CaptchaType) (*captcha.Captcha, error) {
+func (m *MockCaptchaRepository) FindLatestCaptcha(ctx context.Context, email, code string, captchaType captcha.CaptchaType) (*captcha.Captcha, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindLatestCaptcha", email, content, captchaType)
+	ret := m.ctrl.Call(m, "FindLatestCaptcha", ctx, email, code, captchaType)
 	ret0, _ := ret[0].(*captcha.Captcha)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindLatestCaptcha indicates an expected call of FindLatestCaptcha.
-func (mr *MockCaptchaRepositoryMockRecorder) FindLatestCaptcha(email, content, captchaType any) *gomock.Call {
+func (mr *MockCaptchaRepositoryMockRecorder) FindLatestCaptcha(ctx, email, code, captchaType any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestCaptcha", reflect.TypeOf((*MockCaptchaRepository)(nil).FindLatestCaptcha), email, content, captchaType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindLatestCaptcha", reflect.TypeOf((*MockCaptchaRepository)(nil).FindLatestCaptcha), ctx, email, code, captchaType)
 }
 
 // Save mocks base method.
-func (m *MockCaptchaRepository) Save(captcha *captcha.Captcha) error {
+func (m *MockCaptchaRepository) Save(ctx context.Context, captcha *captcha.Captcha) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Save", captcha)
+	ret := m.ctrl.Call(m, "Save", ctx, captcha)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Save indicates an expected call of Save.
-func (mr *MockCaptchaRepositoryMockRecorder) Save(captcha any) *gomock.Call {
+func (mr *MockCaptchaRepositoryMockRecorder) Save(ctx, captcha any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCaptchaRepository)(nil).Save), captcha)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCaptchaRepository)(nil).Save), ctx, captcha)
 }

@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 
@@ -27,6 +28,7 @@ func NewCalculateScorePolicy(
 }
 
 func (p *CalculateScorePolicy) OnEvent(event any) error {
+	ctx := context.Background()
 	evt, ok := event.(record.ModifyRecordEvent)
 	if !ok {
 		return errors.New("invalid event type")
@@ -51,7 +53,7 @@ func (p *CalculateScorePolicy) OnEvent(event any) error {
 	}
 
 	slog.Info("start to calculate score", "cmd", cmd)
-	err := p.calculateScoreCmdHandler.Handle(p.queue, cmd)
+	err := p.calculateScoreCmdHandler.Handle(ctx, p.queue, cmd)
 	if err != nil {
 		return errors.Join(ErrFailedToCalculateScore, err)
 	}

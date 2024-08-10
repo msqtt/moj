@@ -1,6 +1,9 @@
 package game
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type CalculateScoreCmd struct {
 	GameID             string
@@ -22,8 +25,8 @@ func NewCalculateScoreCmdHandler(repo GameRepository) *CalculateScoreCmdHandler 
 	}
 }
 
-func (h *CalculateScoreCmdHandler) Handle(queue queue.EventQueue, cmd CalculateScoreCmd) error {
-	game, err := h.repo.FindGameByID(cmd.GameID)
+func (h *CalculateScoreCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd CalculateScoreCmd) error {
+	game, err := h.repo.FindGameByID(ctx, cmd.GameID)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,9 @@
 package record
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type SubmitRecordCmd struct {
 	AccountID  string
@@ -21,9 +24,9 @@ func NewSubmitRecordCmdHandler(repo RecordRepository) *SubmitRecordCmdHandler {
 	}
 }
 
-func (s *SubmitRecordCmdHandler) Handle(queue queue.EventQueue, cmd SubmitRecordCmd) (string, error) {
+func (s *SubmitRecordCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd SubmitRecordCmd) (string, error) {
 	rec := NewRecord(cmd.AccountID, cmd.GameID, cmd.QuestionID, cmd.Language, cmd.Code, cmd.Time)
-	id, err := s.repo.Save(rec)
+	id, err := s.repo.Save(ctx, rec)
 	if err != nil {
 		return "", err
 	}

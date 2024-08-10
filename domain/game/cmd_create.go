@@ -1,6 +1,9 @@
 package game
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type CreateGameCmd struct {
 	Title        string
@@ -22,11 +25,11 @@ func NewCreateGameCmdHandler(repo GameRepository) *CreateGameCmdHandler {
 	}
 }
 
-func (h *CreateGameCmdHandler) Handle(queue queue.EventQueue, cmd CreateGameCmd) (any, error) {
+func (h *CreateGameCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd CreateGameCmd) (any, error) {
 	game, err := NewGame(cmd.AccountID, cmd.Title, cmd.Description, cmd.Time,
 		cmd.StartTime, cmd.EndTime, cmd.QuestionList)
 	if err != nil {
 		return nil, err
 	}
-	return h.repo.Save(game)
+	return h.repo.Save(ctx, game)
 }

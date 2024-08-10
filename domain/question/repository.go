@@ -1,6 +1,8 @@
 package question
 
+import "context"
+
 type QuestionRepository interface {
-	FindQuestionByID(questionID string) (*Question, error)
-	Save(*Question) (questionID string, err error)
+	FindQuestionByID(ctx context.Context, questionID string) (*Question, error)
+	Save(context.Context, *Question) (questionID string, err error)
 }

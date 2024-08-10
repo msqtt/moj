@@ -1,6 +1,7 @@
 package judgement
 
 import (
+	"context"
 	"errors"
 	"moj/domain/pkg/queue"
 )
@@ -36,9 +37,9 @@ func NewExecutionCmdHandler(repo JudgementRepository, exeService ExecutionServic
 	}
 }
 
-func (e *ExecutionCmdHandler) Handle(queue queue.EventQueue, cmd ExecutionCmd) error {
+func (e *ExecutionCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd ExecutionCmd) error {
 	// Check if there are already cached before execution
-	jud, err := e.repo.FindJudgementByHash(cmd.QuestionID, cmd.CodeHash, cmd.QuestionModifyTime)
+	jud, err := e.repo.FindJudgementByHash(ctx, cmd.QuestionID, cmd.CodeHash, cmd.QuestionModifyTime)
 	if err != nil {
 		return err
 	} else if errors.Is(err, ErrJudgementNotFound) {
@@ -49,7 +50,7 @@ func (e *ExecutionCmdHandler) Handle(queue queue.EventQueue, cmd ExecutionCmd) e
 		if err != nil {
 			return err
 		}
-		return e.repo.Save(jud)
+		return e.repo.Save(ctx, jud)
 	} else {
 		return jud.sendExecutionEvent(queue, cmd)
 	}

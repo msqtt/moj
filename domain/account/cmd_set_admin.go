@@ -1,6 +1,9 @@
 package account
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type SetAdminAccountCmd struct {
 	AccountID string
@@ -17,9 +20,11 @@ func NewSetAdminAccountCmdHandler(repo AccountRepository) *SetAdminAccountCmdHan
 	}
 }
 
-func (s *SetAdminAccountCmdHandler) Handle(queue queue.EventQueue,
+func (s *SetAdminAccountCmdHandler) Handle(
+	ctx context.Context,
+	queue queue.EventQueue,
 	cmd SetAdminAccountCmd) error {
-	acc, err := s.repo.FindAccountByID(cmd.AccountID)
+	acc, err := s.repo.FindAccountByID(ctx, cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -28,5 +33,5 @@ func (s *SetAdminAccountCmdHandler) Handle(queue queue.EventQueue,
 		return err
 	}
 
-	return s.repo.Save(acc)
+	return s.repo.Save(ctx, acc)
 }

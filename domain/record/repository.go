@@ -1,6 +1,8 @@
 package record
 
+import "context"
+
 type RecordRepository interface {
-	FindRecordByID(recordID string) (*Record, error)
-	Save(*Record) (string, error)
+	FindRecordByID(ctx context.Context, recordID string) (*Record, error)
+	Save(context.Context, *Record) (string, error)
 }

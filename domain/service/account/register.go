@@ -1,6 +1,7 @@
 package account
 
 import (
+	"context"
 	"errors"
 	"moj/domain/account"
 	"moj/domain/captcha"
@@ -40,16 +41,16 @@ func NewAccountRegisterService(createAccountCmdHandler *account.CreateAccountCmd
 	}
 }
 
-func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd) error {
+func (s *AccountRegisterService) Handle(ctx context.Context, queue queue.EventQueue, cmd RegisterCmd) error {
 	// check the account by email
-	_, err := s.accountRepository.FindAccountByEmail(cmd.Email)
+	_, err := s.accountRepository.FindAccountByEmail(ctx, cmd.Email)
 	if err == nil {
 		return ErrAccountAlreadyRegistered
 	} else if !errors.Is(err, account.ErrAccountNotFound) {
 		return err
 	}
 
-	cap, err := s.captchaRepository.FindLatestCaptcha(cmd.Email, cmd.Captcha,
+	cap, err := s.captchaRepository.FindLatestCaptcha(ctx, cmd.Email, cmd.Captcha,
 		captcha.CaptchaTypeRegister)
 	if err != nil {
 		return err
@@ -59,7 +60,7 @@ func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd)
 	}
 
 	cap.SetDisable()
-	s.captchaRepository.Save(cap)
+	s.captchaRepository.Save(ctx, cap)
 
 	cmdCreateAccount := account.CreateAccountCmd{
 		Email:    cmd.Email,
@@ -67,7 +68,7 @@ func (s *AccountRegisterService) Handle(queue queue.EventQueue, cmd RegisterCmd)
 		Password: cmd.Password,
 		Time:     cmd.Time,
 	}
-	err = s.createAccountCmdHandler.Handle(queue, cmdCreateAccount)
+	err = s.createAccountCmdHandler.Handle(ctx, queue, cmdCreateAccount)
 	if err != nil {
 		return errors.Join(ErrFailedToCreateAccount, err)
 	}

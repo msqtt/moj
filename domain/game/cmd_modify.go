@@ -1,6 +1,9 @@
 package game
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type ModifyGameCmd struct {
 	GameID       string
@@ -21,8 +24,8 @@ func NewModifyGameCmdHandler(repo GameRepository) *ModifyGameCmdHandler {
 	}
 }
 
-func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd) (any, error) {
-	game, err := h.repo.FindGameByID(cmd.GameID)
+func (h *ModifyGameCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd ModifyGameCmd) (any, error) {
+	game, err := h.repo.FindGameByID(ctx, cmd.GameID)
 	if err != nil {
 		return nil, err
 	}
@@ -31,5 +34,5 @@ func (h *ModifyGameCmdHandler) Handle(queue queue.EventQueue, cmd ModifyGameCmd)
 		return nil, err
 	}
 
-	return h.repo.Save(game)
+	return h.repo.Save(ctx, game)
 }

@@ -1,5 +1,7 @@
 package question
 
+import "context"
+
 type CreateQuestionCmd struct {
 	AccountID        string
 	Title            string
@@ -23,11 +25,11 @@ func NewCreateQuestionCmdHandler(repo QuestionRepository) *CreateQuestionCmdHand
 	}
 }
 
-func (h *CreateQuestionCmdHandler) Handle(cmd CreateQuestionCmd) (result any, err error) {
+func (h *CreateQuestionCmdHandler) Handle(ctx context.Context, cmd CreateQuestionCmd) (result any, err error) {
 	ques, err := NewQuestion("", cmd.AccountID, cmd.Title, cmd.Content, cmd.Level, cmd.AllowedLanguages,
 		cmd.TimeLimit, cmd.MemoryLimit, cmd.Tags, cmd.Time, 0, cmd.Cases)
 	if err != nil {
 		return nil, err
 	}
-	return h.repo.Save(ques)
+	return h.repo.Save(ctx, ques)
 }

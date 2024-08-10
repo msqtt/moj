@@ -1,7 +1,9 @@
 package account
 
+import "context"
+
 type AccountRepository interface {
-	FindAccountByID(accountID string) (*Account, error)
-	FindAccountByEmail(email string) (*Account, error)
-	Save(*Account) error
+	FindAccountByID(ctx context.Context, accountID string) (*Account, error)
+	FindAccountByEmail(ctx context.Context, email string) (*Account, error)
+	Save(ctx context.Context, account *Account) error
 }

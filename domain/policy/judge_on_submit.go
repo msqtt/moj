@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"context"
 	"errors"
 	"moj/domain/judgement"
 	"moj/domain/pkg/queue"
@@ -34,15 +35,16 @@ func NewJudgeOnSubmitPolicy(caseFileReader CaseFileService,
 }
 
 func (p *JudgeOnSubmitPolicy) OnEvent(event any) error {
+	ctx := context.Background()
 	evt, ok := event.(record.SubmitRecordEvent)
 	if !ok {
 		return errors.New("invalid event type")
 	}
-	que, err := p.questionRepository.FindQuestionByID(evt.QuestionID)
+	que, err := p.questionRepository.FindQuestionByID(ctx, evt.QuestionID)
 	if err != nil {
 		return err
 	}
-	cases, err := p.caseFileReader.ReadAllCaseFile(que.Cases)
+	cases, err := p.caseFileReader.ReadAllCaseFile(ctx, que.Cases)
 	if err != nil {
 		return err
 	}
@@ -60,7 +62,7 @@ func (p *JudgeOnSubmitPolicy) OnEvent(event any) error {
 		Time:               time.Now().Unix(),
 	}
 
-	err = p.executionCmdHandler.Handle(p.queue, cmd)
+	err = p.executionCmdHandler.Handle(ctx, p.queue, cmd)
 	if err != nil {
 		return errors.Join(ErrFailedToExecuteCode, err)
 	}

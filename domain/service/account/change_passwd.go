@@ -1,6 +1,7 @@
 package account
 
 import (
+	"context"
 	"errors"
 
 	"moj/domain/account"
@@ -31,8 +32,8 @@ func NewChangePasswdService(changePasswdAccountCmdHandler *account.ChangePasswdA
 	}
 }
 
-func (s *ChangePasswdService) Handle(queue queue.EventQueue, cmd ChangePasswdCmd) error {
-	cap, err := s.captchaRepository.FindLatestCaptcha(cmd.Email, cmd.Captcha,
+func (s *ChangePasswdService) Handle(ctx context.Context, queue queue.EventQueue, cmd ChangePasswdCmd) error {
+	cap, err := s.captchaRepository.FindLatestCaptcha(ctx, cmd.Email, cmd.Captcha,
 		captcha.CaptchaTypeChangePasswd)
 	if err != nil {
 		return err
@@ -42,14 +43,14 @@ func (s *ChangePasswdService) Handle(queue queue.EventQueue, cmd ChangePasswdCmd
 	}
 
 	cap.SetDisable()
-	s.captchaRepository.Save(cap)
+	s.captchaRepository.Save(ctx, cap)
 
 	changePasswdAccountCmd := account.ChangePasswdAccountCmd{
 		AccountID: cmd.AccountID,
 		Password:  cmd.Password,
 		Time:      cmd.Time,
 	}
-	err = s.changePasswdAccountCmdHandler.Handle(queue, changePasswdAccountCmd)
+	err = s.changePasswdAccountCmdHandler.Handle(ctx, queue, changePasswdAccountCmd)
 	if err != nil {
 		return errors.Join(ErrFailedToChangePasswd, err)
 	}

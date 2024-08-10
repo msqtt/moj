@@ -1,5 +1,7 @@
 package question
 
+import "context"
+
 type ModifyQuestionCmd struct {
 	QuestionID       string
 	Enabled          bool
@@ -24,8 +26,8 @@ func NewModifyQuestionCmdHandler(repo QuestionRepository) *ModifyQuestionCmdHand
 	}
 }
 
-func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) (any, error) {
-	ques, err := h.repo.FindQuestionByID(cmd.QuestionID)
+func (h *ModifyQuestionCmdHandler) Handle(ctx context.Context, cmd ModifyQuestionCmd) (any, error) {
+	ques, err := h.repo.FindQuestionByID(ctx, cmd.QuestionID)
 	if err != nil {
 		return nil, err
 	}
@@ -35,5 +37,5 @@ func (h *ModifyQuestionCmdHandler) Handle(cmd ModifyQuestionCmd) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return h.repo.Save(ques2)
+	return h.repo.Save(ctx, ques2)
 }

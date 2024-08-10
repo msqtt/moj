@@ -1,6 +1,9 @@
 package game
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type CancelSignUpGameCmd struct {
 	GameID    string
@@ -18,10 +21,12 @@ func NewCancelSignUpGameCmdHandler(repo GameRepository) *CancelSignUpGameCmdHand
 	}
 }
 
-func (h *CancelSignUpGameCmdHandler) Handle(queue queue.EventQueue, cmd CancelSignUpGameCmd) error {
-	game, err := h.repo.FindGameByID(cmd.GameID)
+func (h *CancelSignUpGameCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd CancelSignUpGameCmd) error {
+	game, err := h.repo.FindGameByID(ctx, cmd.GameID)
 	if err != nil {
 		return err
 	}
-	return game.cancelSignUp(queue, h.repo.DeletSignUpAccount, cmd)
+	return game.cancelSignUp(queue, func(gid, aid string) error {
+		return h.repo.DeletSignUpAccount(ctx, gid, aid)
+	}, cmd)
 }

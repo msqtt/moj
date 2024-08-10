@@ -1,6 +1,7 @@
 package account_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -49,12 +50,12 @@ func TestRegister(t *testing.T) {
 	}
 
 	mCRepo.EXPECT().
-		FindLatestCaptcha(gomock.Eq(cmd.Email),
+		FindLatestCaptcha(gomock.Any(), gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(cap, nil)
 
 	mCRepo.EXPECT().
-		Save(gomock.Eq(cap)).
+		Save(gomock.Any(), gomock.Eq(cap)).
 		Return(nil)
 
 	mCryp.EXPECT().
@@ -62,24 +63,24 @@ func TestRegister(t *testing.T) {
 		Return(cmd.Password, nil)
 
 	mARepo.EXPECT().
-		Save(gomock.Any()).
+		Save(gomock.Any(), gomock.Any()).
 		Return(nil)
 
-	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
+	mARepo.EXPECT().FindAccountByEmail(gomock.Any(), gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
 
 	mQueue.EXPECT().EnQueue(gomock.Eq(event)).Return(nil)
 
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.NoError(t, err)
 
 	// Test case 2: Captcha not found
-	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
+	mARepo.EXPECT().FindAccountByEmail(gomock.Any(), gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
 	mCRepo.EXPECT().
-		FindLatestCaptcha(gomock.Eq(cmd.Email),
+		FindLatestCaptcha(gomock.Any(), gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(nil, saccount.ErrCaptchaNotFound)
 
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)
 
 	// // Test case 3: Captcha expired
@@ -90,13 +91,13 @@ func TestRegister(t *testing.T) {
 
 	cap.Code = cmd.Captcha
 
-	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
+	mARepo.EXPECT().FindAccountByEmail(gomock.Any(), gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
 	mCRepo.EXPECT().
-		FindLatestCaptcha(gomock.Eq(cmd.Email),
+		FindLatestCaptcha(gomock.Any(), gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(cap, nil)
 
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaAlreadyExpired)
 
 	// Test case 4: Failed to create account
@@ -113,17 +114,17 @@ func TestRegister(t *testing.T) {
 		Return(cmd.Password, nil)
 
 	mCRepo.EXPECT().
-		FindLatestCaptcha(gomock.Eq(cmd.Email),
+		FindLatestCaptcha(gomock.Any(), gomock.Eq(cmd.Email),
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(cap, nil)
 
-	mCRepo.EXPECT().Save(gomock.Eq(cap)).Return(nil)
+	mCRepo.EXPECT().Save(gomock.Any(), gomock.Eq(cap)).Return(nil)
 
 	mARepo.EXPECT().
-		Save(gomock.Any()).
+		Save(context.TODO(), gomock.Any()).
 		Return(errors.New("Failed to create account"))
 
-	mARepo.EXPECT().FindAccountByEmail(gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
-	err = s.Handle(mQueue, cmd)
+	mARepo.EXPECT().FindAccountByEmail(gomock.Any(), gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrFailedToCreateAccount)
 }

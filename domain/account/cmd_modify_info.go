@@ -1,6 +1,9 @@
 package account
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type ModifyInfoAccountCmd struct {
 	AccountID  string
@@ -18,8 +21,8 @@ func NewModifyInfoAccountCmdHandler(repo AccountRepository) *ModifyInfoAccountCm
 	}
 }
 
-func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {
-	acc, err := m.repo.FindAccountByID(cmd.AccountID)
+func (m *ModifyInfoAccountCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd ModifyInfoAccountCmd) error {
+	acc, err := m.repo.FindAccountByID(ctx, cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -27,5 +30,5 @@ func (m *ModifyInfoAccountCmdHandler) Handle(queue queue.EventQueue, cmd ModifyI
 	if err != nil {
 		return err
 	}
-	return m.repo.Save(acc)
+	return m.repo.Save(ctx, acc)
 }

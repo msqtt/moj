@@ -1,6 +1,9 @@
 package account
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type LoginAccountCmd struct {
 	AccountID string
@@ -19,8 +22,8 @@ func NewLoginAccountCmdHandler(repo AccountRepository) *LoginAccountCmdHandler {
 	}
 }
 
-func (l *LoginAccountCmdHandler) Handle(queue queue.EventQueue, cmd LoginAccountCmd) error {
-	acc, err := l.repo.FindAccountByID(cmd.AccountID)
+func (l *LoginAccountCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd LoginAccountCmd) error {
+	acc, err := l.repo.FindAccountByID(ctx, cmd.AccountID)
 	if err != nil {
 		return err
 	}

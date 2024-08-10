@@ -1,6 +1,9 @@
 package record
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type ModifyRecordCmd struct {
 	RecordID       string
@@ -24,12 +27,12 @@ func NewModifyRecordCmdHandler(repo RecordRepository) *ModifyRecordCmdHandler {
 	}
 }
 
-func (h *ModifyRecordCmdHandler) Handle(queue queue.EventQueue, cmd ModifyRecordCmd) (any, error) {
-	rec, err := h.repo.FindRecordByID(cmd.RecordID)
+func (h *ModifyRecordCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd ModifyRecordCmd) (any, error) {
+	rec, err := h.repo.FindRecordByID(ctx, cmd.RecordID)
 	if err != nil {
 		return nil, err
 	}
 	rec.modify(queue, cmd)
 
-	return h.repo.Save(rec)
+	return h.repo.Save(ctx, rec)
 }

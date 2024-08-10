@@ -1,6 +1,9 @@
 package account
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type DeleteAccountCmd struct {
 	AccountID string
@@ -17,8 +20,8 @@ func NewDeleteAccountCmdHandler(repo AccountRepository) *DeleteAccountCmdHandler
 	}
 }
 
-func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccountCmd) error {
-	acc, err := d.repo.FindAccountByID(cmd.AccountID)
+func (d *DeleteAccountCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd DeleteAccountCmd) error {
+	acc, err := d.repo.FindAccountByID(ctx, cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -26,5 +29,5 @@ func (d *DeleteAccountCmdHandler) Handle(queue queue.EventQueue, cmd DeleteAccou
 	if err != nil {
 		return err
 	}
-	return d.repo.Save(acc)
+	return d.repo.Save(ctx, acc)
 }

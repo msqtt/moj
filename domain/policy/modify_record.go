@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"context"
 	"errors"
 	"moj/domain/judgement"
 	"moj/domain/pkg/queue"
@@ -25,6 +26,7 @@ func NewModifyRecordAfterExecutionPolicy(modifyRecordCmdHandler *record.ModifyRe
 }
 
 func (p *ModifyRecordPolicy) OnEvent(event any) error {
+	ctx := context.Background()
 	evt, ok := event.(judgement.ExecutionFinishEvent)
 	if !ok {
 		return errors.New("invalid event type")
@@ -42,7 +44,7 @@ func (p *ModifyRecordPolicy) OnEvent(event any) error {
 		Time:           time.Now().Unix(),
 	}
 
-	_, err := p.modifyRecordCmdHandler.Handle(p.queue, cmd)
+	_, err := p.modifyRecordCmdHandler.Handle(ctx, p.queue, cmd)
 	if err != nil {
 		return errors.Join(ErrFailedToModifyRecord, err)
 	}

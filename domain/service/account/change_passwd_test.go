@@ -1,6 +1,7 @@
 package account_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -47,18 +48,18 @@ func TestChangePasswd(t *testing.T) {
 	cap.Code = cmd.Captcha
 
 	mCRepo.EXPECT().
-		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
+		FindLatestCaptcha(context.TODO(), cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(cap, nil)
 
-	mCRepo.EXPECT().Save(gomock.Eq(cap)).Return(nil)
+	mCRepo.EXPECT().Save(gomock.Any(), gomock.Eq(cap)).Return(nil)
 
 	mARepo.EXPECT().
-		FindAccountByID(cmd.AccountID).
+		FindAccountByID(context.TODO(), cmd.AccountID).
 		Return(&account.Account{
 			AccountID: cmd.AccountID,
 		}, nil)
 
-	mARepo.EXPECT().Save(gomock.Any()).Return(nil)
+	mARepo.EXPECT().Save(context.TODO(), gomock.Any()).Return(nil)
 
 	mCryp.EXPECT().
 		Encrypt(gomock.Eq(cmd.Password)).
@@ -68,15 +69,15 @@ func TestChangePasswd(t *testing.T) {
 		EnQueue(gomock.Eq(event)).
 		Return(nil)
 
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.NoError(t, err)
 
 	// Test case 2: Captcha not found
 	mCRepo.EXPECT().
-		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
+		FindLatestCaptcha(context.TODO(), cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(nil, saccount.ErrCaptchaNotFound)
 
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)
 
 	// Test case 3: Captcha expired
@@ -84,7 +85,7 @@ func TestChangePasswd(t *testing.T) {
 		"IP_ADDRESS", 0, time.Now().Unix()-1)
 
 	mCRepo.EXPECT().
-		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
+		FindLatestCaptcha(context.TODO(), cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(cap2, nil)
 	require.NotEmpty(t, cap2)
 	require.NoError(t, err)
@@ -92,21 +93,21 @@ func TestChangePasswd(t *testing.T) {
 	cap.Code = cmd.Captcha
 
 	// Set up the mock captcha repository to return an expired captcha
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaAlreadyExpired)
 
 	// Test case 4: Failed to change password
 	cap.Enabled = true
 	mCRepo.EXPECT().
-		FindLatestCaptcha(cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
+		FindLatestCaptcha(context.TODO(), cmd.Email, cmd.Captcha, captcha.CaptchaTypeChangePasswd).
 		Return(cap, nil)
 
-	mCRepo.EXPECT().Save(gomock.Eq(cap)).Return(nil)
+	mCRepo.EXPECT().Save(context.TODO(), gomock.Eq(cap)).Return(nil)
 
 	mARepo.EXPECT().
-		FindAccountByID(cmd.AccountID).
+		FindAccountByID(context.TODO(), cmd.AccountID).
 		Return(nil, account.ErrAccountNotFound)
 
-	err = s.Handle(mQueue, cmd)
+	err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrFailedToChangePasswd)
 }

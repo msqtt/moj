@@ -1,6 +1,7 @@
 package account
 
 import (
+	"context"
 	"moj/domain/pkg/crypt"
 	"moj/domain/pkg/queue"
 )
@@ -23,9 +24,9 @@ func NewChangePasswdAccountCmdHandler(repo AccountRepository, crypt crypt.Crypto
 	}
 }
 
-func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
+func (h *ChangePasswdAccountCmdHandler) Handle(ctx context.Context, queue queue.EventQueue,
 	cmd ChangePasswdAccountCmd) error {
-	acc, err := h.repo.FindAccountByID(cmd.AccountID)
+	acc, err := h.repo.FindAccountByID(ctx, cmd.AccountID)
 	if err != nil {
 		return err
 	}
@@ -33,5 +34,5 @@ func (h *ChangePasswdAccountCmdHandler) Handle(queue queue.EventQueue,
 	if err != nil {
 		return err
 	}
-	return h.repo.Save(acc)
+	return h.repo.Save(ctx, acc)
 }

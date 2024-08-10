@@ -1,6 +1,9 @@
 package captcha
 
-import "moj/domain/pkg/queue"
+import (
+	"context"
+	"moj/domain/pkg/queue"
+)
 
 type CreateRegisterCaptchaCmd struct {
 	Email    string
@@ -19,12 +22,12 @@ func NewCreateRegisterCaptchaCmdHandler(repo CaptchaRepository) *CreateRegisterC
 	}
 }
 
-func (h *CreateRegisterCaptchaCmdHandler) Handle(queue queue.EventQueue, cmd *CreateRegisterCaptchaCmd) error {
+func (h *CreateRegisterCaptchaCmdHandler) Handle(ctx context.Context, queue queue.EventQueue, cmd *CreateRegisterCaptchaCmd) error {
 	cap, err := NewCaptcha("", cmd.Email, CaptchaTypeRegister, cmd.IpAddr, cmd.Duration, cmd.Time)
 	if err != nil {
 		return err
 	}
-	err = h.repo.Save(cap)
+	err = h.repo.Save(ctx, cap)
 	if err != nil {
 		return err
 	}

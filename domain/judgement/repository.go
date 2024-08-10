@@ -1,7 +1,9 @@
 package judgement
 
+import "context"
+
 type JudgementRepository interface {
-	FindJudgementByID(id string) (*Judgement, error)
-	FindJudgementByHash(questionID string, hash string, questionModifyTime int64) (*Judgement, error)
-	Save(judgement *Judgement) error
+	FindJudgementByID(ctx context.Context, id string) (*Judgement, error)
+	FindJudgementByHash(ctx context.Context, questionID string, hash string, questionModifyTime int64) (*Judgement, error)
+	Save(context.Context, *Judgement) error
 }

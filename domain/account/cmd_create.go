@@ -1,6 +1,7 @@
 package account
 
 import (
+	"context"
 	"moj/domain/pkg/crypt"
 	"moj/domain/pkg/queue"
 )
@@ -24,14 +25,14 @@ func NewCreateAccountCmdHandler(repo AccountRepository, crypt crypt.Cryptor) *Cr
 	}
 }
 
-func (c *CreateAccountCmdHandler) Handle(queue queue.EventQueue,
+func (c *CreateAccountCmdHandler) Handle(ctx context.Context, queue queue.EventQueue,
 	cmd CreateAccountCmd) error {
 	acc, err := NewAccount(c.crypt, cmd.Email, cmd.Password, cmd.NickName)
 	if err != nil {
 		return err
 	}
 
-	err = c.repo.Save(acc)
+	err = c.repo.Save(ctx, acc)
 	if err != nil {
 		return err
 	}
