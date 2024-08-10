@@ -20,9 +20,9 @@ type MongoDBGameRepository struct {
 }
 
 // DeletSignUpAccount implements game.GameRepository.
-func (m *MongoDBGameRepository) DeletSignUpAccount(gameID string, accountID string) error {
+func (m *MongoDBGameRepository) DeletSignUpAccount(ctx context.Context, gameID string, accountID string) error {
 	id, _ := primitive.ObjectIDFromHex(gameID)
-	result, err := m.collection.UpdateByID(context.TODO(), id, bson.M{"$pull": bson.M{"sign_up_account_list": bson.M{"account_id": accountID}}})
+	result, err := m.collection.UpdateByID(ctx, id, bson.M{"$pull": bson.M{"sign_up_account_list": bson.M{"account_id": accountID}}})
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal, errors.New("failed to delete sign up account"), err)
 	}
@@ -31,7 +31,7 @@ func (m *MongoDBGameRepository) DeletSignUpAccount(gameID string, accountID stri
 }
 
 // FindGameByID implements game.GameRepository.
-func (m *MongoDBGameRepository) FindGameByID(gameID string) (*game.Game, error) {
+func (m *MongoDBGameRepository) FindGameByID(ctx context.Context, gameID string) (*game.Game, error) {
 	id, _ := primitive.ObjectIDFromHex(gameID)
 	slog.Debug("find game by id", "gameID", gameID)
 	var model db.GameModel
@@ -46,7 +46,7 @@ func (m *MongoDBGameRepository) FindGameByID(gameID string) (*game.Game, error) 
 }
 
 // InsertSignUpAccount implements game.GameRepository.
-func (m *MongoDBGameRepository) InsertSignUpAccount(gameID string, accountID string, ti int64) error {
+func (m *MongoDBGameRepository) InsertSignUpAccount(ctx context.Context, gameID string, accountID string, ti int64) error {
 	id, _ := primitive.ObjectIDFromHex(gameID)
 	sTime := time.Unix(ti, 0)
 	result, err := m.collection.UpdateByID(context.TODO(), id,
@@ -60,7 +60,7 @@ func (m *MongoDBGameRepository) InsertSignUpAccount(gameID string, accountID str
 }
 
 // Save implements game.GameRepository.
-func (m *MongoDBGameRepository) Save(game *game.Game) (id string, err error) {
+func (m *MongoDBGameRepository) Save(ctx context.Context, game *game.Game) (id string, err error) {
 	model := db.NewFromAggreation(game)
 
 	slog.Debug("save game model", "model", game)

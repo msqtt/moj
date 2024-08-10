@@ -8,7 +8,7 @@ import (
 )
 
 type CommandInvoker interface {
-	Invoke(run func(queue.EventQueue) error) error
+	Invoke(ctx context.Context, run func(ctx context.Context, queue queue.EventQueue) error) error
 }
 
 type TransactionCommandInvoker struct {
@@ -24,10 +24,10 @@ func NewTransactionCommandInvoker(tm db.TransactionManager,
 	}
 }
 
-func (t *TransactionCommandInvoker) Invoke(run func(queue.EventQueue) error) error {
-	return t.transactionManager.Do(context.Background(), func(ctx context.Context) error {
+func (t *TransactionCommandInvoker) Invoke(ctx context.Context, run func(context.Context, queue.EventQueue) error) error {
+	return t.transactionManager.Do(ctx, func(ctx context.Context) error {
 		queue := NewSimpleEventQueue()
-		err1 := run(queue)
+		err1 := run(ctx, queue)
 		t.eventDispatcher.Dispatch(queue)
 		return err1
 	})

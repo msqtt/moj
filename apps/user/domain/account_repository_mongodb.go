@@ -30,10 +30,10 @@ func NewMongoDBAccountRepository(conf *etc.Config, mongodb *db.MongoDB) account.
 }
 
 // FindAccountByID implements account.AccountRepository.
-func (m *MongoDBAccountRepository) FindAccountByID(accountID string) (*account.Account, error) {
+func (m *MongoDBAccountRepository) FindAccountByID(ctx context.Context, accountID string) (*account.Account, error) {
 	var ret db.AccountModel
 	id, _ := primitive.ObjectIDFromHex(accountID)
-	err := m.accountCollection.FindOne(context.TODO(),
+	err := m.accountCollection.FindOne(ctx,
 		bson.M{"_id": id}).Decode(&ret)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -52,20 +52,20 @@ func (m *MongoDBAccountRepository) FindAccountByID(accountID string) (*account.A
 }
 
 // Save implements account.AccountRepository.
-func (m *MongoDBAccountRepository) Save(acc *account.Account) (err error) {
+func (m *MongoDBAccountRepository) Save(ctx context.Context, acc *account.Account) (err error) {
 	model := db.NewAccountModelFromAggregate(acc)
 	slog.Debug("save account aggreation", "acc", acc)
 
 	var result any
 	if model.ID.IsZero() {
 		// insert
-		result, err = m.accountCollection.InsertOne(context.TODO(), model)
+		result, err = m.accountCollection.InsertOne(ctx, model)
 		if err != nil {
 			err = errors.Join(errors.New("failed to insert account"), err)
 		}
 	} else {
 		// update
-		result, err = m.accountCollection.UpdateOne(context.TODO(),
+		result, err = m.accountCollection.UpdateOne(ctx,
 			bson.M{"_id": model.ID}, bson.M{"$set": model})
 		if err != nil {
 			err = errors.Join(errors.New("failed to update account"), err)
@@ -79,7 +79,7 @@ func (m *MongoDBAccountRepository) Save(acc *account.Account) (err error) {
 }
 
 // FindAccountByEmail implements account.AccountRepository.
-func (m *MongoDBAccountRepository) FindAccountByEmail(email string) (*account.Account, error) {
+func (m *MongoDBAccountRepository) FindAccountByEmail(ctx context.Context, email string) (*account.Account, error) {
 	var ret db.AccountModel
 
 	filter := bson.D{
@@ -90,7 +90,7 @@ func (m *MongoDBAccountRepository) FindAccountByEmail(email string) (*account.Ac
 
 	slog.Debug("find latest account by email", "email", email, "filter", filter, "options", opts)
 
-	err := m.accountCollection.FindOne(context.TODO(), filter, opts).Decode(&ret)
+	err := m.accountCollection.FindOne(ctx, filter, opts).Decode(&ret)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(

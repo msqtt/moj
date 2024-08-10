@@ -13,7 +13,7 @@ import (
 )
 
 type QuestionDao interface {
-	FindQuestionPage(cursor string, pageSize int, filter map[string]any) ([]*QuestionViewModel, error)
+	FindQuestionPage(ctx context.Context, cursor string, pageSize int, filter map[string]any) ([]*QuestionViewModel, error)
 }
 
 type MongoDBQuestionDAO struct {
@@ -21,7 +21,7 @@ type MongoDBQuestionDAO struct {
 }
 
 // FindQuestionPage implements QuestionDao.
-func (m *MongoDBQuestionDAO) FindQuestionPage(cursor string, pageSize int,
+func (m *MongoDBQuestionDAO) FindQuestionPage(ctx context.Context, cursor string, pageSize int,
 	f map[string]any) ([]*QuestionViewModel, error) {
 	filter := bson.D{}
 
@@ -66,7 +66,7 @@ func (m *MongoDBQuestionDAO) FindQuestionPage(cursor string, pageSize int,
 
 	slog.Debug("find question view by page", "pipline", pipline)
 
-	cur, err := m.questionCollection.Aggregate(context.TODO(), pipline)
+	cur, err := m.questionCollection.Aggregate(ctx, pipline)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(
@@ -77,10 +77,10 @@ func (m *MongoDBQuestionDAO) FindQuestionPage(cursor string, pageSize int,
 			errors.New("failed to find question view"), err)
 		return nil, err
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
 	var ret []*QuestionViewModel
-	if err := cur.All(context.TODO(), &ret); err != nil {
+	if err := cur.All(ctx, &ret); err != nil {
 		err = errors.Join(app_err.ErrServerInternal,
 			errors.New("failed to get all question view"), err)
 		return nil, err

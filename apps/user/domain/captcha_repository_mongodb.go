@@ -36,7 +36,7 @@ func NewMongoDBCaptchaRepository(
 }
 
 // FindLatestCaptcha implements captcha.CaptchaRepository.
-func (m *MongoDBCaptchaRepository) FindLatestCaptcha(email string, code string, captchaType captcha.CaptchaType) (*captcha.Captcha, error) {
+func (m *MongoDBCaptchaRepository) FindLatestCaptcha(ctx context.Context, email string, code string, captchaType captcha.CaptchaType) (*captcha.Captcha, error) {
 	var ret db.CapthcaModel
 
 	filter := bson.D{
@@ -50,7 +50,7 @@ func (m *MongoDBCaptchaRepository) FindLatestCaptcha(email string, code string, 
 	option := options.FindOneOptions{Sort: bson.D{{Key: "create_time", Value: -1}}}
 
 	slog.Debug("find latest captcha", "filter", filter, "option", option)
-	err := m.captchaCollection.FindOne(context.TODO(), filter, &option).Decode(&ret)
+	err := m.captchaCollection.FindOne(ctx, filter, &option).Decode(&ret)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(
@@ -67,18 +67,18 @@ func (m *MongoDBCaptchaRepository) FindLatestCaptcha(email string, code string, 
 }
 
 // Save implements captcha.CaptchaRepository.
-func (m *MongoDBCaptchaRepository) Save(captcha *captcha.Captcha) (err error) {
+func (m *MongoDBCaptchaRepository) Save(ctx context.Context, captcha *captcha.Captcha) (err error) {
 	model := db.NewCaptchaFromAggregate(captcha)
 	slog.Debug("save captcha model", "model", model)
 	var result any
 	if model.ID.IsZero() {
-		result, err = m.captchaCollection.InsertOne(context.TODO(), model)
+		result, err = m.captchaCollection.InsertOne(ctx, model)
 		if err != nil {
 			err = errors.Join(errors.New("failed to save captcha"), err)
 		}
 	} else {
 		// update
-		result, err = m.captchaCollection.UpdateOne(context.TODO(),
+		result, err = m.captchaCollection.UpdateOne(ctx,
 			bson.M{"_id": model.ID}, bson.M{"$set": model})
 		if err != nil {
 			err = errors.Join(errors.New("failed to update captcha"), err)

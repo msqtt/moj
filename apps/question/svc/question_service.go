@@ -13,7 +13,7 @@ import (
 func (s *Server) GetQuestionInfo(ctx context.Context, req *ques_pb.GetQuestionInfoRequest) (
 	resp *ques_pb.GetQuestionInfoResponse, err error) {
 	slog.Debug("get question info", "req", req)
-	ques, err := s.questionRepository.FindQuestionByID(req.QuestionID)
+	ques, err := s.questionRepository.FindQuestionByID(ctx, req.QuestionID)
 
 	if err != nil {
 		slog.Error("get question info error", "error", err)
@@ -68,7 +68,7 @@ func (s *Server) GetQuestionPage(ctx context.Context, req *ques_pb.GetQuestionPa
 		}
 	}
 
-	ques, err := s.questionDao.FindQuestionPage(req.GetCursor(), int(req.PageSize), m)
+	ques, err := s.questionDao.FindQuestionPage(ctx, req.GetCursor(), int(req.PageSize), m)
 	if err != nil {
 		slog.Error("get question page error", "error", err)
 		err = responseStatusError(err)
@@ -121,7 +121,7 @@ func (s *Server) UpdateQuestion(ctx context.Context, req *ques_pb.UpdateQuestion
 
 	slog.Info("update question command execution", "cmd", cmd)
 
-	_, err = s.modifyQuestionCmdHandler.Handle(cmd)
+	_, err = s.modifyQuestionCmdHandler.Handle(ctx, cmd)
 	if err != nil {
 		slog.Error("update question command execution error", "error", err)
 		err = responseStatusError(err)
@@ -154,7 +154,7 @@ func (s *Server) UploadQuestion(ctx context.Context, req *ques_pb.UploadQuestion
 	}
 
 	slog.Info("upload question command execution", "cmd", cmd)
-	id, err := s.createQuestionCmdHandler.Handle(cmd)
+	id, err := s.createQuestionCmdHandler.Handle(ctx, cmd)
 	if err != nil {
 		slog.Error("upload question command execution error", "error", err)
 		err = responseStatusError(err)

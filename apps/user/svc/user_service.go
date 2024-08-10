@@ -24,8 +24,8 @@ func (s *Server) Login(ctx context.Context, req *user_pb.LoginRequest) (
 	}
 
 	slog.Info("invoking login command", "cmd", cmd)
-	err := s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.loginAccountCmdHandler.Handle(eq, cmd)
+	err := s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
+		return s.loginAccountCmdHandler.Handle(ctx, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke login command", "err", err)
@@ -50,8 +50,8 @@ func (s *Server) Register(ctx context.Context, req *user_pb.RegisterRequest) (
 	}
 
 	slog.Info("invoking register command", "cmd", cmd)
-	err := s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.accountRegisterService.Handle(eq, cmd)
+	err := s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
+		return s.accountRegisterService.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke register command", "err", err)
@@ -73,8 +73,8 @@ func (s *Server) DeleteUser(ctx context.Context, req *user_pb.DeleteUserRequest)
 	}
 
 	slog.Info("invoking delete account command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.deleteAccountCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
+		return s.deleteAccountCmdHandler.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke delete account command", "err", err)
@@ -96,8 +96,8 @@ func (s *Server) SetAdmin(ctx context.Context, req *user_pb.SetAdminRequest) (
 	}
 
 	slog.Info("invoking set admin command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.setAdminAccountCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
+		return s.setAdminAccountCmdHandler.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke set admin command", "err", err)
@@ -120,8 +120,8 @@ func (s *Server) SetStatus(ctx context.Context, req *user_pb.SetStatusRequest) (
 
 	slog.Info("invoking set status command", "cmd", cmd)
 
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.setStatusAccountCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
+		return s.setStatusAccountCmdHandler.Handle(ctx, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke set status command", "err", err)
@@ -144,8 +144,8 @@ func (s *Server) UpdateUserInfo(ctx context.Context,
 	}
 
 	slog.Info("invoking update user info command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.modifyInfoAccountCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
+		return s.modifyInfoAccountCmdHandler.Handle(ctx, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke update user info command", "err", err)
@@ -168,8 +168,8 @@ func (s *Server) ChangeUserPassword(ctx context.Context,
 	}
 
 	slog.Info("invoking change user password command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.changePasswdService.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
+		return s.changePasswdService.Handle(ctx, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke change user password command", "err", err)
@@ -183,7 +183,7 @@ func (s *Server) GetUserInfo(ctx context.Context,
 	req *user_pb.GetUserInfoRequest) (resp *user_pb.GetUserInfoResponse, err error) {
 	slog.Debug("get user info request", "req", req)
 
-	view, err := s.accountViewDAO.FindByAccountID(req.AccountID)
+	view, err := s.accountViewDAO.FindByAccountID(ctx, req.AccountID)
 	if err != nil {
 		slog.Error("failed to find user info", "err", err)
 		err = responseStatusError(err)
@@ -239,7 +239,7 @@ func (s *Server) GetUserPage(ctx context.Context,
 		}
 	}
 
-	views, err := s.accountViewDAO.FindByPage(int(req.GetPageSize()), req.GetCursor(), m)
+	views, err := s.accountViewDAO.FindByPage(ctx, int(req.GetPageSize()), req.GetCursor(), m)
 	if err != nil {
 		slog.Error("failed to find user page", "err", err)
 		err = responseStatusError(err)

@@ -13,10 +13,10 @@ import (
 )
 
 type SignUpScoreDao interface {
-	FindByID(gameID, accountID string) (*SignUpScoreViewModel, error)
-	FindPage(gameID string, page, pageSize int) ([]*SignUpScoreViewModel, int64, error)
-	Save(model *SignUpScoreViewModel) error
-	Delete(gameID, accountID string) error
+	FindByID(ctx context.Context, gameID, accountID string) (*SignUpScoreViewModel, error)
+	FindPage(ctx context.Context, gameID string, page, pageSize int) ([]*SignUpScoreViewModel, int64, error)
+	Save(ctx context.Context, model *SignUpScoreViewModel) error
+	Delete(ctx context.Context, gameID, accountID string) error
 }
 
 type MongoDBSignUpScoreDao struct {
@@ -25,7 +25,7 @@ type MongoDBSignUpScoreDao struct {
 }
 
 // Delete implements SignUpScoreDao.
-func (m *MongoDBSignUpScoreDao) Delete(gameID, accountID string) error {
+func (m *MongoDBSignUpScoreDao) Delete(ctx context.Context, gameID, accountID string) error {
 	slog.Debug("delete signup score", "gameID", gameID, "accountID", accountID)
 	_, err := m.collection.DeleteOne(context.TODO(), bson.M{"game_id": gameID, "account_id": accountID})
 	if err != nil {
@@ -35,7 +35,7 @@ func (m *MongoDBSignUpScoreDao) Delete(gameID, accountID string) error {
 }
 
 // Save implements SignUpScoreDao.
-func (m *MongoDBSignUpScoreDao) Save(model *SignUpScoreViewModel) (err error) {
+func (m *MongoDBSignUpScoreDao) Save(ctx context.Context, model *SignUpScoreViewModel) (err error) {
 	slog.Debug("save signup score", "model", model)
 	if model.ID.IsZero() {
 		_, err = m.collection.InsertOne(context.TODO(), model)
@@ -52,7 +52,7 @@ func (m *MongoDBSignUpScoreDao) Save(model *SignUpScoreViewModel) (err error) {
 }
 
 // FindByGameID implements SignUpScoreDao.
-func (m *MongoDBSignUpScoreDao) FindByID(gameID, accountID string) (*SignUpScoreViewModel, error) {
+func (m *MongoDBSignUpScoreDao) FindByID(ctx context.Context, gameID, accountID string) (*SignUpScoreViewModel, error) {
 	slog.Debug("find signup score", "gameID", gameID, "accountID", accountID)
 	ret := SignUpScoreViewModel{}
 	err := m.collection.FindOne(context.TODO(), bson.M{"game_id": gameID, "account_id": accountID}).Decode(&ret)
@@ -67,7 +67,7 @@ func (m *MongoDBSignUpScoreDao) FindByID(gameID, accountID string) (*SignUpScore
 }
 
 // FindPage implements SignUpScoreDao.
-func (m *MongoDBSignUpScoreDao) FindPage(gameID string, page int, pageSize int) ([]*SignUpScoreViewModel, int64, error) {
+func (m *MongoDBSignUpScoreDao) FindPage(ctx context.Context, gameID string, page int, pageSize int) ([]*SignUpScoreViewModel, int64, error) {
 	filter := bson.M{"game_id": gameID}
 	total, err := m.collection.CountDocuments(context.TODO(), filter)
 	if err != nil {

@@ -26,14 +26,14 @@ func (s *Server) ExecuteJudge(ctx context.Context, req *jud_pb.ExecuteJudgeReque
 
 	slog.Debug("execute judge", "req", req)
 
-	ques, err := s.questionRepo.FindQuestionByID(req.QuestionID)
+	ques, err := s.questionRepo.FindQuestionByID(ctx, req.QuestionID)
 	if err != nil {
 		slog.Error("failed to find question", "error", err)
 		err = responseStatusError(err)
 		return nil, err
 	}
 
-	cases, err := s.reader.ReadAllCaseFile(ques.Cases)
+	cases, err := s.reader.ReadAllCaseFile(ctx, ques.Cases)
 	if err != nil {
 		slog.Error("failed to read question case file", "error", err)
 		err = responseStatusError(err)
@@ -53,8 +53,8 @@ func (s *Server) ExecuteJudge(ctx context.Context, req *jud_pb.ExecuteJudgeReque
 	}
 
 	slog.Debug("start to invoke execute judgement command", "cmd", cmd)
-	err = s.cmdInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		return nil, s.executionCmdHandler.Handle(eq, cmd)
+	err = s.cmdInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) (any, error) {
+		return nil, s.executionCmdHandler.Handle(ctx, eq, cmd)
 	})
 
 	if err != nil {

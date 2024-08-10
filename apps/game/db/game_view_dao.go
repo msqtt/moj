@@ -14,7 +14,7 @@ import (
 )
 
 type GameViewDao interface {
-	FindGamePage(cursor string, pageSize int, f map[string]any) (games []*GameView, err error)
+	FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameView, err error)
 }
 
 type MongoDBGameViewDao struct {
@@ -30,7 +30,7 @@ func NewMongoDBGameViewDao(m *MongoDB) GameViewDao {
 }
 
 // FindGamePage implements GameDao.
-func (m *MongoDBGameViewDao) FindGamePage(cursor string, pageSize int, f map[string]any) (games []*GameView, err error) {
+func (m *MongoDBGameViewDao) FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameView, err error) {
 	filter := bson.D{}
 
 	id, _ := primitive.ObjectIDFromHex(cursor)
@@ -59,7 +59,7 @@ func (m *MongoDBGameViewDao) FindGamePage(cursor string, pageSize int, f map[str
 	slog.Debug("find game view by page", "filter", filter, "opts", opts)
 
 	games = []*GameView{}
-	cur, err := m.collection.Find(context.TODO(), filter, opts)
+	cur, err := m.collection.Find(ctx, filter, opts)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(
@@ -70,9 +70,9 @@ func (m *MongoDBGameViewDao) FindGamePage(cursor string, pageSize int, f map[str
 			errors.New("failed to find question view"), err)
 		return nil, err
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
-	err = cur.All(context.TODO(), &games)
+	err = cur.All(ctx, &games)
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal,
 			errors.New("failed to get all game view"), err)

@@ -28,8 +28,8 @@ func (s *Server) ModifyRecord(ctx context.Context, req *red_pb.ModifyRecordReque
 	}
 
 	slog.Info("start to invoke modify record command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		return s.modifyRecordCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) (any, error) {
+		return s.modifyRecordCmdHandler.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke modify record command", "err", err)
@@ -57,8 +57,8 @@ func (s *Server) SubmitRecord(ctx context.Context, req *red_pb.SubmitRecordReque
 
 	slog.Info("start to invoke submit record command", "cmd", cmd)
 	var id string
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		id1, err := s.submitRecordCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) (any, error) {
+		id1, err := s.submitRecordCmdHandler.Handle(ctx1, eq, cmd)
 		id = id1
 		return id1, err
 	})
@@ -100,7 +100,7 @@ func (s *Server) GetRecordPage(ctx context.Context, req *red_pb.GetRecordPageReq
 
 	m := make(map[string]any)
 
-	res, total, err := s.recordViewDao.FindPage(req.QuestionID,
+	res, total, err := s.recordViewDao.FindPage(ctx, req.QuestionID,
 		req.AccountID, int(req.Page), int(req.PageSize), m)
 	if err != nil {
 		slog.Error("failed to get record page", "err", err)
@@ -118,7 +118,7 @@ func (s *Server) GetRecordPage(ctx context.Context, req *red_pb.GetRecordPageReq
 func (s *Server) GetRecordInfo(ctx context.Context, req *red_pb.GetRecordInfoRequest) (
 	resp *red_pb.GetRecordInfoResponse, err error) {
 	slog.Debug("get record info request", "req", req)
-	rec, err := s.recordRepository.FindRecordByID(req.RecordID)
+	rec, err := s.recordRepository.FindRecordByID(ctx, req.RecordID)
 	if err != nil {
 		slog.Error("failed to get record info", "err", err)
 		err = responseStatusError(err)

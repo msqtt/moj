@@ -13,9 +13,9 @@ import (
 )
 
 type RecordViewDao interface {
-	FindPage(questionID, accountID string, page, pageSize int, filter map[string]any) (
+	FindPage(ctx context.Context, questionID, accountID string, page, pageSize int, filter map[string]any) (
 		[]*RecordViewModel, int64, error)
-	FindAllUnFinished() ([]*RecordModel, error)
+	FindAllUnFinished(context.Context) ([]*RecordModel, error)
 }
 
 type MongoDBRecordViewDao struct {
@@ -24,21 +24,21 @@ type MongoDBRecordViewDao struct {
 }
 
 // FindAllUnFinished implements RecordViewDao.
-func (m *MongoDBRecordViewDao) FindAllUnFinished() ([]*RecordModel, error) {
+func (m *MongoDBRecordViewDao) FindAllUnFinished(ctx context.Context) ([]*RecordModel, error) {
 	filter := bson.M{"$or": bson.A{
 		bson.M{"judge_status": bson.M{"$exists": false}},
 		bson.M{"judge_status": bson.M{"$eq": ""}},
 		bson.M{"judge_status": nil},
 	}}
 
-	cur, err := m.collection.Find(context.TODO(), filter)
+	cur, err := m.collection.Find(ctx, filter)
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal,
 			errors.New("failed to find unfinished record view"), err)
 		return nil, err
 	}
 	var ret []*RecordModel
-	err = cur.All(context.TODO(), &ret)
+	err = cur.All(ctx, &ret)
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal,
 			errors.New("failed to get unfinished record view"), err)
@@ -48,7 +48,7 @@ func (m *MongoDBRecordViewDao) FindAllUnFinished() ([]*RecordModel, error) {
 }
 
 // FindPage implements RecordViewDao.
-func (m *MongoDBRecordViewDao) FindPage(questionID string,
+func (m *MongoDBRecordViewDao) FindPage(ctx context.Context, questionID string,
 	accountID string, page int, pageSize int, f map[string]any) ([]*RecordViewModel, int64, error) {
 	filter := bson.D{
 		bson.E{Key: "game_id", Value: questionID},
@@ -63,7 +63,7 @@ func (m *MongoDBRecordViewDao) FindPage(questionID string,
 		page = 1
 	}
 
-	total, err := m.collection.CountDocuments(context.TODO(), filter)
+	total, err := m.collection.CountDocuments(ctx, filter)
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal, errors.New("failed to count record view"), err)
 		return nil, total, err
@@ -76,7 +76,7 @@ func (m *MongoDBRecordViewDao) FindPage(questionID string,
 	slog.Debug("find record view page", "filter", filter, "opts", opts)
 
 	var ret []*RecordViewModel
-	cur, err := m.collection.Find(context.TODO(), filter, opts)
+	cur, err := m.collection.Find(ctx, filter, opts)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(
@@ -87,9 +87,9 @@ func (m *MongoDBRecordViewDao) FindPage(questionID string,
 			errors.New("failed to find question view"), err)
 		return nil, 0, err
 	}
-	defer cur.Close(context.TODO())
+	defer cur.Close(ctx)
 
-	err = cur.All(context.TODO(), &ret)
+	err = cur.All(ctx, &ret)
 	if err != nil {
 		err = errors.Join(app_err.ErrServerInternal,
 			errors.New("failed to get all game view"), err)

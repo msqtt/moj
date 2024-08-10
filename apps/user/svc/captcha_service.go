@@ -20,7 +20,7 @@ func (s *Server) SendRegisterCaptcha(ctx context.Context, req *user_pb.SendRegis
 	slog.Debug("send register request", "req", req)
 
 	// check latest account by email
-	_, err = s.accountViewDAO.FindLatestByEmail(req.GetEmail())
+	_, err = s.accountViewDAO.FindLatestByEmail(ctx, req.GetEmail())
 	if err == nil {
 		slog.Info("the email already been registered", "email", req.Email)
 		return nil, responseStatusError(ErrAlreadyRegistered)
@@ -38,8 +38,8 @@ func (s *Server) SendRegisterCaptcha(ctx context.Context, req *user_pb.SendRegis
 		Duration: s.conf.CaptchaLiveDuration,
 	}
 	slog.Info("invoking send register captcha command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.createRegisterCaptchaCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
+		return s.createRegisterCaptchaCmdHandler.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke send register captcha command", "err", err)
@@ -56,7 +56,7 @@ func (s *Server) SendChangePasswdCaptcha(ctx context.Context, req *user_pb.SendC
 	slog.Debug("send change password request", "req", req)
 
 	// check the account by email
-	_, err = s.accountViewDAO.FindByAccountID(req.GetAccountID())
+	_, err = s.accountViewDAO.FindByAccountID(ctx, req.GetAccountID())
 	if err != nil {
 		slog.Error("failed to find account view by id", "err", err)
 		if errors.Is(err, db.ErrAccountViewNotFound) {
@@ -74,8 +74,8 @@ func (s *Server) SendChangePasswdCaptcha(ctx context.Context, req *user_pb.SendC
 		Duration:  s.conf.CaptchaLiveDuration,
 	}
 	slog.Info("invoking send change password captcha command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) error {
-		return s.createChangePasswdCaptchaCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
+		return s.createChangePasswdCaptchaCmdHandler.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
 		slog.Error("failed to invoke send change password  captcha command", "err", err)

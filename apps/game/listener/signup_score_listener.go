@@ -1,6 +1,7 @@
 package listener
 
 import (
+	"context"
 	"moj/apps/game/db"
 	"moj/domain/game"
 	"time"
@@ -12,14 +13,15 @@ type SignUpScoreLisener struct {
 
 // OnEvent implements Listener.
 func (s *SignUpScoreLisener) OnEvent(event any) (err error) {
+	ctx := context.Background()
 	switch evt := event.(type) {
 	case game.CalculateScoreEvent:
-		score, err1 := s.signUpScoreDao.FindByID(evt.GameID, evt.AccountID)
+		score, err1 := s.signUpScoreDao.FindByID(ctx, evt.GameID, evt.AccountID)
 		if err1 != nil {
 			return err1
 		}
 		score.Score = evt.Score
-		err = s.signUpScoreDao.Save(score)
+		err = s.signUpScoreDao.Save(ctx, score)
 	case game.SignUpGameEvent:
 		model := &db.SignUpScoreViewModel{
 			GameID:     evt.GameID,
@@ -27,9 +29,9 @@ func (s *SignUpScoreLisener) OnEvent(event any) (err error) {
 			Score:      0,
 			SignUpTime: time.Unix(evt.SignUpTime, 0),
 		}
-		err = s.signUpScoreDao.Save(model)
+		err = s.signUpScoreDao.Save(ctx, model)
 	case game.CancelSignUpGameEvent:
-		err = s.signUpScoreDao.Delete(evt.GameID, evt.AccountID)
+		err = s.signUpScoreDao.Delete(ctx, evt.GameID, evt.AccountID)
 	default:
 	}
 	return

@@ -25,11 +25,11 @@ func NewMongoDBQuestionRepository(mongodb *db.MongoDB) question.QuestionReposito
 }
 
 // FindQuestionByID implements question.QuestionRepository.
-func (m *MongoDBQuestionRepository) FindQuestionByID(questionID string) (*question.Question, error) {
+func (m *MongoDBQuestionRepository) FindQuestionByID(ctx context.Context, questionID string) (*question.Question, error) {
 	id, _ := primitive.ObjectIDFromHex(questionID)
 	questionModel := db.QuestionModel{}
 	err := m.questionCollection.
-		FindOne(context.TODO(), bson.M{"_id": id}).
+		FindOne(ctx, bson.M{"_id": id}).
 		Decode(&questionModel)
 
 	if err != nil {
@@ -48,14 +48,14 @@ func (m *MongoDBQuestionRepository) FindQuestionByID(questionID string) (*questi
 }
 
 // Save implements question.QuestionRepository.
-func (m *MongoDBQuestionRepository) Save(ques *question.Question) (id string, err error) {
+func (m *MongoDBQuestionRepository) Save(ctx context.Context, ques *question.Question) (id string, err error) {
 	model := db.NewFromAggreation(ques)
 	slog.Debug("save question model", "model", ques)
 
 	var result any
 	if model.ID.IsZero() {
 		// insert
-		result1, err1 := m.questionCollection.InsertOne(context.TODO(), model)
+		result1, err1 := m.questionCollection.InsertOne(ctx, model)
 		if err1 != nil {
 			err = errors.Join(errors.New("failed to insert question"), err1)
 		}
@@ -64,7 +64,7 @@ func (m *MongoDBQuestionRepository) Save(ques *question.Question) (id string, er
 	} else {
 		// update
 		result, err = m.questionCollection.
-			UpdateByID(context.TODO(), model.ID, bson.M{"$set": model})
+			UpdateByID(ctx, model.ID, bson.M{"$set": model})
 		if err != nil {
 			err = errors.Join(errors.New("failed to update question"), err)
 		}

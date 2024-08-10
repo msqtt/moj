@@ -21,8 +21,8 @@ type RPCQuestionRepository struct {
 }
 
 // FindQuestionByID implements question.QuestionRepository.
-func (r *RPCQuestionRepository) FindQuestionByID(questionID string) (*question.Question, error) {
-	resp, err := r.client.GetQuestionInfo(context.TODO(), &ques_pb.GetQuestionInfoRequest{
+func (r *RPCQuestionRepository) FindQuestionByID(ctx context.Context, questionID string) (*question.Question, error) {
+	resp, err := r.client.GetQuestionInfo(ctx, &ques_pb.GetQuestionInfoRequest{
 		QuestionID: questionID,
 	})
 
@@ -65,7 +65,7 @@ func (r *RPCQuestionRepository) FindQuestionByID(questionID string) (*question.Q
 }
 
 // Save implements question.QuestionRepository.
-func (r *RPCQuestionRepository) Save(*question.Question) (questionID string, err error) {
+func (r *RPCQuestionRepository) Save(context.Context, *question.Question) (questionID string, err error) {
 	panic("unimplemented")
 }
 

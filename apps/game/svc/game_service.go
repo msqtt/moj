@@ -49,8 +49,8 @@ func (s *Server) CancelSignUpGame(ctx context.Context, req *game_pb.CancelSignUp
 	resp *game_pb.CancelSignUpGameResponse, err error) {
 	slog.Debug("cancel sign up game", "req", req)
 
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		err := s.cancelSignUpGameCmdHandler.Handle(eq, game.CancelSignUpGameCmd{
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) (any, error) {
+		err := s.cancelSignUpGameCmdHandler.Handle(ctx1, eq, game.CancelSignUpGameCmd{
 			GameID:    req.GameID,
 			AccountID: req.AccountID,
 		})
@@ -89,8 +89,8 @@ func (s *Server) CreateGame(ctx context.Context, req *game_pb.CreateGameRequest)
 	slog.Info("start to invoke create game command", "cmd", cmd)
 
 	var gameID string
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		gameID1, err1 := s.createGameCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) (any, error) {
+		gameID1, err1 := s.createGameCmdHandler.Handle(ctx1, eq, cmd)
 		if gameID1 != nil {
 			gameID = gameID1.(string)
 		}
@@ -116,7 +116,7 @@ func (s *Server) GetGameInfo(ctx context.Context, req *game_pb.GetGameInfoReques
 	resp *game_pb.GetGameInfoResponse, err error) {
 	slog.Debug("get game info", "req", req)
 
-	game, err := s.gameRepository.FindGameByID(req.GameID)
+	game, err := s.gameRepository.FindGameByID(ctx, req.GameID)
 	if err != nil {
 		slog.Error("failed to get game info", "err", err)
 		err = responseStatusError(err)
@@ -157,7 +157,7 @@ func (s *Server) GetGamePage(ctx context.Context, req *game_pb.GetGamePageReques
 		}
 	}
 
-	games, err := s.gameViewDao.FindGamePage(req.Cursor, int(req.PageSize), f)
+	games, err := s.gameViewDao.FindGamePage(ctx, req.Cursor, int(req.PageSize), f)
 	if err != nil {
 		slog.Error("get question page error", "error", err)
 		err = responseStatusError(err)
@@ -191,7 +191,7 @@ func (s *Server) GetScore(ctx context.Context, req *game_pb.GetScoreRequest) (
 	resp *game_pb.GetScoreResponse, err error) {
 	slog.Debug("get score", "req", req)
 
-	score, err := s.signUpScoreDao.FindByID(req.GameID, req.AccountID)
+	score, err := s.signUpScoreDao.FindByID(ctx, req.GameID, req.AccountID)
 	if err != nil {
 		slog.Error("failed to get score", "err", err)
 		err = responseStatusError(err)
@@ -210,7 +210,7 @@ func (s *Server) GetScorePage(ctx context.Context, req *game_pb.GetScorePageRequ
 	resp *game_pb.GetScorePageResponse, err error) {
 	slog.Debug("get score page", "req", req)
 
-	scores, total, err := s.signUpScoreDao.FindPage(req.GameID, int(req.Page), int(req.PageSize))
+	scores, total, err := s.signUpScoreDao.FindPage(ctx, req.GameID, int(req.Page), int(req.PageSize))
 	if err != nil {
 		slog.Error("failed to get score page", "err", err)
 		err = responseStatusError(err)
@@ -245,8 +245,8 @@ func (s *Server) SignUpGame(ctx context.Context, req *game_pb.SignUpGameRequest)
 
 	slog.Info("start to invoke sign up game command", "cmd", cmd)
 
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		return nil, s.signUpGameCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) (any, error) {
+		return nil, s.signUpGameCmdHandler.Handle(ctx1, eq, cmd)
 	})
 
 	if err != nil {
@@ -277,8 +277,8 @@ func (s *Server) UpdateGame(ctx context.Context, req *game_pb.UpdateGameRequest)
 
 	slog.Info("start to invoke update game command", "cmd", cmd)
 
-	err = s.commandInvoker.Invoke(func(eq queue.EventQueue) (any, error) {
-		return s.modifyGameCmdHandler.Handle(eq, cmd)
+	err = s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) (any, error) {
+		return s.modifyGameCmdHandler.Handle(ctx1, eq, cmd)
 	})
 
 	if err != nil {

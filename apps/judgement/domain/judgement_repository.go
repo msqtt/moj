@@ -20,7 +20,7 @@ type MongoDBJudementRepository struct {
 }
 
 // FindJudgementByHash implements judgement.JudgementRepository.
-func (m *MongoDBJudementRepository) FindJudgementByHash(questionID string, hash string, questionTime int64) (*judgement.Judgement, error) {
+func (m *MongoDBJudementRepository) FindJudgementByHash(ctx context.Context, questionID string, hash string, questionTime int64) (*judgement.Judgement, error) {
 	filter := bson.M{
 		"question_id":  questionID,
 		"code_hash":    hash,
@@ -29,7 +29,7 @@ func (m *MongoDBJudementRepository) FindJudgementByHash(questionID string, hash 
 	slog.Debug("find judgement by hash", "filter", filter)
 
 	var ret judgement.Judgement
-	err := m.collection.FindOne(context.TODO(), filter).Decode(&ret)
+	err := m.collection.FindOne(ctx, filter).Decode(&ret)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(app_err.ErrModelNotFound, judgement.ErrJudgementNotFound, err)
@@ -41,11 +41,11 @@ func (m *MongoDBJudementRepository) FindJudgementByHash(questionID string, hash 
 }
 
 // FindJudgementByID implements judgement.JudgementRepository.
-func (m *MongoDBJudementRepository) FindJudgementByID(jid string) (*judgement.Judgement, error) {
+func (m *MongoDBJudementRepository) FindJudgementByID(ctx context.Context, jid string) (*judgement.Judgement, error) {
 	id, _ := primitive.ObjectIDFromHex(jid)
 	var ret judgement.Judgement
 	slog.Debug("find judgement by id", "judgmentID", jid)
-	err := m.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&ret)
+	err := m.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&ret)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			err = errors.Join(app_err.ErrModelNotFound, judgement.ErrJudgementNotFound, err)
@@ -57,16 +57,16 @@ func (m *MongoDBJudementRepository) FindJudgementByID(jid string) (*judgement.Ju
 }
 
 // Save implements judgement.JudgementRepository.
-func (m *MongoDBJudementRepository) Save(judgement *judgement.Judgement) (err error) {
+func (m *MongoDBJudementRepository) Save(ctx context.Context, judgement *judgement.Judgement) (err error) {
 	model := db.NewJudgementModelFromAggreation(judgement)
 	var result any
 	if model.ID.IsZero() {
-		result, err = m.collection.InsertOne(context.TODO(), model)
+		result, err = m.collection.InsertOne(ctx, model)
 		if err != nil {
 			err = errors.Join(errors.New("failed to insert judgement"), err)
 		}
 	} else {
-		result, err = m.collection.UpdateByID(context.TODO(), model.ID, bson.M{"$set": model})
+		result, err = m.collection.UpdateByID(ctx, model.ID, bson.M{"$set": model})
 		if err != nil {
 			err = errors.Join(errors.New("failed to update judgement"), err)
 		}

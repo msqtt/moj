@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"context"
 	"log/slog"
 	"moj/apps/record/db"
 	mq "moj/apps/record/mq/producer"
@@ -19,7 +20,7 @@ func (e *ExecuteJudgementTask) Close() {
 
 // Launch implements Worker.
 func (e *ExecuteJudgementTask) Launch() {
-	records, err := e.dao.FindAllUnFinished()
+	records, err := e.dao.FindAllUnFinished(context.Background())
 	if err != nil {
 		slog.Error("failed to do execute judgement work", "error", err)
 		return
