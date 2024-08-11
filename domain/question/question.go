@@ -18,6 +18,10 @@ func (q QuestionLevel) IsValid() bool {
 	return q >= QuestionLevelEasy && q <= QuestionLevelHard
 }
 
+func (q QuestionLevel) String() string {
+	return []string{"easy", "normal", "hard"}[q]
+}
+
 type QuestionLanguage string
 
 const (
