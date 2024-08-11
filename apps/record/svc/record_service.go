@@ -2,7 +2,9 @@ package svc
 
 import (
 	"context"
+	"errors"
 	"log/slog"
+	"moj/apps/game/pkg/app_err"
 	"moj/apps/record/db"
 	red_pb "moj/apps/record/rpc"
 	"moj/domain/pkg/queue"
@@ -149,6 +151,89 @@ func (s *Server) GetRecord(ctx context.Context, req *red_pb.GetRecordRequest) (
 			TimeUsed:         int64(rec.TimeUsed),
 			CpuTimeUsed:      int64(rec.CPUTimeUsed),
 		},
+	}
+	return
+}
+
+// CheckAccountPass implements red_pb.RecordServiceServer.
+func (s *Server) CheckAccountPass(ctx context.Context, req *red_pb.CheckAccountPassRequest) (
+	resp *red_pb.CheckAccountPassResponse, err error) {
+	slog.Debug("check account pass request", "req", req)
+	_, err = s.passedQuestionViewDao.FindByAccountIDAndQuestionID(ctx, req.AccountID, req.QuestionID)
+
+	isPass := true
+	if err != nil {
+		if errors.Is(err, app_err.ErrModelNotFound) {
+			isPass = false
+		} else {
+			slog.Error("failed to check account pass", "err", err)
+			err = responseStatusError(err)
+			return
+		}
+	}
+	resp = &red_pb.CheckAccountPassResponse{
+		IsPass: isPass,
+	}
+	return
+}
+
+// GetAccountPassedCount implements red_pb.RecordServiceServer.
+func (s *Server) GetAccountPassedCount(ctx context.Context, req *red_pb.GetAccountPassedCountRequest) (
+	resp *red_pb.GetAccountPassedCountResponse, err error) {
+	slog.Debug("get account passed count request", "req", req)
+
+	eazy, normal, hard, err := s.passedQuestionViewDao.CountLevelByAccountID(ctx, req.AccountID)
+	if err != nil {
+		slog.Error("failed to get account passed count", "err", err)
+		err = responseStatusError(err)
+	}
+
+	resp = &red_pb.GetAccountPassedCountResponse{
+		Eazy:   eazy,
+		Normal: normal,
+		Hard:   hard,
+	}
+	return
+}
+
+// GetDailyTaskView implements red_pb.RecordServiceServer.
+func (s *Server) GetDailyTaskView(ctx context.Context, req *red_pb.GetDailyTaskViewRequest) (
+	resp *red_pb.GetDailyTaskViewResponse, err error) {
+	slog.Debug("get daily task view request", "req", req)
+	date := time.Unix(req.Time, 0)
+	taskView, err := s.dayTaskViewDao.FindByDate(ctx, date)
+	if err != nil {
+		slog.Error("failed to get daily task view", "err", err)
+		err = responseStatusError(err)
+	}
+	resp = &red_pb.GetDailyTaskViewResponse{
+		SubmitNumber: int64(taskView.SubmitNumber),
+		FinishNumber: int64(taskView.FinishNumber),
+		Time:         taskView.Time.Unix(),
+	}
+	return
+}
+
+// GetQuestionRecordCount implements red_pb.RecordServiceServer.
+func (s *Server) GetQuestionRecordCount(ctx context.Context, req *red_pb.GetQuestionRecordCountRequest) (
+	resp *red_pb.GetQuestionRecordCountResponse, err error) {
+	// slog.Debug("get question record count request", "req", req)
+
+	total, err1 := s.recordViewDao.CountAllByID(ctx, req.QuestionID, req.GetGameID())
+	if err1 != nil {
+		slog.Error("failed to get question record count", "err", err1)
+		err = responseStatusError(err1)
+	}
+
+	passCount, err1 := s.passedQuestionViewDao.CountByQuestionID(ctx, req.QuestionID)
+	if err1 != nil {
+		slog.Error("failed to get question record count", "err", err1)
+		err = responseStatusError(err1)
+	}
+
+	resp = &red_pb.GetQuestionRecordCountResponse{
+		PassedCount: passCount,
+		SubmitTotal: total,
 	}
 	return
 }

@@ -16,6 +16,7 @@ import (
 	"moj/apps/record/mq/producer"
 	"moj/apps/record/schedule"
 	"moj/apps/record/svc"
+	"moj/domain/question"
 	"moj/domain/record"
 	"time"
 )
@@ -26,13 +27,16 @@ func InitializeApplication() *App {
 	config := etc.NewAppConfig()
 	mongoDB := db.NewMongoDB(config)
 	transactionManager := db.NewMongoDBTransactionManager(mongoDB)
-	eventDispatcher := provideDispatcher(config)
+	dailyTaskViewDao := db.NewMongoDBDayTaskViewDao(mongoDB)
+	passedQuestionViewDao := db.NewMongoDBPassedQuestionViewDao(mongoDB)
+	questionRepository := domain.NewRPCQuestionRepository(config)
+	eventDispatcher := provideDispatcher(config, dailyTaskViewDao, passedQuestionViewDao, questionRepository)
 	commandInvoker := domain.NewTransactionCommandInvoker(transactionManager, eventDispatcher)
 	recordRepository := domain.NewMongoDBRecordRepository(mongoDB)
 	modifyRecordCmdHandler := record.NewModifyRecordCmdHandler(recordRepository)
 	submitRecordCmdHandler := record.NewSubmitRecordCmdHandler(recordRepository)
 	recordViewDao := db.NewMongoDBRecordViewDao(mongoDB)
-	server := svc.NewServer(commandInvoker, modifyRecordCmdHandler, submitRecordCmdHandler, recordRepository, recordViewDao)
+	server := svc.NewServer(commandInvoker, modifyRecordCmdHandler, submitRecordCmdHandler, recordRepository, recordViewDao, dailyTaskViewDao, passedQuestionViewDao)
 	v := provideScheduleTask(config, recordViewDao)
 	nsqFinishRecordConsumer := consumer.NewNsqFinishRecordConsumer(config, modifyRecordCmdHandler, eventDispatcher)
 	app := NewApp(server, v, mongoDB, config, nsqFinishRecordConsumer)
@@ -41,9 +45,14 @@ func InitializeApplication() *App {
 
 // wire.go:
 
-func provideDispatcher(conf *etc.Config) domain.EventDispatcher {
+func provideDispatcher(
+	conf *etc.Config,
+	dailyTaskViewDao db.DailyTaskViewDao,
+	passedQuestionViewDao db.PassedQuestionViewDao,
+	questionRepository question.QuestionRepository,
+) domain.EventDispatcher {
 	return domain.NewSyncAndAsyncEventDispatcher(
-		[]listener.Listener{},
+		[]listener.Listener{listener.NewDailyTaskViewListener(dailyTaskViewDao), listener.NewPassedQuestionViewListener(passedQuestionViewDao, questionRepository)},
 		[]producer.Producer{producer.NewExecuteJudgeProducer(conf), producer.NewRecordGameScoreProducer(conf)})
 }
 
@@ -52,6 +61,6 @@ func provideScheduleTask(conf *etc.Config, dao db.RecordViewDao) []*schedule.Tik
 	}
 }
 
-var providers = wire.NewSet(svc.NewServer, record.NewModifyRecordCmdHandler, record.NewSubmitRecordCmdHandler, domain.NewMongoDBRecordRepository, domain.NewTransactionCommandInvoker, producer.NewRecordGameScoreProducer, provideDispatcher,
-	provideScheduleTask, consumer.NewNsqFinishRecordConsumer, db.NewMongoDBTransactionManager, db.NewMongoDBRecordViewDao, db.NewMongoDB, etc.NewAppConfig,
+var providers = wire.NewSet(svc.NewServer, record.NewModifyRecordCmdHandler, record.NewSubmitRecordCmdHandler, domain.NewMongoDBRecordRepository, domain.NewTransactionCommandInvoker, domain.NewRPCQuestionRepository, producer.NewRecordGameScoreProducer, provideDispatcher,
+	provideScheduleTask, consumer.NewNsqFinishRecordConsumer, db.NewMongoDBTransactionManager, db.NewMongoDBRecordViewDao, db.NewMongoDBPassedQuestionViewDao, db.NewMongoDBDayTaskViewDao, db.NewMongoDB, etc.NewAppConfig,
 )

@@ -26,6 +26,10 @@ type RecordServiceClient interface {
 	ModifyRecord(ctx context.Context, in *ModifyRecordRequest, opts ...grpc.CallOption) (*ModifyRecordResponse, error)
 	GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error)
 	GetRecordPage(ctx context.Context, in *GetRecordPageRequest, opts ...grpc.CallOption) (*GetRecordPageResponse, error)
+	GetDailyTaskView(ctx context.Context, in *GetDailyTaskViewRequest, opts ...grpc.CallOption) (*GetDailyTaskViewResponse, error)
+	GetQuestionRecordCount(ctx context.Context, in *GetQuestionRecordCountRequest, opts ...grpc.CallOption) (*GetQuestionRecordCountResponse, error)
+	GetAccountPassedCount(ctx context.Context, in *GetAccountPassedCountRequest, opts ...grpc.CallOption) (*GetAccountPassedCountResponse, error)
+	CheckAccountPass(ctx context.Context, in *CheckAccountPassRequest, opts ...grpc.CallOption) (*CheckAccountPassResponse, error)
 }
 
 type recordServiceClient struct {
@@ -72,6 +76,42 @@ func (c *recordServiceClient) GetRecordPage(ctx context.Context, in *GetRecordPa
 	return out, nil
 }
 
+func (c *recordServiceClient) GetDailyTaskView(ctx context.Context, in *GetDailyTaskViewRequest, opts ...grpc.CallOption) (*GetDailyTaskViewResponse, error) {
+	out := new(GetDailyTaskViewResponse)
+	err := c.cc.Invoke(ctx, "/record.RecordService/GetDailyTaskView", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recordServiceClient) GetQuestionRecordCount(ctx context.Context, in *GetQuestionRecordCountRequest, opts ...grpc.CallOption) (*GetQuestionRecordCountResponse, error) {
+	out := new(GetQuestionRecordCountResponse)
+	err := c.cc.Invoke(ctx, "/record.RecordService/GetQuestionRecordCount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recordServiceClient) GetAccountPassedCount(ctx context.Context, in *GetAccountPassedCountRequest, opts ...grpc.CallOption) (*GetAccountPassedCountResponse, error) {
+	out := new(GetAccountPassedCountResponse)
+	err := c.cc.Invoke(ctx, "/record.RecordService/GetAccountPassedCount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recordServiceClient) CheckAccountPass(ctx context.Context, in *CheckAccountPassRequest, opts ...grpc.CallOption) (*CheckAccountPassResponse, error) {
+	out := new(CheckAccountPassResponse)
+	err := c.cc.Invoke(ctx, "/record.RecordService/CheckAccountPass", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RecordServiceServer is the server API for RecordService service.
 // All implementations must embed UnimplementedRecordServiceServer
 // for forward compatibility
@@ -80,6 +120,10 @@ type RecordServiceServer interface {
 	ModifyRecord(context.Context, *ModifyRecordRequest) (*ModifyRecordResponse, error)
 	GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
 	GetRecordPage(context.Context, *GetRecordPageRequest) (*GetRecordPageResponse, error)
+	GetDailyTaskView(context.Context, *GetDailyTaskViewRequest) (*GetDailyTaskViewResponse, error)
+	GetQuestionRecordCount(context.Context, *GetQuestionRecordCountRequest) (*GetQuestionRecordCountResponse, error)
+	GetAccountPassedCount(context.Context, *GetAccountPassedCountRequest) (*GetAccountPassedCountResponse, error)
+	CheckAccountPass(context.Context, *CheckAccountPassRequest) (*CheckAccountPassResponse, error)
 	mustEmbedUnimplementedRecordServiceServer()
 }
 
@@ -98,6 +142,18 @@ func (UnimplementedRecordServiceServer) GetRecord(context.Context, *GetRecordReq
 }
 func (UnimplementedRecordServiceServer) GetRecordPage(context.Context, *GetRecordPageRequest) (*GetRecordPageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecordPage not implemented")
+}
+func (UnimplementedRecordServiceServer) GetDailyTaskView(context.Context, *GetDailyTaskViewRequest) (*GetDailyTaskViewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDailyTaskView not implemented")
+}
+func (UnimplementedRecordServiceServer) GetQuestionRecordCount(context.Context, *GetQuestionRecordCountRequest) (*GetQuestionRecordCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetQuestionRecordCount not implemented")
+}
+func (UnimplementedRecordServiceServer) GetAccountPassedCount(context.Context, *GetAccountPassedCountRequest) (*GetAccountPassedCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountPassedCount not implemented")
+}
+func (UnimplementedRecordServiceServer) CheckAccountPass(context.Context, *CheckAccountPassRequest) (*CheckAccountPassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAccountPass not implemented")
 }
 func (UnimplementedRecordServiceServer) mustEmbedUnimplementedRecordServiceServer() {}
 
@@ -184,6 +240,78 @@ func _RecordService_GetRecordPage_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RecordService_GetDailyTaskView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDailyTaskViewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServiceServer).GetDailyTaskView(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/record.RecordService/GetDailyTaskView",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServiceServer).GetDailyTaskView(ctx, req.(*GetDailyTaskViewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RecordService_GetQuestionRecordCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetQuestionRecordCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServiceServer).GetQuestionRecordCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/record.RecordService/GetQuestionRecordCount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServiceServer).GetQuestionRecordCount(ctx, req.(*GetQuestionRecordCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RecordService_GetAccountPassedCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountPassedCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServiceServer).GetAccountPassedCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/record.RecordService/GetAccountPassedCount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServiceServer).GetAccountPassedCount(ctx, req.(*GetAccountPassedCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RecordService_CheckAccountPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckAccountPassRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServiceServer).CheckAccountPass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/record.RecordService/CheckAccountPass",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServiceServer).CheckAccountPass(ctx, req.(*CheckAccountPassRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RecordService_ServiceDesc is the grpc.ServiceDesc for RecordService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +334,22 @@ var RecordService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRecordPage",
 			Handler:    _RecordService_GetRecordPage_Handler,
+		},
+		{
+			MethodName: "GetDailyTaskView",
+			Handler:    _RecordService_GetDailyTaskView_Handler,
+		},
+		{
+			MethodName: "GetQuestionRecordCount",
+			Handler:    _RecordService_GetQuestionRecordCount_Handler,
+		},
+		{
+			MethodName: "GetAccountPassedCount",
+			Handler:    _RecordService_GetAccountPassedCount_Handler,
+		},
+		{
+			MethodName: "CheckAccountPass",
+			Handler:    _RecordService_CheckAccountPass_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

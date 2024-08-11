@@ -14,6 +14,8 @@ type Server struct {
 	submitRecordCmdHandler *record.SubmitRecordCmdHandler
 	recordRepository       record.RecordRepository
 	recordViewDao          db.RecordViewDao
+	dayTaskViewDao         db.DailyTaskViewDao
+	passedQuestionViewDao  db.PassedQuestionViewDao
 }
 
 func NewServer(
@@ -22,6 +24,8 @@ func NewServer(
 	submitRecordCmdHandler *record.SubmitRecordCmdHandler,
 	recordRepository record.RecordRepository,
 	recordViewDao db.RecordViewDao,
+	dayTaskViewDao db.DailyTaskViewDao,
+	passedQuestionViewDao db.PassedQuestionViewDao,
 ) *Server {
 	return &Server{
 		commandInvoker:         commandInvoker,
@@ -29,5 +33,7 @@ func NewServer(
 		submitRecordCmdHandler: submitRecordCmdHandler,
 		recordRepository:       recordRepository,
 		recordViewDao:          recordViewDao,
+		dayTaskViewDao:         dayTaskViewDao,
+		passedQuestionViewDao:  passedQuestionViewDao,
 	}
 }

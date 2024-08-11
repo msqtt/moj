@@ -12,15 +12,24 @@ import (
 	"moj/apps/record/mq/producer"
 	"moj/apps/record/schedule"
 	"moj/apps/record/svc"
+	"moj/domain/question"
 	"moj/domain/record"
 	"time"
 
 	"github.com/google/wire"
 )
 
-func provideDispatcher(conf *etc.Config) domain.EventDispatcher {
+func provideDispatcher(
+	conf *etc.Config,
+	dailyTaskViewDao db.DailyTaskViewDao,
+	passedQuestionViewDao db.PassedQuestionViewDao,
+	questionRepository question.QuestionRepository,
+) domain.EventDispatcher {
 	return domain.NewSyncAndAsyncEventDispatcher(
-		[]listener.Listener{},
+		[]listener.Listener{
+			listener.NewDailyTaskViewListener(dailyTaskViewDao),
+			listener.NewPassedQuestionViewListener(passedQuestionViewDao, questionRepository),
+		},
 		[]producer.Producer{
 			producer.NewExecuteJudgeProducer(conf),
 			producer.NewRecordGameScoreProducer(conf),
@@ -43,6 +52,7 @@ var providers = wire.NewSet(
 	record.NewSubmitRecordCmdHandler,
 	domain.NewMongoDBRecordRepository,
 	domain.NewTransactionCommandInvoker,
+	domain.NewRPCQuestionRepository,
 	producer.NewRecordGameScoreProducer,
 
 	provideDispatcher,
@@ -52,6 +62,8 @@ var providers = wire.NewSet(
 
 	db.NewMongoDBTransactionManager,
 	db.NewMongoDBRecordViewDao,
+	db.NewMongoDBPassedQuestionViewDao,
+	db.NewMongoDBDayTaskViewDao,
 	db.NewMongoDB,
 	etc.NewAppConfig,
 )

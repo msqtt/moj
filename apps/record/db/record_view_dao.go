@@ -16,11 +16,27 @@ type RecordViewDao interface {
 	FindPage(ctx context.Context, questionID, accountID string, page, pageSize int, filter map[string]any) (
 		[]*RecordModel, int64, error)
 	FindAllUnFinished(context.Context) ([]*RecordModel, error)
+	CountAllByID(ctx context.Context, questionID, optianalGameID string) (int64, error)
 }
 
 type MongoDBRecordViewDao struct {
 	mongodb    *MongoDB
 	collection *mongo.Collection
+}
+
+// CountAllByID implements RecordViewDao.
+func (m *MongoDBRecordViewDao) CountAllByID(ctx context.Context, questionID, optianalGameID string) (int64, error) {
+	filter := bson.M{"question_id": questionID}
+	if optianalGameID != "" {
+		filter["game_id"] = optianalGameID
+
+	}
+	number, err := m.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("failed to count question by id"), err)
+	}
+	return number, err
 }
 
 // FindAllUnFinished implements RecordViewDao.

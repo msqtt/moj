@@ -16,6 +16,7 @@ type Config struct {
 	Debug                      bool
 	NsqdAddr                   string        `mapstructure:"NSQD_ADDR"`
 	NsqLookUpAddr              string        `mapstructure:"NSQ_LOOKUP_ADDR"`
+	QuestionRPCAddr            string        `mapstructure:"QUESTION_RPC_ADDR"`
 	ExecuteJudgeTopic          string        `mapstructure:"EXECUTE_JUDGE_TOPIC"`
 	FinishRecordTopic          string        `mapstructure:"FINISH_RECORD_TOPIC"`
 	FinishRecordTopicChannel   string        `mapstructure:"FINISH_RECORD_TOPIC_CHANNEL"`

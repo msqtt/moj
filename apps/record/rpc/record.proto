@@ -9,6 +9,11 @@ service RecordService {
     rpc ModifyRecord(ModifyRecordRequest) returns (ModifyRecordResponse);
     rpc GetRecord(GetRecordRequest) returns (GetRecordResponse);
     rpc GetRecordPage(GetRecordPageRequest) returns (GetRecordPageResponse);
+
+    rpc GetDailyTaskView(GetDailyTaskViewRequest) returns (GetDailyTaskViewResponse);
+    rpc GetQuestionRecordCount(GetQuestionRecordCountRequest) returns (GetQuestionRecordCountResponse);
+    rpc GetAccountPassedCount(GetAccountPassedCountRequest) returns (GetAccountPassedCountResponse);
+    rpc CheckAccountPass(CheckAccountPassRequest) returns (CheckAccountPassResponse);
 }
 
 message SubmitRecordRequest {
@@ -77,4 +82,43 @@ message GetRecordPageRequest {
 message GetRecordPageResponse {
     repeated Record records = 1;
     int64 total = 2;
+}
+
+message GetDailyTaskViewRequest {
+    int64 time = 1;    
+}
+
+message GetDailyTaskViewResponse {
+	int64 submitNumber = 1;
+	int64 finishNumber = 2;
+    int64 time = 3;
+}
+
+message GetQuestionRecordCountRequest {
+    string questionID = 1;
+    optional string gameID = 2;
+}
+
+message GetQuestionRecordCountResponse {
+    int64 passedCount = 1;
+    int64 submitTotal = 2;
+}
+
+message GetAccountPassedCountRequest {
+    string accountID = 1;
+}
+
+message GetAccountPassedCountResponse {
+    int64 eazy = 1;
+    int64 normal = 2;
+    int64 hard = 3;
+}
+
+message CheckAccountPassRequest {
+    string accountID = 1;
+    string questionID = 2;
+}
+
+message CheckAccountPassResponse {
+    bool isPass = 1;
 }
