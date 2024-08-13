@@ -50,7 +50,7 @@ func (s *Server) Register(ctx context.Context, req *user_pb.RegisterRequest) (
 	}
 
 	slog.Info("invoking register command", "cmd", cmd)
-	err := s.commandInvoker.Invoke(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
+	err := s.commandInvoker.InvokeWithTrans(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
 		return s.accountRegisterService.Handle(ctx1, eq, cmd)
 	})
 	if err != nil {
@@ -168,7 +168,7 @@ func (s *Server) ChangeUserPassword(ctx context.Context,
 	}
 
 	slog.Info("invoking change user password command", "cmd", cmd)
-	err = s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
+	err = s.commandInvoker.InvokeWithTrans(ctx, func(ctx context.Context, eq queue.EventQueue) error {
 		return s.changePasswdService.Handle(ctx, eq, cmd)
 	})
 	if err != nil {

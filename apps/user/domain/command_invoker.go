@@ -8,6 +8,7 @@ import (
 )
 
 type CommandInvoker interface {
+	InvokeWithTrans(ctx context.Context, run func(ctx context.Context, queue queue.EventQueue) error) error
 	Invoke(ctx context.Context, run func(ctx context.Context, queue queue.EventQueue) error) error
 }
 
@@ -24,11 +25,18 @@ func NewTransactionCommandInvoker(tm db.TransactionManager,
 	}
 }
 
-func (t *TransactionCommandInvoker) Invoke(ctx context.Context, run func(context.Context, queue.EventQueue) error) error {
-	return t.transactionManager.Do(ctx, func(ctx context.Context) error {
+func (t *TransactionCommandInvoker) InvokeWithTrans(ctx context.Context, run func(context.Context, queue.EventQueue) error) error {
+	return t.transactionManager.Do(ctx, func(ctx context.Context) (any, error) {
 		queue := NewSimpleEventQueue()
 		err1 := run(ctx, queue)
 		t.eventDispatcher.Dispatch(queue)
-		return err1
+		return nil, err1
 	})
+}
+
+func (t *TransactionCommandInvoker) Invoke(ctx context.Context, run func(context.Context, queue.EventQueue) error) error {
+	queue := NewSimpleEventQueue()
+	err := run(ctx, queue)
+	t.eventDispatcher.Dispatch(queue)
+	return err
 }

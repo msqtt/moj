@@ -5,6 +5,9 @@ import (
 	"log/slog"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
 type TransactionManager interface {
@@ -22,6 +25,11 @@ func NewMongoDBTransactionManager(mongoDB *MongoDB) TransactionManager {
 // Do implements TransactionManager.
 func (m *MongoDBTransactionManager) Do(ctx context.Context,
 	callback func(ctx context.Context) (any, error)) error {
+
+	wc := writeconcern.Majority()
+	rc := readconcern.Snapshot()
+	txnOptions := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
+
 	session, err := m.mongoDB.Client().StartSession()
 	if err != nil {
 		return err
@@ -32,7 +40,7 @@ func (m *MongoDBTransactionManager) Do(ctx context.Context,
 
 	res, err := session.WithTransaction(ctx, func(ctx mongo.SessionContext) (interface{}, error) {
 		return callback(ctx)
-	})
+	}, txnOptions)
 
 	if err != nil {
 		slog.Error("transaction failed, rollback", "session_id", session.ID(), "error", err)

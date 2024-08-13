@@ -7,7 +7,7 @@ import (
 type Config struct {
 	AppPort             int    `mapstructure:"APP_PORT"`
 	MongoHost           string `mapstructure:"MONGO_HOST"`
-	MongoDBName         string `mapstructure:"MonGO_DBNAME"`
+	MongoDBName         string `mapstructure:"MONGO_DBNAME"`
 	KeyFile             string `mapstructure:"KEY_FILE"`
 	CertFile            string `mapstructure:"CERT_FILE"`
 	CaptchaLiveDuration int64  `mapstructure:"CAPTCHA_LIVE_DURATION"`
