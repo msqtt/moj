@@ -32,7 +32,7 @@ func NewMongoDBAccountViewDAO(
 ) AccountViewDAO {
 	accountVieweCollection := mongodb.
 		Database().
-		Collection("view_account")
+		Collection("account_view")
 	return &MongoDBAccountViewDAO{
 		mongodb:               mongodb,
 		accountViewCollection: accountVieweCollection,
