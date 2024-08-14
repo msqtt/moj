@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"moj/domain/judgement"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 	"moj/domain/question"
 	"moj/domain/record"
@@ -38,7 +39,7 @@ func (p *JudgeOnSubmitPolicy) OnEvent(event any) error {
 	ctx := context.Background()
 	evt, ok := event.(record.SubmitRecordEvent)
 	if !ok {
-		return errors.New("invalid event type")
+		return domain_err.ErrEventTypeInvalid
 	}
 	que, err := p.questionRepository.FindQuestionByID(ctx, evt.QuestionID)
 	if err != nil {

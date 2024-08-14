@@ -3,7 +3,8 @@ package domain_err
 import "errors"
 
 var (
-	ErrInValided  = errors.New("invalided argument")
-	ErrDuplicated = errors.New("duplicated operation")
-	ErrExpired    = errors.New("expired operation")
+	ErrInValided        = errors.New("invalided argument")
+	ErrDuplicated       = errors.New("duplicated operation")
+	ErrExpired          = errors.New("expired operation")
+	ErrEventTypeInvalid = errors.New("invalid event type")
 )

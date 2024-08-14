@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"moj/domain/judgement"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 	"moj/domain/record"
 	"time"
@@ -29,7 +30,7 @@ func (p *ModifyRecordPolicy) OnEvent(event any) error {
 	ctx := context.Background()
 	evt, ok := event.(judgement.ExecutionFinishEvent)
 	if !ok {
-		return errors.New("invalid event type")
+		return domain_err.ErrEventTypeInvalid
 	}
 
 	cmd := record.ModifyRecordCmd{

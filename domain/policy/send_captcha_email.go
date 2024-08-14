@@ -3,6 +3,7 @@ package policy
 import (
 	"errors"
 	"moj/domain/captcha"
+	domain_err "moj/domain/pkg/error"
 )
 
 type SendCaptchaEmailPolicy struct {
@@ -36,7 +37,7 @@ func (p *SendCaptchaEmailPolicy) OnEvent(event any) (err error) {
 		}
 		err = p.emailService.SendRegisterEmail(cmd)
 	default:
-		return errors.New("invalid event type")
+		return domain_err.ErrEventTypeInvalid
 	}
 	if err != nil {
 		err = errors.Join(ErrFailedToSendEmail, err)

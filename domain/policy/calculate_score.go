@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"moj/domain/game"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 	"moj/domain/record"
 )
@@ -31,7 +32,7 @@ func (p *CalculateScorePolicy) OnEvent(event any) error {
 	ctx := context.Background()
 	evt, ok := event.(record.ModifyRecordEvent)
 	if !ok {
-		return errors.New("invalid event type")
+		return domain_err.ErrEventTypeInvalid
 	}
 
 	if evt.GameID == "" {
