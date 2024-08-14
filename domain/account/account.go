@@ -163,7 +163,7 @@ func (a *Account) SetStatus(queue queue.EventQueue, cmd SetStatusAccountCmd) err
 
 // isNickName checks whether given name is a valid nickname.
 func isNickName(name string) bool {
-	regex := regexp.MustCompile(`^[a-zA-Z0-9_-]{3,15}$|^[\p{Han}]{1,5}$`)
+	regex := regexp.MustCompile(`^[\p{Han}a-zA-Z0-9_-]{3,10}$`)
 	return regex.MatchString(name)
 }
 
