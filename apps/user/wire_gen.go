@@ -31,13 +31,13 @@ func InitializeApplication() *App {
 	accountViewDAO := db.NewMongoDBAccountViewDAO(mongoDB)
 	eventDispatcher := ProvideEventDispatcher(sendCaptchaEmailPolicy, accountViewDAO)
 	commandInvoker := domain.NewTransactionCommandInvoker(transactionManager, eventDispatcher)
+	cryptor := domain.NewBCryptor()
 	accountRepository := domain.NewMongoDBAccountRepository(config, mongoDB)
 	loginAccountCmdHandler := account.NewLoginAccountCmdHandler(accountRepository)
 	setAdminAccountCmdHandler := account.NewSetAdminAccountCmdHandler(accountRepository)
 	setStatusAccountCmdHandler := account.NewSetStatusAccountCmdHandler(accountRepository)
 	deleteAccountCmdHandler := account.NewDeleteAccountCmdHandler(accountRepository)
 	modifyInfoAccountCmdHandler := account.NewModifyInfoAccountCmdHandler(accountRepository)
-	cryptor := domain.NewBCryptor()
 	createAccountCmdHandler := account.NewCreateAccountCmdHandler(accountRepository, cryptor)
 	captchaRepository := domain.NewMongoDBCaptchaRepository(mongoDB)
 	accountRegisterService := account2.NewAccountRegisterService(createAccountCmdHandler, captchaRepository, accountRepository)
@@ -45,7 +45,7 @@ func InitializeApplication() *App {
 	changePasswdService := account2.NewChangePasswdService(changePasswdAccountCmdHandler, captchaRepository)
 	createChangePasswdCaptchaCmdHandler := captcha.NewCreateChangePasswdCaptchaCmdHandler(captchaRepository)
 	createRegisterCaptchaCmdHandler := captcha.NewCreateRegisterCaptchaCmdHandler(captchaRepository)
-	server := svc.NewServer(config, commandInvoker, accountViewDAO, loginAccountCmdHandler, setAdminAccountCmdHandler, setStatusAccountCmdHandler, deleteAccountCmdHandler, modifyInfoAccountCmdHandler, accountRegisterService, changePasswdService, createChangePasswdCaptchaCmdHandler, createRegisterCaptchaCmdHandler)
+	server := svc.NewServer(config, commandInvoker, cryptor, accountViewDAO, accountRepository, loginAccountCmdHandler, setAdminAccountCmdHandler, setStatusAccountCmdHandler, deleteAccountCmdHandler, modifyInfoAccountCmdHandler, accountRegisterService, changePasswdService, createChangePasswdCaptchaCmdHandler, createRegisterCaptchaCmdHandler)
 	app := NewApp(server, mongoDB, config)
 	return app
 }

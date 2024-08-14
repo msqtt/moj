@@ -7,6 +7,7 @@ import (
 	user_pb "moj/apps/user/rpc"
 	"moj/domain/account"
 	"moj/domain/captcha"
+	"moj/domain/pkg/crypt"
 	svc_account "moj/domain/service/account"
 )
 
@@ -15,7 +16,9 @@ type Server struct {
 	user_pb.UnimplementedCaptchaServiceServer
 	conf                                *etc.Config
 	commandInvoker                      domain.CommandInvoker
+	cryptor                             crypt.Cryptor
 	accountViewDAO                      db.AccountViewDAO
+	accountRepository                   account.AccountRepository
 	loginAccountCmdHandler              *account.LoginAccountCmdHandler
 	setAdminAccountCmdHandler           *account.SetAdminAccountCmdHandler
 	setStatusAccountCmdHandler          *account.SetStatusAccountCmdHandler
@@ -30,7 +33,9 @@ type Server struct {
 func NewServer(
 	conf *etc.Config,
 	commandInvoker domain.CommandInvoker,
+	cryptor crypt.Cryptor,
 	accountViewDAO db.AccountViewDAO,
+	accountRepository account.AccountRepository,
 	loginAccountCmdHandler *account.LoginAccountCmdHandler,
 	setAdminAccountCmdHandler *account.SetAdminAccountCmdHandler,
 	setStatusAccountCmdHandler *account.SetStatusAccountCmdHandler,
@@ -44,7 +49,9 @@ func NewServer(
 	return &Server{
 		conf:                                conf,
 		commandInvoker:                      commandInvoker,
+		cryptor:                             cryptor,
 		accountViewDAO:                      accountViewDAO,
+		accountRepository:                   accountRepository,
 		loginAccountCmdHandler:              loginAccountCmdHandler,
 		setAdminAccountCmdHandler:           setAdminAccountCmdHandler,
 		setStatusAccountCmdHandler:          setStatusAccountCmdHandler,

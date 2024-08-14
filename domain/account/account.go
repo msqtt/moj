@@ -65,6 +65,7 @@ func NewAccount(cry crypt.Cryptor, email, passwd, nickName string) (acc *Account
 func (a *Account) create(queue queue.EventQueue, cmd CreateAccountCmd) error {
 	event := CreateAccountEvent{
 		AccountID:    a.AccountID,
+		AvatarLink:   a.AvatarLink,
 		Email:        cmd.Email,
 		NickName:     cmd.NickName,
 		RegisterTime: cmd.Time,

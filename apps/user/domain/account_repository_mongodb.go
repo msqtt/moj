@@ -63,6 +63,7 @@ func (m *MongoDBAccountRepository) Save(ctx context.Context, acc *account.Accoun
 		if err != nil {
 			err = errors.Join(errors.New("failed to insert account"), err)
 		}
+		acc.AccountID = result.(*mongo.InsertOneResult).InsertedID.(primitive.ObjectID).Hex()
 	} else {
 		// update
 		result, err = m.accountCollection.UpdateOne(ctx,

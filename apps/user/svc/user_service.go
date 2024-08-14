@@ -2,29 +2,55 @@ package svc
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
+	"moj/apps/game/pkg/app_err"
 	"moj/apps/user/db"
 	user_pb "moj/apps/user/rpc"
 	"moj/domain/account"
+	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"
 	svc_account "moj/domain/service/account"
+)
+
+var (
+	ErrLoginEmailNotFound = errors.Join(app_err.ErrModelNotFound,
+		errors.New("login email not found"))
+	ErrLoginPasswordWrong = errors.Join(domain_err.ErrInValided,
+		errors.New("login password wrong"))
 )
 
 // Login implements user_pb.UserServiceServer.
 func (s *Server) Login(ctx context.Context, req *user_pb.LoginRequest) (
 	*user_pb.LoginResponse, error) {
 	slog.Debug("login request", "req", req)
+
+	acc, err := s.accountRepository.FindAccountByEmail(ctx, req.GetEmail())
+	if err != nil {
+		slog.Error("failed to find account by email", "err", err)
+		err = responseStatusError(err)
+		return nil, err
+	}
+
+	err = s.cryptor.Valid(req.GetPassword(), acc.Password)
+	if err != nil {
+		slog.Error("login password wrong", "err", err)
+		err = errors.Join(ErrLoginPasswordWrong, err)
+		err = responseStatusError(err)
+		return nil, err
+	}
+
 	cmd := account.LoginAccountCmd{
-		AccountID: req.GetAccountID(),
+		AccountID: acc.AccountID,
 		Device:    req.GetDevice(),
 		IPAddr:    req.GetIpAddr(),
 		Time:      time.Now().Unix(),
 	}
 
 	slog.Info("invoking login command", "cmd", cmd)
-	err := s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
+	err = s.commandInvoker.Invoke(ctx, func(ctx context.Context, eq queue.EventQueue) error {
 		return s.loginAccountCmdHandler.Handle(ctx, eq, cmd)
 	})
 	if err != nil {
@@ -32,7 +58,8 @@ func (s *Server) Login(ctx context.Context, req *user_pb.LoginRequest) (
 		return nil, responseStatusError(err)
 	}
 	return &user_pb.LoginResponse{
-		Time: time.Now().Unix(),
+		AccountID: acc.AccountID,
+		Time:      time.Now().Unix(),
 	}, nil
 }
 
@@ -187,6 +214,7 @@ func (s *Server) GetUser(ctx context.Context,
 	if err != nil {
 		slog.Error("failed to find user info", "err", err)
 		err = responseStatusError(err)
+		return
 	}
 	resp = &user_pb.GetUserResponse{
 		User: accountViewModelToUsers(view)}

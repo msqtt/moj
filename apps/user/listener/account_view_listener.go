@@ -30,7 +30,7 @@ func (a *AccountViewListener) OnEvent(event any) (err error) {
 		view := &db.AccountViewModel{
 			AccountID:            evt.AccountID,
 			Email:                evt.Email,
-			AvatarLink:           evt.AccountID,
+			AvatarLink:           evt.AvatarLink,
 			NickName:             evt.NickName,
 			Enabled:              true,
 			IsAdmin:              false,
@@ -118,6 +118,7 @@ func (a *AccountViewListener) OnEvent(event any) (err error) {
 		if err2 != nil {
 			err = errors.Join(err2, err)
 		}
+	default:
 	}
 	if err != nil {
 		slog.Error("AccountView failed", "err", err, "event", event)
