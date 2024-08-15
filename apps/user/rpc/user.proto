@@ -36,7 +36,8 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-    int64 time = 1;
+    string accountID = 1;
+    int64 time = 2;
 }
 
 message User {
@@ -66,7 +67,7 @@ message GetUserPageRequest {
     string cursor = 1;
     int32 pageSize = 2;
     message Option {
-        optional string word = 1;
+        optional string word = 1; // search accountID or nickname or email
         optional bool enabled = 2;
         optional bool isAdmin = 3;
     }

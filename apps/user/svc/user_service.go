@@ -77,15 +77,19 @@ func (s *Server) Register(ctx context.Context, req *user_pb.RegisterRequest) (
 	}
 
 	slog.Info("invoking register command", "cmd", cmd)
+	var id string
 	err := s.commandInvoker.InvokeWithTrans(ctx, func(ctx1 context.Context, eq queue.EventQueue) error {
-		return s.accountRegisterService.Handle(ctx1, eq, cmd)
+		id1, err := s.accountRegisterService.Handle(ctx1, eq, cmd)
+		id = id1.(string)
+		return err
 	})
 	if err != nil {
 		slog.Error("failed to invoke register command", "err", err)
 		return nil, responseStatusError(err)
 	}
 	return &user_pb.RegisterResponse{
-		Time: time.Now().Unix(),
+		AccountID: id,
+		Time:      time.Now().Unix(),
 	}, nil
 }
 

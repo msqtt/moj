@@ -70,7 +70,7 @@ func TestRegister(t *testing.T) {
 
 	mQueue.EXPECT().EnQueue(gomock.Eq(event)).Return(nil)
 
-	err = s.Handle(context.TODO(), mQueue, cmd)
+	_, err = s.Handle(context.TODO(), mQueue, cmd)
 	require.NoError(t, err)
 
 	// Test case 2: Captcha not found
@@ -80,7 +80,7 @@ func TestRegister(t *testing.T) {
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(nil, saccount.ErrCaptchaNotFound)
 
-	err = s.Handle(context.TODO(), mQueue, cmd)
+	_, err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaNotFound)
 
 	// // Test case 3: Captcha expired
@@ -97,7 +97,7 @@ func TestRegister(t *testing.T) {
 			gomock.Eq(cmd.Captcha), gomock.Eq(captcha.CaptchaTypeRegister)).
 		Return(cap, nil)
 
-	err = s.Handle(context.TODO(), mQueue, cmd)
+	_, err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrCaptchaAlreadyExpired)
 
 	// Test case 4: Failed to create account
@@ -125,6 +125,6 @@ func TestRegister(t *testing.T) {
 		Return(errors.New("Failed to create account"))
 
 	mARepo.EXPECT().FindAccountByEmail(gomock.Any(), gomock.Eq(cmd.Email)).Return(nil, account.ErrAccountNotFound)
-	err = s.Handle(context.TODO(), mQueue, cmd)
+	_, err = s.Handle(context.TODO(), mQueue, cmd)
 	require.ErrorIs(t, err, saccount.ErrFailedToCreateAccount)
 }

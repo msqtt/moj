@@ -26,15 +26,15 @@ func NewCreateAccountCmdHandler(repo AccountRepository, crypt crypt.Cryptor) *Cr
 }
 
 func (c *CreateAccountCmdHandler) Handle(ctx context.Context, queue queue.EventQueue,
-	cmd CreateAccountCmd) error {
+	cmd CreateAccountCmd) (string, error) {
 	acc, err := NewAccount(c.crypt, cmd.Email, cmd.Password, cmd.NickName)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = c.repo.Save(ctx, acc)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return acc.create(queue, cmd)
+	return acc.AccountID, acc.create(queue, cmd)
 }

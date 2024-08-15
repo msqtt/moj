@@ -41,22 +41,22 @@ func NewAccountRegisterService(createAccountCmdHandler *account.CreateAccountCmd
 	}
 }
 
-func (s *AccountRegisterService) Handle(ctx context.Context, queue queue.EventQueue, cmd RegisterCmd) error {
+func (s *AccountRegisterService) Handle(ctx context.Context, queue queue.EventQueue, cmd RegisterCmd) (any, error) {
 	// check the account by email
 	_, err := s.accountRepository.FindAccountByEmail(ctx, cmd.Email)
 	if err == nil {
-		return ErrAccountAlreadyRegistered
+		return nil, ErrAccountAlreadyRegistered
 	} else if !errors.Is(err, account.ErrAccountNotFound) {
-		return err
+		return nil, err
 	}
 
 	cap, err := s.captchaRepository.FindLatestCaptcha(ctx, cmd.Email, cmd.Captcha,
 		captcha.CaptchaTypeRegister)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if cap.IsExpired(cmd.Time) {
-		return ErrCaptchaAlreadyExpired
+		return nil, ErrCaptchaAlreadyExpired
 	}
 
 	cap.SetDisable()
@@ -68,9 +68,9 @@ func (s *AccountRegisterService) Handle(ctx context.Context, queue queue.EventQu
 		Password: cmd.Password,
 		Time:     cmd.Time,
 	}
-	err = s.createAccountCmdHandler.Handle(ctx, queue, cmdCreateAccount)
+	id, err := s.createAccountCmdHandler.Handle(ctx, queue, cmdCreateAccount)
 	if err != nil {
-		return errors.Join(ErrFailedToCreateAccount, err)
+		return nil, errors.Join(ErrFailedToCreateAccount, err)
 	}
-	return nil
+	return id, err
 }
