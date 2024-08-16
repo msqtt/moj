@@ -14,7 +14,7 @@ service QuestionService {
 message Case {
     int64 number = 1;
     string inputFilePath = 2;
-    string outFilePath = 3;
+    string outputFilePath = 3;
 }
 
 enum QuestionLevel {

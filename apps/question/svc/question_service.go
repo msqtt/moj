@@ -180,7 +180,7 @@ func ToQuestionCases(cases []*ques_pb.Case) []question.Case {
 		ret[i] = question.Case{
 			Number:         int(c.GetNumber()),
 			InputFilePath:  c.InputFilePath,
-			OutputFilePath: c.OutFilePath,
+			OutputFilePath: c.OutputFilePath,
 		}
 	}
 	return ret
@@ -190,9 +190,9 @@ func FromQuestionCases(cases []question.Case) []*ques_pb.Case {
 	ret := make([]*ques_pb.Case, len(cases))
 	for i, c := range cases {
 		ret[i] = &ques_pb.Case{
-			Number:        int64(c.Number),
-			InputFilePath: c.InputFilePath,
-			OutFilePath:   c.OutputFilePath,
+			Number:         int64(c.Number),
+			InputFilePath:  c.InputFilePath,
+			OutputFilePath: c.OutputFilePath,
 		}
 	}
 	return ret
@@ -202,9 +202,9 @@ func FromModelCases(cases []db.Case) []*ques_pb.Case {
 	ret := make([]*ques_pb.Case, len(cases))
 	for i, c := range cases {
 		ret[i] = &ques_pb.Case{
-			Number:        int64(c.Number),
-			InputFilePath: c.InputFilePath,
-			OutFilePath:   c.OutputFilePath,
+			Number:         int64(c.Number),
+			InputFilePath:  c.InputFilePath,
+			OutputFilePath: c.OutputFilePath,
 		}
 	}
 	return ret

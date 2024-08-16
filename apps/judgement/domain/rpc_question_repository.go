@@ -42,7 +42,7 @@ func (r *RPCQuestionRepository) FindQuestionByID(ctx context.Context, questionID
 		cases[id] = question.Case{
 			Number:         int(ca.Number),
 			InputFilePath:  ca.InputFilePath,
-			OutputFilePath: ca.OutFilePath,
+			OutputFilePath: ca.OutputFilePath,
 		}
 	}
 
