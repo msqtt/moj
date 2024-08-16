@@ -210,4 +210,20 @@ func FromModelCases(cases []db.Case) []*ques_pb.Case {
 	return ret
 }
 
+// DeleteQuestion implements ques_pb.QuestionServiceServer.
+func (s *Server) DeleteQuestion(ctx context.Context, req *ques_pb.DeleteQuestionRequest) (
+	resp *ques_pb.DeleteQuestionResponse, err error) {
+	slog.Debug("delete question", "req", req)
+
+	err = s.questionDao.DeleteQuestion(ctx, req.QuestionID)
+	if err != nil {
+		slog.Error("delete question error", "error", err)
+		return nil, err
+	}
+
+	return &ques_pb.DeleteQuestionResponse{
+		Time: time.Now().Unix(),
+	}, nil
+}
+
 var _ ques_pb.QuestionServiceServer = (*Server)(nil)

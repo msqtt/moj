@@ -1,0 +1,13 @@
+input SendRegisterEmail {
+    email: String!
+}
+
+input SendChangePasswordEmail {
+    userID: ID!
+    email: String!
+}
+
+extend type Mutation { 
+    sendRegisterEmail(input: SendRegisterEmail!): Time!
+    sendChangePasswordEmail(input: SendChangePasswordEmail!): Time!
+}

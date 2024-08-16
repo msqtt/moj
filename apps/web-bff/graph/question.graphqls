@@ -1,0 +1,64 @@
+enum Level {
+    Eazy
+    Normal
+    Hard
+}
+
+type Case {
+    number: Int!
+    inputFilePath: String!
+    outputFilePath: String!
+}
+
+type Question {
+    id: ID!    
+    userID: ID!
+    enabled: Boolean!
+    title: String!
+    content: String!
+    level: Level!
+    allowedLanguages: [String!]! 
+    timeLimit: Int!
+    memoryLimit: Int!
+    tags: [String!]!
+    createTime: String!
+    modifyTime: String!
+    cases: [Case!]!
+}
+
+type QuestionPage implements CursorPage {
+    nextID: ID!
+    questions: [Question!]!
+}
+
+# each filter is optional
+input QuestionsFilter {
+    # word used to search in title or tags or questionID
+    word: String
+    enabled: Boolean
+    level: Level
+    language: String
+    createrID: ID
+}
+
+input QuestionInput {
+    title: String!
+    userID: ID!
+    content: String!
+    level: Level!
+    allowedLanguages: [String!]!
+    timeLimit: Int!
+    memoryLimit: Int!
+    tags: [String!]!
+    #cases: [Case!]!
+}
+
+extend type Query {
+    question(id: ID!): Question!
+    questions(pageSize:Int!, afterID:String, filter: QuestionsFilter): QuestionPage!
+}
+
+extend type Mutation {
+    createQuestion(input: QuestionInput!): Question!
+    modifyQuestion(input: QuestionInput!): Question!
+} 

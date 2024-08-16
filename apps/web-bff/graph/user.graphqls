@@ -1,0 +1,85 @@
+type FinishedQuestion {
+    eazyCount: Int!
+    normalCount: Int!
+    hardCount: Int!
+}
+
+type User {
+    id: ID!
+    email: String!
+    avatarLink: String!
+    nickName: String!
+    enabled: Boolean!
+    isAdmin: Boolean!
+    lastLoginTime: String!
+    lastLoginIPAddr: String!
+    lastLoginDevice: String!
+    lastPasswdChangeTime: String!
+    registerTime: String!
+    deleteTime: String!
+    finishedQuestion: FinishedQuestion!
+}
+
+type UserPage implements CursorPage {
+    users: [User!]!
+    nextID: ID!
+}   
+
+input LoginInput {
+    email: String!
+    password: String!
+}
+
+input RegisterInput {
+    nickName: String!
+    email: String!
+    password: String!
+    captcha: String!
+}
+
+input UserInfo {
+    id: ID!
+    nickName: String!
+    avatarLink: String!
+}
+
+input ChangePasswordInput {
+    id: ID!
+    newPassword: String!
+    captcha: String!
+}
+
+type Token {
+    refreshToken: String!
+    accessToken: String!
+}
+
+type LoginResult {
+    token: Token!
+    user: User!
+}
+
+# each filter is optional
+input UsersFilter {
+    enabled: Boolean
+    isAdmin: Boolean
+    # word used to search in userID or nickName or email
+    word: String
+}
+
+extend type Query {
+    user(id: ID!): User
+    users(pageSize: Int! = 10, afterID: ID, filter: UsersFilter): UserPage!
+}
+
+extend type Mutation {
+    login(input: LoginInput!): LoginResult!
+    register(input: RegisterInput!): User!
+    modifyUserInfo(info: UserInfo): User!
+    changePassword(input: ChangePasswordInput): User!
+    deleteUser(id: ID!): Time!
+    setUserStatus(id: ID!, status: Boolean!): User!
+    setUserAdmin(id: ID!, isAdmin: Boolean!): User!
+    
+    fetchAccessToken(refreshToken: String!): Token!
+}

@@ -1,0 +1,11 @@
+type Time {
+    time: String!
+}
+
+interface CursorPage {
+    nextID: ID!
+}
+
+interface OffsetPage {
+    total: Int!
+}

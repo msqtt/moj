@@ -14,10 +14,25 @@ import (
 
 type QuestionDao interface {
 	FindQuestionPage(ctx context.Context, cursor string, pageSize int, filter map[string]any) ([]*QuestionModel, error)
+	DeleteQuestion(ctx context.Context, id string) error
 }
 
 type MongoDBQuestionDAO struct {
 	questionCollection *mongo.Collection
+}
+
+// DeleteQuestion implements QuestionDao.
+func (m *MongoDBQuestionDAO) DeleteQuestion(ctx context.Context, qid string) error {
+	id, _ := primitive.ObjectIDFromHex(qid)
+	result, err := m.questionCollection.DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		slog.Error("failed to delete question", "error", err)
+		err = errors.Join(app_err.ErrServerInternal, errors.New("failed to delete question"))
+		return err
+	}
+	slog.Error("delete question", "result", result)
+
+	return err
 }
 
 // FindQuestionPage implements QuestionDao.
