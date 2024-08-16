@@ -19,7 +19,7 @@ type QuestionModel struct {
 	Enabled          bool
 	Title            string
 	Content          string
-	Level            int
+	Level            string
 	AllowedLanguages []string `bson:"allowed_languages"`
 	Cases            []Case
 	Tags             []string
@@ -38,7 +38,7 @@ func NewFromAggreation(q *question.Question) *QuestionModel {
 		AccountID:        q.AccountID,
 		Enabled:          q.Enabled,
 		Title:            q.Title,
-		Level:            int(q.Level),
+		Level:            q.Level.String(),
 		AllowedLanguages: langs,
 		Cases:            cases,
 		TimeLimit:        q.TimeLimit,
@@ -98,7 +98,7 @@ func (q *QuestionModel) ToAggregate() *question.Question {
 		Enabled:          q.Enabled,
 		Title:            q.Title,
 		Content:          q.Content,
-		Level:            question.QuestionLevel(q.Level),
+		Level:            question.FromStringLevel(q.Level),
 		AllowedLanguages: langs,
 		Cases:            cases,
 		TimeLimit:        q.TimeLimit,

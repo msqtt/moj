@@ -19,7 +19,20 @@ func (q QuestionLevel) IsValid() bool {
 }
 
 func (q QuestionLevel) String() string {
-	return []string{"easy", "normal", "hard"}[q]
+	return []string{"Easy", "Normal", "Hard"}[q]
+}
+
+func FromStringLevel(level string) QuestionLevel {
+	switch level {
+	case "Easy":
+		return QuestionLevelEasy
+	case "Normal":
+		return QuestionLevelNormal
+	case "Hard":
+		return QuestionLevelHard
+	default:
+		return QuestionLevelNormal
+	}
 }
 
 type QuestionLanguage string

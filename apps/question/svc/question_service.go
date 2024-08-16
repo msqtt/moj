@@ -78,13 +78,14 @@ func (s *Server) GetQuestionPage(ctx context.Context, req *ques_pb.GetQuestionPa
 	var nextCursor string
 	quesView := make([]*ques_pb.Question, len(ques))
 	for i, q := range ques {
+		agg := q.ToAggregate()
 		quesView[i] = &ques_pb.Question{
 			QuestionID:       q.ID.Hex(),
 			AccountID:        q.AccountID,
 			Enabled:          q.Enabled,
 			Title:            q.Title,
 			Content:          q.Content,
-			Level:            ques_pb.QuestionLevel(q.Level),
+			Level:            ques_pb.QuestionLevel(agg.Level),
 			AllowedLanguages: q.AllowedLanguages,
 			Cases:            FromModelCases(q.Cases),
 			TimeLimit:        int64(q.TimeLimit),
