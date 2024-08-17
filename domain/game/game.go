@@ -23,6 +23,7 @@ var (
 	ErrQuestionNotFound    = errors.New("collect question not found")
 	ErrAccountAlreadyExist = errors.Join(domain_err.ErrDuplicated, errors.New("account already sign up"))
 	ErrInvalidTimeRange    = errors.Join(domain_err.ErrInValided, errors.New("invalid time range"))
+	ErrSignUpTimeExpired   = errors.Join(domain_err.ErrExpired, errors.New("operation expired"))
 )
 
 type Game struct {
@@ -126,6 +127,10 @@ func (g *Game) signUp(queue queue.EventQueue, insertArrayFn func(gid, aid string
 		return ErrAccountAlreadyExist
 	}
 
+	if cmd.Time < g.StartTime {
+		return ErrSignUpTimeExpired
+	}
+
 	err := insertArrayFn(g.GameID, cmd.AccountID, cmd.Time)
 	if err != nil {
 		return err
@@ -144,6 +149,10 @@ func (g *Game) cancelSignUp(queue queue.EventQueue, deleteArrayFn func(gid, aid 
 	accId := g.findSignedUp(cmd.AccountID)
 	if accId == -1 {
 		return ErrAccountNotFound
+	}
+
+	if cmd.Time > g.StartTime {
+		return ErrSignUpTimeExpired
 	}
 
 	err := deleteArrayFn(g.GameID, cmd.AccountID)
