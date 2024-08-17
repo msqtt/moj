@@ -296,3 +296,20 @@ func (s *Server) UpdateGame(ctx context.Context, req *game_pb.UpdateGameRequest)
 	}
 	return
 }
+
+// DeleteGame implements game_pb.GameServiceServer.
+func (s *Server) DeleteGame(ctx context.Context, req *game_pb.DeleteGameRequest) (
+	resp *game_pb.DeleteGameResponse, err error) {
+	slog.Debug("delete game", "req", req)
+
+	err = s.gameViewDao.DeleteGame(ctx, req.GetGameID())
+	if err != nil {
+		slog.Error("failed to delete game", "err", err)
+		err = responseStatusError(err)
+		return
+	}
+	resp = &game_pb.DeleteGameResponse{
+		Time: time.Now().Unix(),
+	}
+	return
+}

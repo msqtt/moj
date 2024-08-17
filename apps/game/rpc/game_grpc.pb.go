@@ -28,6 +28,7 @@ type GameServiceClient interface {
 	GetScore(ctx context.Context, in *GetScoreRequest, opts ...grpc.CallOption) (*GetScoreResponse, error)
 	GetScorePage(ctx context.Context, in *GetScorePageRequest, opts ...grpc.CallOption) (*GetScorePageResponse, error)
 	UpdateGame(ctx context.Context, in *UpdateGameRequest, opts ...grpc.CallOption) (*UpdateGameResponse, error)
+	DeleteGame(ctx context.Context, in *DeleteGameRequest, opts ...grpc.CallOption) (*DeleteGameResponse, error)
 	SignUpGame(ctx context.Context, in *SignUpGameRequest, opts ...grpc.CallOption) (*SignUpGameResponse, error)
 	CancelSignUpGame(ctx context.Context, in *CancelSignUpGameRequest, opts ...grpc.CallOption) (*CancelSignUpGameResponse, error)
 }
@@ -94,6 +95,15 @@ func (c *gameServiceClient) UpdateGame(ctx context.Context, in *UpdateGameReques
 	return out, nil
 }
 
+func (c *gameServiceClient) DeleteGame(ctx context.Context, in *DeleteGameRequest, opts ...grpc.CallOption) (*DeleteGameResponse, error) {
+	out := new(DeleteGameResponse)
+	err := c.cc.Invoke(ctx, "/game.GameService/DeleteGame", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gameServiceClient) SignUpGame(ctx context.Context, in *SignUpGameRequest, opts ...grpc.CallOption) (*SignUpGameResponse, error) {
 	out := new(SignUpGameResponse)
 	err := c.cc.Invoke(ctx, "/game.GameService/SignUpGame", in, out, opts...)
@@ -122,6 +132,7 @@ type GameServiceServer interface {
 	GetScore(context.Context, *GetScoreRequest) (*GetScoreResponse, error)
 	GetScorePage(context.Context, *GetScorePageRequest) (*GetScorePageResponse, error)
 	UpdateGame(context.Context, *UpdateGameRequest) (*UpdateGameResponse, error)
+	DeleteGame(context.Context, *DeleteGameRequest) (*DeleteGameResponse, error)
 	SignUpGame(context.Context, *SignUpGameRequest) (*SignUpGameResponse, error)
 	CancelSignUpGame(context.Context, *CancelSignUpGameRequest) (*CancelSignUpGameResponse, error)
 	mustEmbedUnimplementedGameServiceServer()
@@ -148,6 +159,9 @@ func (UnimplementedGameServiceServer) GetScorePage(context.Context, *GetScorePag
 }
 func (UnimplementedGameServiceServer) UpdateGame(context.Context, *UpdateGameRequest) (*UpdateGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGame not implemented")
+}
+func (UnimplementedGameServiceServer) DeleteGame(context.Context, *DeleteGameRequest) (*DeleteGameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGame not implemented")
 }
 func (UnimplementedGameServiceServer) SignUpGame(context.Context, *SignUpGameRequest) (*SignUpGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUpGame not implemented")
@@ -276,6 +290,24 @@ func _GameService_UpdateGame_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GameService_DeleteGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServiceServer).DeleteGame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/game.GameService/DeleteGame",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServiceServer).DeleteGame(ctx, req.(*DeleteGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _GameService_SignUpGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SignUpGameRequest)
 	if err := dec(in); err != nil {
@@ -342,6 +374,10 @@ var GameService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateGame",
 			Handler:    _GameService_UpdateGame_Handler,
+		},
+		{
+			MethodName: "DeleteGame",
+			Handler:    _GameService_DeleteGame_Handler,
 		},
 		{
 			MethodName: "SignUpGame",

@@ -15,11 +15,26 @@ import (
 
 type GameViewDao interface {
 	FindGamePage(ctx context.Context, cursor string, pageSize int, f map[string]any) (games []*GameModel, err error)
+	DeleteGame(ctx context.Context, gid string) error
 }
 
 type MongoDBGameViewDao struct {
 	collection *mongo.Collection
 	mongodb    *MongoDB
+}
+
+// DeleteGame implements GameViewDao.
+func (m *MongoDBGameViewDao) DeleteGame(ctx context.Context, gid string) error {
+	id, _ := primitive.ObjectIDFromHex(gid)
+	slog.Debug("delete game", "id", id)
+	result, err := m.collection.DeleteOne(ctx, bson.M{"game_id": id})
+	if err != nil {
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("cannot delete game"), err)
+		return err
+	}
+	slog.Debug("delete game", "id", id, "result", result)
+	return err
 }
 
 func NewMongoDBGameViewDao(m *MongoDB) GameViewDao {

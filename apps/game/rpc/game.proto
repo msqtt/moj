@@ -11,6 +11,7 @@ service GameService {
     rpc GetScore(GetScoreRequest) returns (GetScoreResponse) {};
     rpc GetScorePage(GetScorePageRequest) returns (GetScorePageResponse) {};
     rpc UpdateGame(UpdateGameRequest) returns (UpdateGameResponse) {};
+    rpc DeleteGame(DeleteGameRequest) returns (DeleteGameResponse) {};
     rpc SignUpGame(SignUpGameRequest) returns (SignUpGameResponse) {};
     rpc CancelSignUpGame(CancelSignUpGameRequest) returns (CancelSignUpGameResponse) {};
 }
@@ -95,8 +96,8 @@ message GetGamePageRequest {
     string cursor = 1;
     int64 pageSize = 2;
     message Option {
-       optional string word = 1; 
-       optional int64 time = 2; // during time
+       optional string word = 1; // word used to search game in title
+       optional int64 time = 2; // search game which is open during this time
     }
     optional Option filterOptions = 3;
 }
@@ -130,4 +131,12 @@ message Score {
 message GetScorePageResponse {
     repeated Score scores = 1;
     int64 total = 2;
+}
+
+message DeleteGameRequest {
+    string gameID = 1;
+}
+
+message DeleteGameResponse {
+    int64 time = 1;
 }
