@@ -11,6 +11,8 @@ import (
 	"google.golang.org/grpc"
 	"moj/apps/web-bff/etc"
 	"moj/apps/web-bff/graph"
+	"moj/apps/web-bff/handler"
+	"moj/apps/web-bff/oss"
 	"moj/apps/web-bff/rpc"
 	"moj/apps/web-bff/token"
 )
@@ -23,7 +25,10 @@ func InitializeApplication() *App {
 	tokener := token.NewPasetoTokener(config)
 	sessionManager := token.NewSessionManager(config, tokener)
 	resolver := graph.NewResolver(config, rpcClients, sessionManager)
-	app := NewApp(config, resolver, rpcClients)
+	uploader := oss.NewMinioOssUploader()
+	avatarFileHandler := handler.NewAvatarHandler(uploader, config, sessionManager)
+	caseFileHandler := handler.NewCaseFileHandler(uploader)
+	app := NewApp(config, resolver, rpcClients, avatarFileHandler, caseFileHandler)
 	return app
 }
 
@@ -48,4 +53,4 @@ func provideRpcClients(conf *etc.Config) *rpc.RpcClients {
 	return ret
 }
 
-var providers = wire.NewSet(etc.NewAppConfig, graph.NewResolver, token.NewPasetoTokener, token.NewSessionManager, provideRpcClients)
+var providers = wire.NewSet(etc.NewAppConfig, graph.NewResolver, token.NewPasetoTokener, token.NewSessionManager, handler.NewAvatarHandler, handler.NewCaseFileHandler, oss.NewMinioOssUploader, provideRpcClients)

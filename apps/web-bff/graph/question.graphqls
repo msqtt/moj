@@ -10,9 +10,15 @@ type Case {
     outputFilePath: String!
 }
 
+input CaseInput {
+    number: Int!
+    inputFilePath: String!
+    outputFilePath: String!
+}
+
 type Question {
     id: ID!    
-    userID: ID!
+    createrID: ID!
     enabled: Boolean!
     title: String!
     content: String!
@@ -42,23 +48,34 @@ input QuestionsFilter {
 }
 
 input QuestionInput {
+    # 修改时必须提供id
+    id: ID
     title: String!
-    userID: ID!
+    enabled: Boolean!
     content: String!
     level: Level!
     allowedLanguages: [String!]!
     timeLimit: Int!
     memoryLimit: Int!
     tags: [String!]!
-    #cases: [Case!]!
+    cases: [CaseInput!]!
+}
+
+type SubmitCount {
+    submitCount: Int!
+    passedCount: Int!
 }
 
 extend type Query {
     question(id: ID!): Question!
     questions(pageSize:Int!, afterID:String, filter: QuestionsFilter): QuestionPage!
+    
+    questionSubmitCount(qid: ID!, gid: ID): SubmitCount!
 }
 
 extend type Mutation {
     createQuestion(input: QuestionInput!): Question!
     modifyQuestion(input: QuestionInput!): Question!
+    deleteQuestion(id: ID!): Time!
+    checkUserPassedQuestion(id: ID!): Boolean!
 } 

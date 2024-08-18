@@ -12,8 +12,8 @@ import (
 	user_pb "moj/apps/user/rpc"
 	"moj/apps/web-bff/graph/model"
 	"moj/apps/web-bff/middleware"
+	"moj/apps/web-bff/pkg"
 	"moj/apps/web-bff/token"
-	"strconv"
 
 	"google.golang.org/grpc/codes"
 	gstatus "google.golang.org/grpc/status"
@@ -119,7 +119,7 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 
 // ModifyUserInfo is the resolver for the updateUserInfo field.
 func (r *mutationResolver) ModifyUserInfo(ctx context.Context, info *model.UserInfo) (*model.User, error) {
-	err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, info.ID, false)
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, info.ID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func (r *mutationResolver) ModifyUserInfo(ctx context.Context, info *model.UserI
 
 // ChangePassword is the resolver for the changePassword field.
 func (r *mutationResolver) ChangePassword(ctx context.Context, input *model.ChangePasswordInput) (*model.User, error) {
-	err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, input.ID, false)
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, input.ID, false)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func (r *mutationResolver) ChangePassword(ctx context.Context, input *model.Chan
 
 // DeleteUser is the resolver for the deleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (*model.Time, error) {
-	err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, false)
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, false)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +226,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (*model.Ti
 
 // SetUserStatus is the resolver for the setUserStatus field.
 func (r *mutationResolver) SetUserStatus(ctx context.Context, id string, status bool) (*model.User, error) {
-	err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, true)
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, true)
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +259,7 @@ func (r *mutationResolver) SetUserStatus(ctx context.Context, id string, status 
 
 // SetUserAdmin is the resolver for the setUserAdmin field.
 func (r *mutationResolver) SetUserAdmin(ctx context.Context, id string, isAdmin bool) (*model.User, error) {
-	err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, true)
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, true)
 	if err != nil {
 		return nil, err
 	}
@@ -314,9 +314,9 @@ func (r *mutationResolver) FetchAccessToken(ctx context.Context, refreshToken st
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (user *model.User, err error) {
-	err1 := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, false)
+	_, err1 := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, false)
 	if err1 != nil {
-		err2 := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, id, true)
+		_, err2 := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", true)
 		if err2 != nil {
 			user = nil
 			err = err2
@@ -332,7 +332,7 @@ func (r *queryResolver) User(ctx context.Context, id string) (user *model.User, 
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, pageSize int, afterID *string, filter *model.UsersFilter) (*model.UserPage, error) {
-	err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", true)
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", true)
 	if err != nil {
 		return nil, err
 	}
@@ -360,7 +360,7 @@ func (r *queryResolver) Users(ctx context.Context, pageSize int, afterID *string
 	})
 	if err != nil {
 		slog.Error("get user page error", "err", err)
-		return nil, err
+		return nil, ErrInternal
 	}
 
 	users := make([]*model.User, len(resp.GetUsers()))
@@ -405,13 +405,10 @@ type userResolver struct{ *Resolver }
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
 func fromInt64Second(i int64) *model.Time {
-	return &model.Time{Time: int64ToString(i)}
-}
-func int64ToString(i int64) string {
-	return strconv.FormatInt(i, 10)
+	return &model.Time{Time: pkg.Int64ToString(i)}
 }
 func checkUserLogin(client user_pb.UserServiceClient, smg *token.SessionManager,
-	ctx context.Context, targetID string, needAdmin bool) (err error) {
+	ctx context.Context, limitID string, needAdmin bool) (loginID string, err error) {
 	tokn, err := middleware.GetAuthTokenFromContext(ctx)
 	if err != nil {
 		slog.Error("check user login error", "err", err)
@@ -419,17 +416,19 @@ func checkUserLogin(client user_pb.UserServiceClient, smg *token.SessionManager,
 		return
 	}
 
-	loginID, err := smg.ValidAccessToken(tokn)
+	loginID, err = smg.ValidAccessToken(tokn)
 	if err != nil {
 		slog.Error("check user login error", "err", err)
 		err = errors.Join(ErrUserTokenInvalid, err)
 		return
 	}
 
-	if !needAdmin && loginID != targetID {
+	if !needAdmin && limitID == "" {
+		return
+	} else if !needAdmin && loginID != limitID {
 		err = ErrUserUnAuthorized
 		return
-	} else if !needAdmin && loginID == targetID {
+	} else if !needAdmin && loginID == limitID {
 		return
 	}
 	// else needAdmin
@@ -441,10 +440,12 @@ func checkUserLogin(client user_pb.UserServiceClient, smg *token.SessionManager,
 			err = ErrUserUnAuthorized
 			return
 		}
-		return ErrInternal
+		err = ErrInternal
+		return
 	}
 	if !resp.User.IsAdmin {
-		return ErrUserUnAuthorized
+		err = ErrUserUnAuthorized
+		return
 	}
 	return
 }
@@ -473,12 +474,12 @@ func fromProtoUser(u *user_pb.User) *model.User {
 		NickName:             u.NickName,
 		Enabled:              u.Enabled,
 		IsAdmin:              u.IsAdmin,
-		LastLoginTime:        int64ToString(u.LastLoginTime),
+		LastLoginTime:        pkg.Int64ToString(u.LastLoginTime),
 		LastLoginIPAddr:      u.LastLoginIPAddr,
 		LastLoginDevice:      u.LastLoginDevice,
-		LastPasswdChangeTime: int64ToString(u.LastPasswdChangeTime),
-		RegisterTime:         int64ToString(u.RegisterTime),
-		DeleteTime:           int64ToString(u.DeleteTime),
+		LastPasswdChangeTime: pkg.Int64ToString(u.LastPasswdChangeTime),
+		RegisterTime:         pkg.Int64ToString(u.RegisterTime),
+		DeleteTime:           pkg.Int64ToString(u.DeleteTime),
 	}
 }
 

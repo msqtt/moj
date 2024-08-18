@@ -24,16 +24,70 @@ type Case struct {
 	OutputFilePath string `json:"outputFilePath"`
 }
 
+type CaseInput struct {
+	Number         int    `json:"number"`
+	InputFilePath  string `json:"inputFilePath"`
+	OutputFilePath string `json:"outputFilePath"`
+}
+
 type ChangePasswordInput struct {
 	ID          string `json:"id"`
 	NewPassword string `json:"newPassword"`
 	Captcha     string `json:"captcha"`
 }
 
+type DailyTasksNumber struct {
+	SumbitNumber int `json:"sumbitNumber"`
+	FinishNumber int `json:"finishNumber"`
+}
+
 type FinishedQuestion struct {
 	EazyCount   int `json:"eazyCount"`
 	NormalCount int `json:"normalCount"`
 	HardCount   int `json:"hardCount"`
+}
+
+type Game struct {
+	ID           string          `json:"id"`
+	CreaterID    string          `json:"createrID"`
+	Title        string          `json:"title"`
+	Description  string          `json:"description"`
+	StartTime    string          `json:"startTime"`
+	EndTime      string          `json:"endTime"`
+	CreateTime   string          `json:"createTime"`
+	QuestionList []*GameQuestion `json:"questionList"`
+}
+
+type GameInput struct {
+	ID           *string              `json:"id,omitempty"`
+	Title        string               `json:"title"`
+	Description  string               `json:"description"`
+	StartTime    string               `json:"startTime"`
+	EndTime      string               `json:"endTime"`
+	QuestionList []*GameQuestionInput `json:"questionList"`
+}
+
+type GamePage struct {
+	NextID string  `json:"nextID"`
+	Games  []*Game `json:"games"`
+}
+
+func (GamePage) IsCursorPage()          {}
+func (this GamePage) GetNextID() string { return this.NextID }
+
+type GameQuestion struct {
+	QuestionID string `json:"questionID"`
+	Score      int    `json:"score"`
+}
+
+type GameQuestionInput struct {
+	QuestionID string `json:"questionID"`
+	Score      int    `json:"score"`
+}
+
+type GamesFilter struct {
+	Word *string `json:"word,omitempty"`
+	Time *string `json:"time,omitempty"`
 }
 
 type LoginInput struct {
@@ -54,7 +108,7 @@ type Query struct {
 
 type Question struct {
 	ID               string   `json:"id"`
-	UserID           string   `json:"userID"`
+	CreaterID        string   `json:"createrID"`
 	Enabled          bool     `json:"enabled"`
 	Title            string   `json:"title"`
 	Content          string   `json:"content"`
@@ -69,14 +123,16 @@ type Question struct {
 }
 
 type QuestionInput struct {
-	Title            string   `json:"title"`
-	UserID           string   `json:"userID"`
-	Content          string   `json:"content"`
-	Level            Level    `json:"level"`
-	AllowedLanguages []string `json:"allowedLanguages"`
-	TimeLimit        int      `json:"timeLimit"`
-	MemoryLimit      int      `json:"memoryLimit"`
-	Tags             []string `json:"tags"`
+	ID               *string      `json:"id,omitempty"`
+	Title            string       `json:"title"`
+	Enabled          bool         `json:"enabled"`
+	Content          string       `json:"content"`
+	Level            Level        `json:"level"`
+	AllowedLanguages []string     `json:"allowedLanguages"`
+	TimeLimit        int          `json:"timeLimit"`
+	MemoryLimit      int          `json:"memoryLimit"`
+	Tags             []string     `json:"tags"`
+	Cases            []*CaseInput `json:"cases"`
 }
 
 type QuestionPage struct {
@@ -95,12 +151,53 @@ type QuestionsFilter struct {
 	CreaterID *string `json:"createrID,omitempty"`
 }
 
+type Record struct {
+	ID               string  `json:"id"`
+	UserID           string  `json:"userID"`
+	QuestionID       string  `json:"questionID"`
+	GameID           *string `json:"gameID,omitempty"`
+	Language         string  `json:"language"`
+	Code             string  `json:"code"`
+	CodeHash         string  `json:"codeHash"`
+	JudgeStatus      string  `json:"judgeStatus"`
+	FailedReason     string  `json:"failedReason"`
+	NumberFinishedAt int     `json:"numberFinishedAt"`
+	TotalCase        int     `json:"totalCase"`
+	CreateTime       string  `json:"createTime"`
+	FinishTime       string  `json:"finishTime"`
+	MemoryUsed       int     `json:"memoryUsed"`
+	TimeUserd        int     `json:"timeUserd"`
+	CPUTimeUsed      int     `json:"cpuTimeUsed"`
+}
+
+type RecordPage struct {
+	Records []*Record `json:"records"`
+	Total   int       `json:"total"`
+}
+
+func (RecordPage) IsOffsetPage()      {}
+func (this RecordPage) GetTotal() int { return this.Total }
+
 type RegisterInput struct {
 	NickName string `json:"nickName"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Captcha  string `json:"captcha"`
 }
+
+type Score struct {
+	UserID     string `json:"userID"`
+	Score      int    `json:"score"`
+	SignUpTime string `json:"signUpTime"`
+}
+
+type ScoresPage struct {
+	Total  int      `json:"total"`
+	Scores []*Score `json:"scores"`
+}
+
+func (ScoresPage) IsOffsetPage()      {}
+func (this ScoresPage) GetTotal() int { return this.Total }
 
 type SendChangePasswordEmail struct {
 	UserID string `json:"userID"`
@@ -109,6 +206,11 @@ type SendChangePasswordEmail struct {
 
 type SendRegisterEmail struct {
 	Email string `json:"email"`
+}
+
+type SubmitCount struct {
+	SubmitCount int `json:"submitCount"`
+	PassedCount int `json:"passedCount"`
 }
 
 type Time struct {

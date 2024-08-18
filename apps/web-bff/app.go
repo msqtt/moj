@@ -4,26 +4,33 @@ import (
 	"log/slog"
 	"moj/apps/web-bff/etc"
 	"moj/apps/web-bff/graph"
+	"moj/apps/web-bff/handler"
 	"moj/apps/web-bff/rpc"
 	"os"
 	"time"
 )
 
 type App struct {
-	config     *etc.Config
-	resolver   *graph.Resolver
-	rpcClients *rpc.RpcClients
+	config            *etc.Config
+	resolver          *graph.Resolver
+	rpcClients        *rpc.RpcClients
+	avatarFileHandler *handler.AvatarFileHandler
+	caseFileHandler   *handler.CaseFileHandler
 }
 
 func NewApp(
 	config *etc.Config,
 	resolver *graph.Resolver,
 	rpcClients *rpc.RpcClients,
+	avatarFileHandler *handler.AvatarFileHandler,
+	caseFileHandler *handler.CaseFileHandler,
 ) *App {
 	return &App{
-		config:     config,
-		resolver:   resolver,
-		rpcClients: rpcClients,
+		config:            config,
+		resolver:          resolver,
+		rpcClients:        rpcClients,
+		avatarFileHandler: avatarFileHandler,
+		caseFileHandler:   caseFileHandler,
 	}
 }
 
@@ -44,7 +51,7 @@ func setupLogger(debug bool) {
 // start rpc server
 func (a *App) Start() {
 	setupLogger(a.config.Debug)
-	startHttpServer(a.resolver)
+	a.startHttpServer()
 }
 
 func (a *App) Stop() {

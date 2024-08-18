@@ -89,7 +89,3 @@ models:
     fields:
       finishedQuestion:
         resolver: true
-  Question:
-    fields:
-      cases:
-        resolver: true

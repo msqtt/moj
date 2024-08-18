@@ -1,0 +1,39 @@
+type Record {
+    id: ID!
+    userID: ID!
+    questionID: ID!
+    gameID: ID
+    language: String!
+    code: String!
+    codeHash: String!
+    judgeStatus: String!
+    failedReason: String!
+    numberFinishedAt: Int!
+    totalCase: Int!
+    createTime: String!
+    finishTime: String!
+    memoryUsed: Int!
+    timeUserd: Int!
+    cpuTimeUsed: Int!
+}
+
+type RecordPage implements OffsetPage {
+    records: [Record!]!
+    total: Int!
+}
+
+type DailyTasksNumber {
+    sumbitNumber: Int!
+    finishNumber: Int!
+}
+
+extend type Query {
+    record(id: ID!): Record!
+    records(questionID: ID!, gameID: ID, page: Int!, pageSize: Int!): RecordPage!
+    
+    dailyTasksNumber(time: String!): DailyTasksNumber!
+}
+
+extend type Mutation {
+    submitRecord(questionID: ID!, gameID: ID, code: String!, language: String!): Record!
+}

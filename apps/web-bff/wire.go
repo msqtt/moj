@@ -6,6 +6,8 @@ package main
 import (
 	"moj/apps/web-bff/etc"
 	"moj/apps/web-bff/graph"
+	"moj/apps/web-bff/handler"
+	"moj/apps/web-bff/oss"
 	"moj/apps/web-bff/rpc"
 	"moj/apps/web-bff/token"
 
@@ -37,6 +39,11 @@ var providers = wire.NewSet(
 	graph.NewResolver,
 	token.NewPasetoTokener,
 	token.NewSessionManager,
+
+	handler.NewAvatarHandler,
+	handler.NewCaseFileHandler,
+
+	oss.NewMinioOssUploader,
 
 	provideRpcClients,
 )

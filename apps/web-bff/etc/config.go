@@ -12,6 +12,10 @@ type Config struct {
 	CertFile             string `mapstructure:"CERT_FILE"`
 	TLS                  bool
 	Debug                bool
+	AvatarFileSizeLimit  int64         `mapstructure:"AVATAR_FILE_SIZE_LIMIT"`
+	AvatarFilePrefixPath string        `mapstructure:"AVATAR_FILE_PREFIX_PATH"`
+	CaseFileSizeLimit    int64         `mapstructure:"CASE_FILE_SIZE_LIMIT"`
+	CaseFilePrefixPath   string        `mapstructure:"CASE_FILE_PREFIX_PATH"`
 	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	SymmetricKey         string        `mapstructure:"SYMMETRIC_KEY"`

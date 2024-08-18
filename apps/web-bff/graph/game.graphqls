@@ -1,0 +1,68 @@
+type Game {
+    id: ID!
+    createrID: ID!
+    title: String!
+    description: String!
+    startTime: String!
+    endTime: String!
+    createTime: String!
+    questionList: [GameQuestion!]!
+}
+
+# each filter is optional
+input GamesFilter {
+    # word used to search game in title
+    word: String
+    # search game which is open during this time
+    time: String
+}
+
+type GamePage implements CursorPage {
+   nextID: ID! 
+   games: [Game!]!
+}
+
+type Score {
+    userID: String!
+    score: Int!
+    signUpTime: String!
+}
+
+type GameQuestion {
+    questionID: ID! 
+    score: Int!
+}
+
+type ScoresPage implements OffsetPage {
+    total: Int!
+    scores: [Score!]!
+}
+
+extend type Query {
+    game(id: ID!): Game
+    games(pageSize:Int!, afterID:String, filter: GamesFilter): GamePage!
+    gameScore(uid: ID!, gid:ID!): Score!
+    gameScores(gid:ID!, page: Int!, pageSize: Int!): [Score!]!
+}
+
+input GameQuestionInput {
+    questionID: ID!
+    score: Int!
+}
+
+input GameInput {
+    id: ID
+    title: String!
+    description: String!
+    startTime: String!
+    endTime: String!
+    questionList: [GameQuestionInput!]!
+}
+
+extend type Mutation {
+    createGame(input: GameInput!): Game!
+    modifyGame(input: GameInput!): Game!
+    deleteGame(gid: ID!): Time!
+    signUpGame(gid:ID!): Time!
+    cancelSignUpGame(gid: ID!): Time!
+}
