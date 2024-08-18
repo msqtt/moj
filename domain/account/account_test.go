@@ -8,13 +8,13 @@ import (
 
 func TestNickName(t *testing.T) {
 	validNames := []string{"user_123", "hello", "张三三", "李四王五",
-		"铁臂阿童木123", "张three", "傻逼2-ai次元"}
+		"铁臂阿童木123", "张three", "傻逼2-ai次元", "testNickName"}
 	for _, name := range validNames {
 		require.True(t, isNickName(name), "Name: %s", name)
 	}
 
 	invalidNames := []string{"", "12345678901234567890", "user#",
-		"user@", "user!", "一二三四五六七八九十个"}
+		"user@", "user!", "一二三四五六七八九十个个个"}
 	for _, name := range invalidNames {
 		require.False(t, isNickName(name), "Name: %s", name)
 	}
