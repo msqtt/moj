@@ -120,5 +120,10 @@ message CheckAccountPassRequest {
 }
 
 message CheckAccountPassResponse {
-    bool isPass = 1;
+    enum PassStatus {
+        Undo = 0;
+        Working = 1;
+        Pass = 2;
+    }
+    PassStatus status = 1;
 }

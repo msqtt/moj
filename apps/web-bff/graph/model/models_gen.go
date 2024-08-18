@@ -107,19 +107,20 @@ type Query struct {
 }
 
 type Question struct {
-	ID               string   `json:"id"`
-	CreaterID        string   `json:"createrID"`
-	Enabled          bool     `json:"enabled"`
-	Title            string   `json:"title"`
-	Content          string   `json:"content"`
-	Level            Level    `json:"level"`
-	AllowedLanguages []string `json:"allowedLanguages"`
-	TimeLimit        int      `json:"timeLimit"`
-	MemoryLimit      int      `json:"memoryLimit"`
-	Tags             []string `json:"tags"`
-	CreateTime       string   `json:"createTime"`
-	ModifyTime       string   `json:"modifyTime"`
-	Cases            []*Case  `json:"cases"`
+	ID               string             `json:"id"`
+	CreaterID        string             `json:"createrID"`
+	Enabled          bool               `json:"enabled"`
+	Title            string             `json:"title"`
+	Content          string             `json:"content"`
+	Level            Level              `json:"level"`
+	AllowedLanguages []string           `json:"allowedLanguages"`
+	TimeLimit        int                `json:"timeLimit"`
+	MemoryLimit      int                `json:"memoryLimit"`
+	Tags             []string           `json:"tags"`
+	CreateTime       string             `json:"createTime"`
+	ModifyTime       string             `json:"modifyTime"`
+	Cases            []*Case            `json:"cases"`
+	PassStatus       QuestionPassStatus `json:"passStatus"`
 }
 
 type QuestionInput struct {
@@ -298,5 +299,48 @@ func (e *Level) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Level) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type QuestionPassStatus string
+
+const (
+	QuestionPassStatusUndo    QuestionPassStatus = "Undo"
+	QuestionPassStatusWorking QuestionPassStatus = "Working"
+	QuestionPassStatusPass    QuestionPassStatus = "Pass"
+)
+
+var AllQuestionPassStatus = []QuestionPassStatus{
+	QuestionPassStatusUndo,
+	QuestionPassStatusWorking,
+	QuestionPassStatusPass,
+}
+
+func (e QuestionPassStatus) IsValid() bool {
+	switch e {
+	case QuestionPassStatusUndo, QuestionPassStatusWorking, QuestionPassStatusPass:
+		return true
+	}
+	return false
+}
+
+func (e QuestionPassStatus) String() string {
+	return string(e)
+}
+
+func (e *QuestionPassStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = QuestionPassStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid QuestionPassStatus", str)
+	}
+	return nil
+}
+
+func (e QuestionPassStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

@@ -30,6 +30,7 @@ type Question {
     createTime: String!
     modifyTime: String!
     cases: [Case!]!
+    passStatus: QuestionPassStatus!
 }
 
 type QuestionPage implements CursorPage {
@@ -66,6 +67,12 @@ type SubmitCount {
     passedCount: Int!
 }
 
+enum QuestionPassStatus {
+    Undo
+    Working
+    Pass
+}
+
 extend type Query {
     question(id: ID!): Question!
     questions(pageSize:Int!, afterID:String, filter: QuestionsFilter): QuestionPage!
@@ -77,5 +84,4 @@ extend type Mutation {
     createQuestion(input: QuestionInput!): Question!
     modifyQuestion(input: QuestionInput!): Question!
     deleteQuestion(id: ID!): Time!
-    checkUserPassedQuestion(id: ID!): Boolean!
 } 

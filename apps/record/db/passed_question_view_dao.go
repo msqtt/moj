@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type PassedQuestionViewDao interface {
+type PassQuestionViewDao interface {
 	FindByAccountIDAndQuestionID(ctx context.Context, accountID string, questionID string) (*PassedQuestionViewModel, error)
 	CountByQuestionID(ctx context.Context, questionID string) (passNumber int64, err error)
 	CountLevelByAccountID(ctx context.Context, accountID string) (eazy, normal, hard int64, err error)
@@ -102,7 +102,7 @@ func (m *MongoDBPassedQuestionViewDao) Save(ctx context.Context, model *PassedQu
 	return
 }
 
-func NewMongoDBPassedQuestionViewDao(mondodb *MongoDB) PassedQuestionViewDao {
+func NewMongoDBPassedQuestionViewDao(mondodb *MongoDB) PassQuestionViewDao {
 	return &MongoDBPassedQuestionViewDao{
 		mondodb:    mondodb,
 		collection: mondodb.Database().Collection("record_passed_question"),

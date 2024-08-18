@@ -6,13 +6,14 @@ import (
 	"log/slog"
 	"moj/apps/game/pkg/app_err"
 	"moj/apps/record/db"
+	"moj/domain/judgement"
 	"moj/domain/question"
 	"moj/domain/record"
 	"time"
 )
 
 type PassedQuestionViewListener struct {
-	dao          db.PassedQuestionViewDao
+	dao          db.PassQuestionViewDao
 	questionRepo question.QuestionRepository
 }
 
@@ -28,9 +29,15 @@ func (p *PassedQuestionViewListener) OnEvent(event any) error {
 				slog.Error("failed to get question when listen to pass record", "error", err)
 				return err
 			}
+
+			status := db.PassStatusWorking
+			if evt.JudgeStatus == string(judgement.JudgeStatusAC) {
+				status = db.PassStatusPass
+			}
 			model := db.PassedQuestionViewModel{
 				AccountID:  evt.AccountID,
 				QuestionID: evt.QuestionID,
+				Status:     status,
 				Level:      quest.Level.String(),
 				RecordID:   evt.RecordID,
 				GameID:     evt.GameID,
@@ -48,7 +55,7 @@ func (p *PassedQuestionViewListener) OnEvent(event any) error {
 }
 
 func NewPassedQuestionViewListener(
-	dao db.PassedQuestionViewDao,
+	dao db.PassQuestionViewDao,
 	questionRepo question.QuestionRepository,
 ) *PassedQuestionViewListener {
 	return &PassedQuestionViewListener{

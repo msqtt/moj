@@ -16,11 +16,6 @@ import (
 	gstatus "google.golang.org/grpc/status"
 )
 
-var (
-	ErrRecordNotFound    = errors.New("提交记录不存在")
-	ErrDailyTaskNotFound = errors.New("每日任务不存在")
-)
-
 // SubmitRecord is the resolver for the submitRecord field.
 func (r *mutationResolver) SubmitRecord(ctx context.Context, questionID string, gameID *string, code string, language string) (*model.Record, error) {
 	uid, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", false)
@@ -49,42 +44,6 @@ func (r *mutationResolver) SubmitRecord(ctx context.Context, questionID string, 
 	}
 
 	return record, err
-}
-
-func fromPbRecord(red *red_pb.Record) *model.Record {
-	return &model.Record{
-		ID:               red.RecordID,
-		UserID:           red.AccountID,
-		QuestionID:       red.GetQuestionID(),
-		GameID:           red.GameID,
-		Language:         red.GetLanguage(),
-		Code:             red.GetCode(),
-		CodeHash:         red.CodeHash,
-		JudgeStatus:      red.JudgeStatus,
-		FailedReason:     *red.FailedReason,
-		NumberFinishedAt: int(red.NumberFinishedAt),
-		TotalCase:        int(red.TotalQuestion),
-		CreateTime:       pkg.Int64ToString(red.CreateTime),
-		FinishTime:       pkg.Int64ToString(red.FinishTime),
-		MemoryUsed:       int(red.MemoryUsed),
-		TimeUserd:        int(red.TimeUsed),
-		CPUTimeUsed:      int(red.CpuTimeUsed),
-	}
-}
-
-func findRecord(client red_pb.RecordServiceClient, ctx context.Context, id string) (*model.Record, error) {
-	resp, err := client.GetRecord(ctx, &red_pb.GetRecordRequest{
-		RecordID: id,
-	})
-	if err != nil {
-		if status, ok := gstatus.FromError(err); ok {
-			if status.Code() == codes.NotFound {
-				return nil, ErrRecordNotFound
-			}
-		}
-		return nil, ErrInternal
-	}
-	return fromPbRecord(resp.GetRecord()), nil
 }
 
 // Record is the resolver for the record field.
@@ -164,4 +123,50 @@ func (r *queryResolver) DailyTasksNumber(ctx context.Context, time string) (*mod
 		SumbitNumber: int(resp.SubmitNumber),
 		FinishNumber: int(resp.FinishNumber),
 	}, nil
+}
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+var (
+	ErrRecordNotFound    = errors.New("提交记录不存在")
+	ErrDailyTaskNotFound = errors.New("每日任务不存在")
+)
+
+func fromPbRecord(red *red_pb.Record) *model.Record {
+	return &model.Record{
+		ID:               red.RecordID,
+		UserID:           red.AccountID,
+		QuestionID:       red.GetQuestionID(),
+		GameID:           red.GameID,
+		Language:         red.GetLanguage(),
+		Code:             red.GetCode(),
+		CodeHash:         red.CodeHash,
+		JudgeStatus:      red.JudgeStatus,
+		FailedReason:     *red.FailedReason,
+		NumberFinishedAt: int(red.NumberFinishedAt),
+		TotalCase:        int(red.TotalQuestion),
+		CreateTime:       pkg.Int64ToString(red.CreateTime),
+		FinishTime:       pkg.Int64ToString(red.FinishTime),
+		MemoryUsed:       int(red.MemoryUsed),
+		TimeUserd:        int(red.TimeUsed),
+		CPUTimeUsed:      int(red.CpuTimeUsed),
+	}
+}
+func findRecord(client red_pb.RecordServiceClient, ctx context.Context, id string) (*model.Record, error) {
+	resp, err := client.GetRecord(ctx, &red_pb.GetRecordRequest{
+		RecordID: id,
+	})
+	if err != nil {
+		if status, ok := gstatus.FromError(err); ok {
+			if status.Code() == codes.NotFound {
+				return nil, ErrRecordNotFound
+			}
+		}
+		return nil, ErrInternal
+	}
+	return fromPbRecord(resp.GetRecord()), nil
 }

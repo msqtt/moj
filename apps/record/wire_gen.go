@@ -28,15 +28,15 @@ func InitializeApplication() *App {
 	mongoDB := db.NewMongoDB(config)
 	transactionManager := db.NewMongoDBTransactionManager(mongoDB)
 	dailyTaskViewDao := db.NewMongoDBDayTaskViewDao(mongoDB)
-	passedQuestionViewDao := db.NewMongoDBPassedQuestionViewDao(mongoDB)
+	passQuestionViewDao := db.NewMongoDBPassedQuestionViewDao(mongoDB)
 	questionRepository := domain.NewRPCQuestionRepository(config)
-	eventDispatcher := provideDispatcher(config, dailyTaskViewDao, passedQuestionViewDao, questionRepository)
+	eventDispatcher := provideDispatcher(config, dailyTaskViewDao, passQuestionViewDao, questionRepository)
 	commandInvoker := domain.NewTransactionCommandInvoker(transactionManager, eventDispatcher)
 	recordRepository := domain.NewMongoDBRecordRepository(mongoDB)
 	modifyRecordCmdHandler := record.NewModifyRecordCmdHandler(recordRepository)
 	submitRecordCmdHandler := record.NewSubmitRecordCmdHandler(recordRepository)
 	recordViewDao := db.NewMongoDBRecordViewDao(mongoDB)
-	server := svc.NewServer(commandInvoker, modifyRecordCmdHandler, submitRecordCmdHandler, recordRepository, recordViewDao, dailyTaskViewDao, passedQuestionViewDao)
+	server := svc.NewServer(commandInvoker, modifyRecordCmdHandler, submitRecordCmdHandler, recordRepository, recordViewDao, dailyTaskViewDao, passQuestionViewDao)
 	v := provideScheduleTask(config, recordViewDao)
 	nsqFinishRecordConsumer := consumer.NewNsqFinishRecordConsumer(config, modifyRecordCmdHandler, eventDispatcher)
 	app := NewApp(server, v, mongoDB, config, nsqFinishRecordConsumer)
@@ -48,7 +48,7 @@ func InitializeApplication() *App {
 func provideDispatcher(
 	conf *etc.Config,
 	dailyTaskViewDao db.DailyTaskViewDao,
-	passedQuestionViewDao db.PassedQuestionViewDao,
+	passedQuestionViewDao db.PassQuestionViewDao,
 	questionRepository question.QuestionRepository,
 ) domain.EventDispatcher {
 	return domain.NewSyncAndAsyncEventDispatcher(

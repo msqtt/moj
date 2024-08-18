@@ -89,3 +89,7 @@ models:
     fields:
       finishedQuestion:
         resolver: true
+  Question:
+    fields:
+      passStatus:
+        resolver: true

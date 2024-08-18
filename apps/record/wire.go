@@ -22,7 +22,7 @@ import (
 func provideDispatcher(
 	conf *etc.Config,
 	dailyTaskViewDao db.DailyTaskViewDao,
-	passedQuestionViewDao db.PassedQuestionViewDao,
+	passedQuestionViewDao db.PassQuestionViewDao,
 	questionRepository question.QuestionRepository,
 ) domain.EventDispatcher {
 	return domain.NewSyncAndAsyncEventDispatcher(

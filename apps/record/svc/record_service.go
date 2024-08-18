@@ -159,20 +159,22 @@ func (s *Server) GetRecord(ctx context.Context, req *red_pb.GetRecordRequest) (
 func (s *Server) CheckAccountPass(ctx context.Context, req *red_pb.CheckAccountPassRequest) (
 	resp *red_pb.CheckAccountPassResponse, err error) {
 	slog.Debug("check account pass request", "req", req)
-	_, err = s.passedQuestionViewDao.FindByAccountIDAndQuestionID(ctx, req.AccountID, req.QuestionID)
+	view, err := s.passQuestionViewDao.FindByAccountIDAndQuestionID(ctx, req.AccountID, req.QuestionID)
 
-	isPass := true
+	passStatus := red_pb.CheckAccountPassResponse_Working
 	if err != nil {
-		if errors.Is(err, app_err.ErrModelNotFound) {
-			isPass = false
-		} else {
+		if !errors.Is(err, app_err.ErrModelNotFound) {
 			slog.Error("failed to check account pass", "err", err)
 			err = responseStatusError(err)
 			return
 		}
+		passStatus = red_pb.CheckAccountPassResponse_Undo
+	} else if view.Status == db.PassStatusPass {
+		passStatus = red_pb.CheckAccountPassResponse_Pass
 	}
+
 	resp = &red_pb.CheckAccountPassResponse{
-		IsPass: isPass,
+		Status: passStatus,
 	}
 	return
 }
@@ -182,7 +184,7 @@ func (s *Server) GetAccountPassedCount(ctx context.Context, req *red_pb.GetAccou
 	resp *red_pb.GetAccountPassedCountResponse, err error) {
 	slog.Debug("get account passed count request", "req", req)
 
-	eazy, normal, hard, err := s.passedQuestionViewDao.CountLevelByAccountID(ctx, req.AccountID)
+	eazy, normal, hard, err := s.passQuestionViewDao.CountLevelByAccountID(ctx, req.AccountID)
 	if err != nil {
 		slog.Error("failed to get account passed count", "err", err)
 		err = responseStatusError(err)
@@ -225,7 +227,7 @@ func (s *Server) GetQuestionRecordCount(ctx context.Context, req *red_pb.GetQues
 		err = responseStatusError(err1)
 	}
 
-	passCount, err1 := s.passedQuestionViewDao.CountByQuestionID(ctx, req.QuestionID)
+	passCount, err1 := s.passQuestionViewDao.CountByQuestionID(ctx, req.QuestionID)
 	if err1 != nil {
 		slog.Error("failed to get question record count", "err", err1)
 		err = responseStatusError(err1)

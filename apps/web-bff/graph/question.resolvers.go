@@ -120,27 +120,6 @@ func (r *mutationResolver) DeleteQuestion(ctx context.Context, id string) (*mode
 	return fromInt64Second(resp.GetTime()), nil
 }
 
-// CheckUserPassedQuestion is the resolver for the checkUserPassedQuestion field.
-func (r *mutationResolver) CheckUserPassedQuestion(ctx context.Context, id string) (bool, error) {
-	uid, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", false)
-	if err != nil {
-		return false, err
-	}
-
-	req := &red_pb.CheckAccountPassRequest{
-		QuestionID: id,
-		AccountID:  uid,
-	}
-
-	resp, err := r.RpcClients.RecordClient.CheckAccountPass(ctx, req)
-	if err != nil {
-		slog.Error("failed to check user passed question", "error", err)
-		return false, ErrInternal
-	}
-
-	return resp.GetIsPass(), err
-}
-
 // Question is the resolver for the question field.
 func (r *queryResolver) Question(ctx context.Context, id string) (*model.Question, error) {
 	ques, err := findQuestion(r.RpcClients.QuestionClient, ctx, id)
@@ -239,6 +218,45 @@ func (r *queryResolver) QuestionSubmitCount(ctx context.Context, qid string, gid
 		PassedCount: int(resp.PassedCount),
 	}, err
 }
+
+func fromPbPassStatus(s red_pb.CheckAccountPassResponse_PassStatus) model.QuestionPassStatus {
+	switch s {
+	case red_pb.CheckAccountPassResponse_Pass:
+		return model.QuestionPassStatusPass
+	case red_pb.CheckAccountPassResponse_Undo:
+		return model.QuestionPassStatusUndo
+	case red_pb.CheckAccountPassResponse_Working:
+		return model.QuestionPassStatusWorking
+	default:
+		return model.QuestionPassStatusUndo
+	}
+}
+
+// PassStatus is the resolver for the passStatus field.
+func (r *questionResolver) PassStatus(ctx context.Context, obj *model.Question) (model.QuestionPassStatus, error) {
+	uid, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", false)
+	if err != nil {
+		return model.QuestionPassStatusUndo, err
+	}
+
+	req := &red_pb.CheckAccountPassRequest{
+		QuestionID: obj.ID,
+		AccountID:  uid,
+	}
+
+	resp, err := r.RpcClients.RecordClient.CheckAccountPass(ctx, req)
+	if err != nil {
+		slog.Error("failed to check user passed question", "error", err)
+		return model.QuestionPassStatusUndo, ErrInternal
+	}
+
+	return fromPbPassStatus(resp.GetStatus()), err
+}
+
+// Question returns QuestionResolver implementation.
+func (r *Resolver) Question() QuestionResolver { return &questionResolver{r} }
+
+type questionResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have

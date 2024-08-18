@@ -41,6 +41,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Question() QuestionResolver
 	User() UserResolver
 }
 
@@ -94,7 +95,6 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CancelSignUpGame        func(childComplexity int, gid string) int
 		ChangePassword          func(childComplexity int, input *model.ChangePasswordInput) int
-		CheckUserPassedQuestion func(childComplexity int, id string) int
 		CreateGame              func(childComplexity int, input model.GameInput) int
 		CreateQuestion          func(childComplexity int, input model.QuestionInput) int
 		DeleteGame              func(childComplexity int, gid string) int
@@ -140,6 +140,7 @@ type ComplexityRoot struct {
 		Level            func(childComplexity int) int
 		MemoryLimit      func(childComplexity int) int
 		ModifyTime       func(childComplexity int) int
+		PassStatus       func(childComplexity int) int
 		Tags             func(childComplexity int) int
 		TimeLimit        func(childComplexity int) int
 		Title            func(childComplexity int) int
@@ -232,7 +233,6 @@ type MutationResolver interface {
 	CreateQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error)
 	ModifyQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error)
 	DeleteQuestion(ctx context.Context, id string) (*model.Time, error)
-	CheckUserPassedQuestion(ctx context.Context, id string) (bool, error)
 	SubmitRecord(ctx context.Context, questionID string, gameID *string, code string, language string) (*model.Record, error)
 	Login(ctx context.Context, input model.LoginInput) (*model.LoginResult, error)
 	Register(ctx context.Context, input model.RegisterInput) (*model.User, error)
@@ -256,6 +256,9 @@ type QueryResolver interface {
 	DailyTasksNumber(ctx context.Context, time string) (*model.DailyTasksNumber, error)
 	User(ctx context.Context, id string) (*model.User, error)
 	Users(ctx context.Context, pageSize int, afterID *string, filter *model.UsersFilter) (*model.UserPage, error)
+}
+type QuestionResolver interface {
+	PassStatus(ctx context.Context, obj *model.Question) (model.QuestionPassStatus, error)
 }
 type UserResolver interface {
 	FinishedQuestion(ctx context.Context, obj *model.User) (*model.FinishedQuestion, error)
@@ -457,18 +460,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.ChangePassword(childComplexity, args["input"].(*model.ChangePasswordInput)), true
-
-	case "Mutation.checkUserPassedQuestion":
-		if e.complexity.Mutation.CheckUserPassedQuestion == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_checkUserPassedQuestion_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CheckUserPassedQuestion(childComplexity, args["id"].(string)), true
 
 	case "Mutation.createGame":
 		if e.complexity.Mutation.CreateGame == nil {
@@ -887,6 +878,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Question.ModifyTime(childComplexity), true
+
+	case "Question.passStatus":
+		if e.complexity.Question.PassStatus == nil {
+			break
+		}
+
+		return e.complexity.Question.PassStatus(childComplexity), true
 
 	case "Question.tags":
 		if e.complexity.Question.Tags == nil {
@@ -1393,21 +1391,6 @@ func (ec *executionContext) field_Mutation_changePassword_args(ctx context.Conte
 		}
 	}
 	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_checkUserPassedQuestion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
 	return args, nil
 }
 
@@ -3593,6 +3576,8 @@ func (ec *executionContext) fieldContext_Mutation_createQuestion(ctx context.Con
 				return ec.fieldContext_Question_modifyTime(ctx, field)
 			case "cases":
 				return ec.fieldContext_Question_cases(ctx, field)
+			case "passStatus":
+				return ec.fieldContext_Question_passStatus(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Question", field.Name)
 		},
@@ -3676,6 +3661,8 @@ func (ec *executionContext) fieldContext_Mutation_modifyQuestion(ctx context.Con
 				return ec.fieldContext_Question_modifyTime(ctx, field)
 			case "cases":
 				return ec.fieldContext_Question_cases(ctx, field)
+			case "passStatus":
+				return ec.fieldContext_Question_passStatus(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Question", field.Name)
 		},
@@ -3747,61 +3734,6 @@ func (ec *executionContext) fieldContext_Mutation_deleteQuestion(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteQuestion_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_checkUserPassedQuestion(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_checkUserPassedQuestion(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CheckUserPassedQuestion(rctx, fc.Args["id"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_checkUserPassedQuestion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_checkUserPassedQuestion_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4815,6 +4747,8 @@ func (ec *executionContext) fieldContext_Query_question(ctx context.Context, fie
 				return ec.fieldContext_Question_modifyTime(ctx, field)
 			case "cases":
 				return ec.fieldContext_Question_cases(ctx, field)
+			case "passStatus":
+				return ec.fieldContext_Question_passStatus(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Question", field.Name)
 		},
@@ -6016,6 +5950,50 @@ func (ec *executionContext) fieldContext_Question_cases(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Question_passStatus(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Question_passStatus(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Question().PassStatus(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.QuestionPassStatus)
+	fc.Result = res
+	return ec.marshalNQuestionPassStatus2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Question_passStatus(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Question",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type QuestionPassStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _QuestionPage_nextID(ctx context.Context, field graphql.CollectedField, obj *model.QuestionPage) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_QuestionPage_nextID(ctx, field)
 	if err != nil {
@@ -6125,6 +6103,8 @@ func (ec *executionContext) fieldContext_QuestionPage_questions(_ context.Contex
 				return ec.fieldContext_Question_modifyTime(ctx, field)
 			case "cases":
 				return ec.fieldContext_Question_cases(ctx, field)
+			case "passStatus":
+				return ec.fieldContext_Question_passStatus(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Question", field.Name)
 		},
@@ -10952,13 +10932,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "checkUserPassedQuestion":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_checkUserPassedQuestion(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "submitRecord":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_submitRecord(ctx, field)
@@ -11367,68 +11340,104 @@ func (ec *executionContext) _Question(ctx context.Context, sel ast.SelectionSet,
 		case "id":
 			out.Values[i] = ec._Question_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createrID":
 			out.Values[i] = ec._Question_createrID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "enabled":
 			out.Values[i] = ec._Question_enabled(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._Question_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "content":
 			out.Values[i] = ec._Question_content(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "level":
 			out.Values[i] = ec._Question_level(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "allowedLanguages":
 			out.Values[i] = ec._Question_allowedLanguages(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "timeLimit":
 			out.Values[i] = ec._Question_timeLimit(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "memoryLimit":
 			out.Values[i] = ec._Question_memoryLimit(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "tags":
 			out.Values[i] = ec._Question_tags(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createTime":
 			out.Values[i] = ec._Question_createTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "modifyTime":
 			out.Values[i] = ec._Question_modifyTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "cases":
 			out.Values[i] = ec._Question_cases(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "passStatus":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Question_passStatus(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12777,6 +12786,16 @@ func (ec *executionContext) marshalNQuestionPage2ᚖmojᚋappsᚋwebᚑbffᚋgra
 		return graphql.Null
 	}
 	return ec._QuestionPage(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNQuestionPassStatus2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx context.Context, v interface{}) (model.QuestionPassStatus, error) {
+	var res model.QuestionPassStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNQuestionPassStatus2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx context.Context, sel ast.SelectionSet, v model.QuestionPassStatus) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNRecord2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx context.Context, sel ast.SelectionSet, v model.Record) graphql.Marshaler {
