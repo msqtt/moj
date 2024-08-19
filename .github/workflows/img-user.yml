@@ -31,8 +31,7 @@ jobs:
     - name: Set whole image tag
       id: set_env
       run: | 
-        echo "LATEST_TAG=$(echo '${{ steps.get_release.outputs.tag }}' | tr -d '"')" >> $GITHUB_ENV
-        echo "TAG=msqt/moj-${{ env.APP_NAME }}:${{ env.LATEST_TAG }},msqt/moj-${{ env.APP_NAME }}:latest" >> $GITHUB_ENV
+        echo "TAG=msqt/moj-${{ env.APP_NAME }}:${{ steps.get_release.outputs.tag }},msqt/moj-${{ env.APP_NAME }}:latest" >> $GITHUB_ENV
     
     - name: Set up QEMU
       if: ${{ steps.get_release.outputs.result != 'none' }}
