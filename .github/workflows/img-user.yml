@@ -25,7 +25,7 @@ jobs:
           });
           const latestReleaseTag = releases[0]?.tag_name || 'none';
           console.log(`Latest release tag: ${latestReleaseTag}`);
-          return latestReleaseTag;
+          core.setOutput('tag', latestReleaseTag);
     
     - name: Set up QEMU
       if: ${{ steps.get_release.outputs.result != 'none' }}
@@ -45,6 +45,6 @@ jobs:
       with:
         context: .
         file: builds/${{ env.APP_NAME }}.Dockerfile
-        tags: msqt/moj-${{ env.APP_NAME }}:${{ steps.get_release.outputs.result }},msqt/moj-${{ env.APP_NAME }}:latest
+        tags: msqt/moj-${{ env.APP_NAME }}:${{ steps.get_release.outputs.tag }},msqt/moj-${{ env.APP_NAME }}:latest
         platforms: linux/amd64,linux/arm64
         push: true
