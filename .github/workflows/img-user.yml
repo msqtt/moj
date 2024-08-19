@@ -28,9 +28,9 @@ jobs:
           console.log(`Latest release tag: ${latestReleaseTag}`);
           core.setOutput('tag', latestReleaseTag);
 
-    - name: Set environment variable without quotes
+    - name: Set whole image tag
       id: set_env
-      run: echo "LATEST_TAG=$(echo '${{ steps.get_release.outputs.tag }}' | tr -d '\"')" >> $GITHUB_ENV
+      run: echo "TAG=msqt/moj-${{ env.APP_NAME }}:${{ env.LATEST_TAG }},msqt/moj-${{ env.APP_NAME }}:latest" >> $GITHUB_ENV
     
     - name: Set up QEMU
       if: ${{ steps.get_release.outputs.result != 'none' }}
@@ -50,6 +50,6 @@ jobs:
       with:
         context: .
         file: builds/${{ env.APP_NAME }}.Dockerfile
-        tags: msqt/moj-${{ env.APP_NAME }}:${{ env.LATEST_TAG }},msqt/moj-${{ env.APP_NAME }}:latest
+        tags: ${{ env.TAG }}
         platforms: linux/amd64,linux/arm64
         push: true
