@@ -1,0 +1,11 @@
+go 1.22.3
+
+use (
+	./apps/game
+	./apps/judgement
+	./apps/question
+	./apps/record
+	./apps/user
+	./apps/web-bff
+	./domain
+)

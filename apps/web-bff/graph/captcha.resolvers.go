@@ -8,9 +8,9 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	user_pb "moj/apps/user/rpc"
-	"moj/apps/web-bff/graph/model"
-	"moj/apps/web-bff/middleware"
+	user_pb "moj/user/rpc"
+	"moj/web-bff/graph/model"
+	"moj/web-bff/middleware"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

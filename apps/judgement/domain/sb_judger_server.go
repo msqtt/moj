@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log"
 	"log/slog"
-	"moj/apps/game/pkg/app_err"
-	"moj/apps/judgement/etc"
-	sb_pb "moj/apps/judgement/rpc/sb-judger"
+	"moj/game/pkg/app_err"
+	"moj/judgement/etc"
+	sb_pb "moj/judgement/rpc/sb-judger"
 	"moj/domain/judgement"
 
 	"google.golang.org/grpc"

@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"time"
 
-	"moj/apps/game/pkg/app_err"
-	"moj/apps/user/db"
-	user_pb "moj/apps/user/rpc"
+	"moj/game/pkg/app_err"
+	"moj/user/db"
+	user_pb "moj/user/rpc"
 	"moj/domain/account"
 	domain_err "moj/domain/pkg/error"
 	"moj/domain/pkg/queue"

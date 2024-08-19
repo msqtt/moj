@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"moj/apps/game/pkg/app_err"
-	"moj/apps/record/db"
-	"moj/apps/record/pkg"
+	"moj/game/pkg/app_err"
+	"moj/record/db"
+	"moj/record/pkg"
 	"moj/domain/record"
 	"time"
 )

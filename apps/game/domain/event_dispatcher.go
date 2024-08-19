@@ -3,7 +3,7 @@ package domain
 import (
 	"log/slog"
 
-	"moj/apps/user/listener"
+	"moj/user/listener"
 	"moj/domain/pkg/queue"
 )
 

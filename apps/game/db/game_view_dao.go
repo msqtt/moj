@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"moj/apps/game/pkg/app_err"
+	"moj/game/pkg/app_err"
 	"moj/domain/game"
 
 	"go.mongodb.org/mongo-driver/bson"

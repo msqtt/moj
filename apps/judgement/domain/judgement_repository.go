@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"moj/apps/judgement/db"
-	"moj/apps/judgement/pkg/app_err"
+	"moj/judgement/db"
+	"moj/judgement/pkg/app_err"
 	"moj/domain/judgement"
 	"time"
 

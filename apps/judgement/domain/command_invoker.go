@@ -3,7 +3,7 @@ package domain
 import (
 	"context"
 
-	"moj/apps/judgement/db"
+	"moj/judgement/db"
 	"moj/domain/pkg/queue"
 )
 

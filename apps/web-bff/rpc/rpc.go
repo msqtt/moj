@@ -2,11 +2,11 @@ package rpc
 
 import (
 	"log"
-	game_pb "moj/apps/game/rpc"
-	ques_pb "moj/apps/question/rpc"
-	red_pb "moj/apps/record/rpc"
-	user_pb "moj/apps/user/rpc"
-	"moj/apps/web-bff/etc"
+	game_pb "moj/game/rpc"
+	ques_pb "moj/question/rpc"
+	red_pb "moj/record/rpc"
+	user_pb "moj/user/rpc"
+	"moj/web-bff/etc"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

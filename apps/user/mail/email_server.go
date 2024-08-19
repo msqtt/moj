@@ -2,7 +2,7 @@ package mail
 
 import (
 	"log/slog"
-	"moj/apps/user/etc"
+	"moj/user/etc"
 	"moj/domain/policy"
 )
 

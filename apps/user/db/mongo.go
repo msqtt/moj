@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"moj/apps/user/etc"
+	"moj/user/etc"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

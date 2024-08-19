@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log/slog"
 
-	"moj/apps/user/db"
-	inter_error "moj/apps/user/pkg/app_err"
+	"moj/user/db"
+	inter_error "moj/user/pkg/app_err"
 	"moj/domain/captcha"
 	svc_account "moj/domain/service/account"
 

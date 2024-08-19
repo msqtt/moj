@@ -2,7 +2,7 @@ package listener
 
 import (
 	"context"
-	"moj/apps/game/db"
+	"moj/game/db"
 	"moj/domain/game"
 	"time"
 )

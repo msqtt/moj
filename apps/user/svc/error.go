@@ -2,7 +2,7 @@ package svc
 
 import (
 	"errors"
-	inter_error "moj/apps/user/pkg/app_err"
+	inter_error "moj/user/pkg/app_err"
 	domain_err "moj/domain/pkg/error"
 
 	"google.golang.org/grpc/codes"

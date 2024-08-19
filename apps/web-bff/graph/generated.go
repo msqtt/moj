@@ -8,7 +8,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"moj/apps/web-bff/graph/model"
+	"moj/web-bff/graph/model"
 	"strconv"
 	"sync"
 	"sync/atomic"

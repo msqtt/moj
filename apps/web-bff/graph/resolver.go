@@ -1,9 +1,9 @@
 package graph
 
 import (
-	"moj/apps/web-bff/etc"
-	"moj/apps/web-bff/rpc"
-	"moj/apps/web-bff/token"
+	"moj/web-bff/etc"
+	"moj/web-bff/rpc"
+	"moj/web-bff/token"
 )
 
 // This file will not be regenerated automatically.

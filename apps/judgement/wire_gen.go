@@ -8,13 +8,13 @@ package main
 
 import (
 	"github.com/google/wire"
-	"moj/apps/judgement/db"
-	"moj/apps/judgement/domain"
-	"moj/apps/judgement/etc"
-	"moj/apps/judgement/listener"
-	"moj/apps/judgement/mq/consumer"
-	"moj/apps/judgement/mq/producer"
-	"moj/apps/judgement/svc"
+	"moj/judgement/db"
+	"moj/judgement/domain"
+	"moj/judgement/etc"
+	"moj/judgement/listener"
+	"moj/judgement/mq/consumer"
+	"moj/judgement/mq/producer"
+	"moj/judgement/svc"
 	"moj/domain/judgement"
 )
 

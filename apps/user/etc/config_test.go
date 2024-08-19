@@ -3,7 +3,7 @@ package etc_test
 import (
 	"testing"
 
-	"moj/apps/user/etc"
+	"moj/user/etc"
 
 	"github.com/stretchr/testify/require"
 )

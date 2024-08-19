@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log/slog"
 
-	"moj/apps/user/db"
-	"moj/apps/user/etc"
-	inter_error "moj/apps/user/pkg/app_err"
+	"moj/user/db"
+	"moj/user/etc"
+	inter_error "moj/user/pkg/app_err"
 	"moj/domain/account"
 
 	"go.mongodb.org/mongo-driver/bson"

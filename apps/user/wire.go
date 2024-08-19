@@ -4,12 +4,12 @@
 package main
 
 import (
-	"moj/apps/user/db"
-	"moj/apps/user/domain"
-	"moj/apps/user/etc"
-	"moj/apps/user/listener"
-	"moj/apps/user/mail"
-	service "moj/apps/user/svc"
+	"moj/user/db"
+	"moj/user/domain"
+	"moj/user/etc"
+	"moj/user/listener"
+	"moj/user/mail"
+	service "moj/user/svc"
 	"moj/domain/account"
 	"moj/domain/captcha"
 	"moj/domain/policy"

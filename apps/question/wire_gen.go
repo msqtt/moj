@@ -8,10 +8,10 @@ package main
 
 import (
 	"github.com/google/wire"
-	"moj/apps/question/db"
-	"moj/apps/question/domain"
-	"moj/apps/question/etc"
-	"moj/apps/question/svc"
+	"moj/question/db"
+	"moj/question/domain"
+	"moj/question/etc"
+	"moj/question/svc"
 	"moj/domain/question"
 )
 

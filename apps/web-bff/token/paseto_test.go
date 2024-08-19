@@ -1,7 +1,7 @@
 package token
 
 import (
-	"moj/apps/web-bff/etc"
+	"moj/web-bff/etc"
 	"testing"
 	"time"
 

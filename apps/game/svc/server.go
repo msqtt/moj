@@ -1,9 +1,9 @@
 package svc
 
 import (
-	"moj/apps/game/db"
-	"moj/apps/game/domain"
-	game_pb "moj/apps/game/rpc"
+	"moj/game/db"
+	"moj/game/domain"
+	game_pb "moj/game/rpc"
 	"moj/domain/game"
 )
 

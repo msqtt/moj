@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"moj/apps/web-bff/graph"
-	"moj/apps/web-bff/middleware"
+	"moj/web-bff/graph"
+	"moj/web-bff/middleware"
 	"net/http"
 	"strconv"
 

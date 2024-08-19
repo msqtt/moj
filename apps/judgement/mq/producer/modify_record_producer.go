@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"moj/apps/judgement/etc"
+	"moj/judgement/etc"
 
 	"github.com/nsqio/go-nsq"
 )

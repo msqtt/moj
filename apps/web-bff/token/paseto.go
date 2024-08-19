@@ -3,7 +3,7 @@ package token
 import (
 	"encoding/json"
 	"errors"
-	"moj/apps/web-bff/etc"
+	"moj/web-bff/etc"
 	"time"
 
 	"github.com/o1egl/paseto"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"moj/apps/question/db"
-	"moj/apps/question/pkg/app_err"
+	"moj/question/db"
+	"moj/question/pkg/app_err"
 	"moj/domain/question"
 
 	"go.mongodb.org/mongo-driver/bson"

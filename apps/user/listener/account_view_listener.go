@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"moj/apps/user/db"
+	"moj/user/db"
 	"moj/domain/account"
 )
 

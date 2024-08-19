@@ -3,8 +3,8 @@ package mq
 import (
 	"encoding/json"
 	"log"
-	"moj/apps/game/domain"
-	"moj/apps/game/etc"
+	"moj/game/domain"
+	"moj/game/etc"
 	"moj/domain/game"
 	"moj/domain/policy"
 	"moj/domain/record"

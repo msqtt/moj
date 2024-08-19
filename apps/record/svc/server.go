@@ -1,9 +1,9 @@
 package svc
 
 import (
-	"moj/apps/record/db"
-	"moj/apps/record/domain"
-	red_pb "moj/apps/record/rpc"
+	"moj/record/db"
+	"moj/record/domain"
+	red_pb "moj/record/rpc"
 	"moj/domain/record"
 )
 

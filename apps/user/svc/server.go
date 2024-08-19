@@ -1,10 +1,10 @@
 package svc
 
 import (
-	"moj/apps/user/db"
-	"moj/apps/user/domain"
-	"moj/apps/user/etc"
-	user_pb "moj/apps/user/rpc"
+	"moj/user/db"
+	"moj/user/domain"
+	"moj/user/etc"
+	user_pb "moj/user/rpc"
 	"moj/domain/account"
 	"moj/domain/captcha"
 	"moj/domain/pkg/crypt"

@@ -3,8 +3,8 @@ package svc
 import (
 	"context"
 	"log/slog"
-	"moj/apps/judgement/domain"
-	jud_pb "moj/apps/judgement/rpc"
+	"moj/judgement/domain"
+	jud_pb "moj/judgement/rpc"
 	"moj/domain/judgement"
 	"moj/domain/pkg/queue"
 	"moj/domain/policy"

@@ -3,7 +3,7 @@ package svc
 import (
 	"context"
 	"log/slog"
-	game_pb "moj/apps/game/rpc"
+	game_pb "moj/game/rpc"
 	"moj/domain/game"
 	"moj/domain/pkg/queue"
 	"time"

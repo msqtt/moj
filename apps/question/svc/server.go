@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"moj/apps/question/db"
-	ques_pb "moj/apps/question/rpc"
+	"moj/question/db"
+	ques_pb "moj/question/rpc"
 	"moj/domain/question"
 )
 

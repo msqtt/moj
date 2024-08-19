@@ -2,10 +2,10 @@ package main
 
 import (
 	"log/slog"
-	"moj/apps/web-bff/etc"
-	"moj/apps/web-bff/graph"
-	"moj/apps/web-bff/handler"
-	"moj/apps/web-bff/rpc"
+	"moj/web-bff/etc"
+	"moj/web-bff/graph"
+	"moj/web-bff/handler"
+	"moj/web-bff/rpc"
 	"os"
 	"time"
 )

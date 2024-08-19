@@ -2,7 +2,7 @@ package domain
 
 import (
 	"errors"
-	inter_error "moj/apps/user/pkg/app_err"
+	inter_error "moj/user/pkg/app_err"
 	"moj/domain/pkg/crypt"
 
 	"golang.org/x/crypto/bcrypt"

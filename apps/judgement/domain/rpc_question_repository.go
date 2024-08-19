@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log"
-	"moj/apps/judgement/etc"
-	"moj/apps/judgement/pkg/app_err"
-	ques_pb "moj/apps/question/rpc"
+	"moj/judgement/etc"
+	"moj/judgement/pkg/app_err"
+	ques_pb "moj/question/rpc"
 	"moj/domain/question"
 
 	"google.golang.org/grpc"

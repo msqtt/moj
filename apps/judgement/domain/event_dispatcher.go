@@ -3,8 +3,8 @@ package domain
 import (
 	"log/slog"
 
-	"moj/apps/judgement/listener"
-	mq "moj/apps/judgement/mq/producer"
+	"moj/judgement/listener"
+	mq "moj/judgement/mq/producer"
 	"moj/domain/pkg/queue"
 )
 

@@ -3,8 +3,8 @@ package consumer
 import (
 	"encoding/json"
 	"log"
-	"moj/apps/record/domain"
-	"moj/apps/record/etc"
+	"moj/record/domain"
+	"moj/record/etc"
 	"moj/domain/judgement"
 	"moj/domain/policy"
 	"moj/domain/record"

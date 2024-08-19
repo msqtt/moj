@@ -4,12 +4,12 @@
 package main
 
 import (
-	"moj/apps/game/db"
-	"moj/apps/game/domain"
-	"moj/apps/game/etc"
-	"moj/apps/game/listener"
-	"moj/apps/game/mq"
-	"moj/apps/game/svc"
+	"moj/game/db"
+	"moj/game/domain"
+	"moj/game/etc"
+	"moj/game/listener"
+	"moj/game/mq"
+	"moj/game/svc"
 	"moj/domain/game"
 
 	"github.com/google/wire"

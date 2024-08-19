@@ -4,12 +4,12 @@
 package main
 
 import (
-	"moj/apps/web-bff/etc"
-	"moj/apps/web-bff/graph"
-	"moj/apps/web-bff/handler"
-	"moj/apps/web-bff/oss"
-	"moj/apps/web-bff/rpc"
-	"moj/apps/web-bff/token"
+	"moj/web-bff/etc"
+	"moj/web-bff/graph"
+	"moj/web-bff/handler"
+	"moj/web-bff/oss"
+	"moj/web-bff/rpc"
+	"moj/web-bff/token"
 
 	"github.com/google/wire"
 	"google.golang.org/grpc"

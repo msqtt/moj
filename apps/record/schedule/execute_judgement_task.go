@@ -3,8 +3,8 @@ package schedule
 import (
 	"context"
 	"log/slog"
-	"moj/apps/record/db"
-	mq "moj/apps/record/mq/producer"
+	"moj/record/db"
+	mq "moj/record/mq/producer"
 	"moj/domain/record"
 )
 

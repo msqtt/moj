@@ -3,8 +3,8 @@ package domain
 import (
 	"context"
 
-	"moj/apps/game/db"
 	"moj/domain/pkg/queue"
+	"moj/game/db"
 )
 
 type CommandInvoker interface {

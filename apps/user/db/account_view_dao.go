@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log/slog"
 
-	inter_error "moj/apps/user/pkg/app_err"
+	inter_error "moj/user/pkg/app_err"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

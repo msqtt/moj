@@ -2,7 +2,7 @@ package token
 
 import (
 	"errors"
-	"moj/apps/web-bff/etc"
+	"moj/web-bff/etc"
 )
 
 type SessionManager struct {
