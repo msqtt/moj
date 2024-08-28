@@ -4,27 +4,27 @@
 
 moj 是一个简单的 OnlineJudge 分布式服务应用，设计基于领域驱动 ，使用 Golang 开发。
 
-本项目仅作为本人在学习微服务过程中开发的一个简单样例，业务功能尚未完善，后续或许会逐步完善，目前仅供参考，请勿在正式生产环境下使用。
+本项目仅作为本人学习微服务过程中开发的简单样例，业务功能尚未完善，后续或许会逐步完善，仅供参考，请勿在正式生产环境下使用。
 
 如有任何问题或建议，欢迎通过提交 issue 交流讨论。
 
 #### 业务服务
 
-包含的基础业务：
+包含基础业务：
 * 用户服务
 * 题目服务
 * 判题服务
 * 比赛服务
 
-> 更多详细的内容请查看[需求文档](./docs/requirement.md)。
+> 详细内容请查看[需求文档](./docs/requirement.md)。
 
 #### 服务治理
 
-本项目以服务网格作为服务治理方案，使用 Kubernetes 作为容器编排部署。
+本项目以**服务网格**作为服务治理方案，使用 Kubernetes 作为容器编排方案。
 
 在通信协议上:
 * 各服务节点间使用 GRPC 协议进行通信。
-* Web BFF 节点按照 GraphQL 规范，暴露 HTTP 接口与前端通信。
+* Web-BFF 节点以 GraphQL 为规范，使用 HTTP 接口与前端通信。
 
 
 
@@ -59,11 +59,11 @@ moj 是一个简单的 OnlineJudge 分布式服务应用，设计基于领域驱
 #### 监控设施
 
 * 对于**指标监控**，
-本项目推荐使用 Prometheus ，安装方式请参考[官方文档](https://prometheus.io)。
+本项目推荐搭配使用 Prometheus ，安装方式请参考[官方文档](https://prometheus.io)。
 * 对于**日志监控**，
-本项目推荐使用 Loki 架构，安装方式请参考[官方文档](https://grafana.com/docs/loki/)。
+本项目推荐搭配使用 Loki 架构，安装方式请参考[官方文档](https://grafana.com/docs/loki/)。
 * 对于**看板应用和监控告警**，本项目推荐使用 Grafana ，安装方式请参考[官方文档](https://grafana.com/grafana/)。
-* 对于**分布式追踪**，本项目推荐使用 Jaeger ，安装方式请参考[官方文档](https://www.jaegertracing.io/)。
+* 对于**分布式追踪**，本项目推荐搭配使用 Jaeger ，安装方式请参考[官方文档](https://www.jaegertracing.io/)。
 
 ### 使用说明
 
@@ -71,7 +71,7 @@ moj 是一个简单的 OnlineJudge 分布式服务应用，设计基于领域驱
 
 `http://moj-web-bff.<namespace>:18080/`
 
-接口访问地址：
+GraphQL 接口访问地址：
 
 `http://moj-web-bff.<namespace>:18080/query/`
 
