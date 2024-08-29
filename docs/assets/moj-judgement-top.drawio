@@ -13,7 +13,7 @@
         <mxCell id="hPZAuObZ41Z15zBgy_SH-9" value="Record Service" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.azure.cloud" parent="1" vertex="1">
           <mxGeometry x="450" y="458" width="50" height="32" as="geometry" />
         </mxCell>
-        <mxCell id="VZ6JtrIhUhEAgBTIwW6t-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=1;" parent="1" source="hPZAuObZ41Z15zBgy_SH-15" target="VZ6JtrIhUhEAgBTIwW6t-16" edge="1">
+        <mxCell id="VZ6JtrIhUhEAgBTIwW6t-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="hPZAuObZ41Z15zBgy_SH-15" target="VZ6JtrIhUhEAgBTIwW6t-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="hPZAuObZ41Z15zBgy_SH-15" value="Judgement Service" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.azure.cloud" parent="1" vertex="1">
