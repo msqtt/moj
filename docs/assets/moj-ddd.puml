@@ -1,0 +1,556 @@
+@startuml
+object cmd_create_account {
+    Email
+    NickName
+    Password
+    Time
+}
+
+object cmd_delete_account {
+   AccountID 
+   Password
+   Time
+}
+
+object cmd_login_account {
+    AccountID
+    Device
+    IPAddr
+    Time
+}
+
+object cmd_modify_account_info {
+    AccountID
+    NickName
+    AvatarLink
+}
+
+object cmd_change_account_passwd {
+    AccountID
+    Password
+    Time
+}
+
+object cmd_set_account_admin {
+    AccountID
+    IsAdmin
+}
+
+object cmd_set_account_status {
+    AccountID
+    Enabled
+}
+
+object agg_account {
+    AccountID 
+    Email
+    Password
+    AvatarLink
+    NickName
+    Enabled
+    IsAdmin
+}
+
+object event_account_create {
+    AccountID 
+    Email
+    NickName
+    RegisterTime
+    Enabled = true
+}
+
+
+object event_delete_account {
+    AccountID 
+    DeleteTime
+    Enabled = false
+}
+
+object event_login_account {
+    AccountID
+    LoginIPAddr
+    LoginDevice
+    LoginTime
+}
+
+object event_modify_account_info {
+    AccountID
+    NickName    
+    AvatarLink
+}
+
+object event_change_account_passwd {
+    AccountID
+    ChangeTime
+}
+
+object event_set_account_admin {
+    AccountID
+    IsAdmin
+}
+
+object event_set_account_status {
+    AccountID
+    Enabled
+}
+
+object read_model_account {
+    AccountID 
+    Email
+    AvatarLink
+    NickName
+    Enabled
+    IsAdmin
+    LastLoginTime
+    LastLoginIPAddr
+    LastLoginDevice
+    LastPasswdChangeTime
+    RegisterTime
+    DeleteTime
+}
+
+object read_model_account_passed_question {
+    AccountID
+    QuestionID
+    RecordID
+    FinishTime
+}
+
+cmd_delete_account -d-> agg_account 
+cmd_create_account -d-> agg_account
+cmd_set_account_admin -d-> agg_account
+cmd_set_account_status -d-> agg_account
+
+cmd_modify_account_info -d-> agg_account
+cmd_login_account -d-> agg_account
+cmd_change_account_passwd -d-> agg_account
+
+agg_account -d-> event_delete_account
+agg_account -d-> event_account_create
+
+agg_account -d-> event_set_account_admin
+agg_account -d-> event_set_account_status
+
+agg_account -d-> event_modify_account_info
+agg_account -d-> event_login_account
+agg_account -d-> event_change_account_passwd
+
+
+event_account_create -d-> read_model_account
+event_delete_account -d-> read_model_account
+event_login_account -d-> read_model_account
+event_modify_account_info -d-> read_model_account
+event_set_account_status -d-> read_model_account
+event_set_account_admin -d-> read_model_account
+event_change_account_passwd -d-> read_model_account
+
+object cmd_create_register_captcha {
+    Email
+    Time
+    IpAddr
+    LiveDuration
+}
+
+object cmd_create_change_passwd_captcha {
+    AccountID
+    Email
+    Time
+    IpAddr
+    LiveDuration
+}
+
+object agg_captcha {
+    AccountID
+    Email
+    Type
+    Content
+    IpAddr
+    Duration
+    Enabled
+    CreateTime
+    ExpireTime
+}
+
+object service_email {
+}
+
+
+cmd_create_register_captcha -d-> agg_captcha
+cmd_create_change_passwd_captcha -d-> agg_captcha
+
+agg_captcha -d-> event_register_captcha
+agg_captcha -d-> event_change_passwd_captcha
+
+object event_register_captcha {
+}
+object event_change_passwd_captcha {
+}
+
+event_register_captcha -d-> service_email
+event_change_passwd_captcha -d-> service_email
+
+object cmd_register {
+    Email
+    NickName
+    Password
+    Captcha
+    Time
+}
+
+object service_register {
+    if Captcha existed and Valided
+    - find the latest Captcha through Email and content
+    - whether ExpireTime is larger then Time
+}
+
+cmd_register -d-> service_register
+service_register -d-> agg_captcha
+service_register -d-> cmd_create_account
+
+object cmd_change_passwd {
+    Email
+    Password
+    Captcha
+    Time
+}
+
+object service_change_passwd {
+    is there a able account using email?
+    if Captcha existed and Valided
+    - find the latest Captcha through AccountID and content
+    - whether ExpireTime is larger then Time
+}
+
+cmd_change_passwd -d-> service_change_passwd
+service_change_passwd -d-> agg_captcha
+service_change_passwd -d-> cmd_change_account_passwd
+object cmd_create_question {
+    Title
+    Level
+    AllowedLanguages
+    TimeLimit
+    MemoryLimit
+    Tags
+    Time
+}
+
+object cmd_modify_question {
+    QuestionID
+    Enabled
+    Title
+    Level
+    AllowedLanguages
+    TimeLimit
+    MemoryLimit
+    Tags
+    Time
+}
+
+object agg_question {
+    QuestionID
+    Enabled
+    Title
+    Level
+    AllowedLanguages
+    Cases vo_case
+    TimeLimit
+    MemoryLimitn
+    Tags
+    CreateTime
+    ModifyTime
+}
+
+cmd_create_question -d-> agg_question
+cmd_modify_question -d-> agg_question
+agg_question -r- vo_case
+
+object cmd_upload_question {
+    Title
+    Level
+    AllowedLanguages
+    TimeLimit
+    MemoryLimit
+    Tags
+    Time
+    CaseFiles
+}
+
+object service_upload_question {
+    1. create question aggregation
+    2. insert case files
+}
+
+object po_case {
+    QuestionID
+    CaseNumber
+    CaseInputFile
+    CaseOutputFile
+}
+
+
+object vo_case {
+    Number
+    InputFilePath
+    OutputFilePath
+}
+vo_case --> po_case
+
+cmd_upload_question -d-> service_upload_question
+
+service_upload_question -r- po_case
+service_upload_question -d-> cmd_create_question
+
+
+
+object cmd_update_question {
+    QuestionID
+    Title
+    Level
+    AllowedLanguages
+    TimeLimit
+    MemoryLimit
+    Tags
+    Time
+    CaseFiles
+}
+
+
+object service_modify_question {
+    1. find the question aggregation then modify
+    2. modify the case files
+}
+
+cmd_update_question -d-> service_modify_question
+
+service_modify_question -r- po_case
+service_modify_question -d-> cmd_modify_question
+
+object cmd_execution {
+    RecordID
+    QuestionID
+    CaseFiles
+    Language
+    Code
+    CodeHash
+    Time
+}
+
+object agg_judgement {
+    JudgeMentID
+    JudgeStatus   
+    RecordID
+    QuestionID
+    Code
+    CodeHash
+    NumberFinishedAt
+    TotalQuestion
+    MemoryUsed
+    TimeUsed
+    CPUTimeUsed
+    ExecuteTime
+    FailedReason
+}
+
+object event_finish_execution {
+    JudgeMentID
+    JudgeStatus   
+    RecordID
+    CodeHash
+    NumberFinishedAt
+    TotalQuestion
+    MemoryUsed
+    TimeUsed
+    CPUTimeUsed
+    ExecuteTime
+    FailedReason
+}
+
+cmd_execution -d-> agg_judgement
+agg_judgement -d-> event_finish_execution
+
+
+object cmd_submit_record {
+    AccountID
+    QustionID
+    GameID (can be null)
+    Language
+    Code
+    Time
+}
+
+object cmd_modify_record {
+    RecordID
+    JudgeStatus
+    ResultInfo
+    MemoryUsed
+    TimeUsed
+    CPUTimeUsed
+    Time
+}
+
+object agg_record {
+    RecordID
+    AccountID
+    GameID (can be null)
+    QustionID
+    Language
+    Code
+    CodeHash
+    JudgeStatus
+    ResultInfo
+    NumberFinishedAt
+    TotalQuestion
+    CreateTime
+    FinishTime
+    MemoryUsed
+    TimeUsed
+    CPUTimeUsed
+}
+
+object event_submit_record {
+    RecordID
+    AccountID
+    QustionID
+    GameID (can be null)
+    Language
+    Code
+    CreateTime
+}
+
+object event_modify_record {
+    RecordID
+    AccountID
+    QuestionID
+    GameID (can be null)
+    JudgeStatus
+    NumberFinishedAt
+    TotalQuestion
+    FinishTime
+}
+
+object read_model_task {
+    the situation of records one day
+    - submit number
+    - finish number
+}
+
+cmd_submit_record -d-> agg_record
+cmd_modify_record -d-> agg_record
+
+agg_record -d-> event_submit_record
+agg_record -d-> event_modify_record
+
+event_submit_record -d-> read_model_task
+event_modify_record -d-> read_model_task
+event_modify_record -d-> read_model_account_passed_question
+
+
+object policy_judge {
+    - find all casefiles through QuestionID
+}
+object policy_finish_judge {
+}
+
+event_submit_record -l-> policy_judge
+policy_judge -d-> cmd_execution
+policy_judge -d- po_case
+
+event_finish_execution -d-> policy_finish_judge
+policy_finish_judge -r-> cmd_modify_record
+
+object cmd_create_game {
+    Title
+    Description
+    OrganizerID
+    Time
+    StartTime
+    EndTime
+    QuestionIDList
+}
+object cmd_modify_game {
+    GameID
+    Title
+    Description
+    OrganizerID
+    StartTime
+    EndTime
+    QuestionIDList
+}
+object cmd_signup {
+    GameID
+    AccountID
+    Time
+}
+object cmd_cancel_signup {
+    GameID
+    AccountID
+    Time
+}
+object cmd_calculate_score {
+    GameID
+    RecordID
+    AccountID
+    QuestionID
+    NumberFinishedAt
+    TotalQuestion
+}
+
+object agg_game {
+    GameID
+    Title
+    Description
+    OrganizerID
+    Time
+    StartTime
+    EndTime
+    QuestionIDList [questionID, score]
+    SignUpUserList [{userID, signUpTime}}
+}
+
+object event_signup {
+    GameID
+    AccountID
+    SignUpTime
+}
+object event_cancel_signup {
+    GameID
+    AccountID
+    CancelTime
+}
+object event_calculate_score {
+    GameID
+    AccountID
+    QuestionID
+    Score
+}
+
+cmd_create_game -d-> agg_game
+cmd_modify_game -d-> agg_game
+cmd_signup -d-> agg_game
+cmd_cancel_signup -d-> agg_game
+cmd_calculate_score -d-> agg_game
+
+agg_game -d-> event_signup
+agg_game -d-> event_cancel_signup
+agg_game -d-> event_calculate_score
+
+object read_model_account_score {
+    GameID
+    AccountID
+    Score
+    SignUpTime
+}
+
+event_signup -d-> read_model_account_score
+event_cancel_signup -d-> read_model_account_score
+event_calculate_score -d-> read_model_account_score
+
+object policy_calculate_score {
+    1. find starting game that the account has signed up
+    2. whether the question is in the game
+}
+
+event_modify_record -r-> policy_calculate_score
+policy_calculate_score -d-> cmd_calculate_score
+
+@end
