@@ -4,18 +4,40 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"moj/domain/record"
 	"moj/record/db"
 	"moj/record/pkg/app_err"
-	"moj/domain/record"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoDBRecordRepository struct {
 	mongodb    *db.MongoDB
 	collection *mongo.Collection
+}
+
+// FindBestRecord implements record.RecordRepository.
+func (m *MongoDBRecordRepository) FindBestRecord(ctx context.Context, uid string, qid string, gid string) (*record.Record, error) {
+	filter := bson.M{"account_id": uid, "question_id": qid}
+	opts := options.FindOne().SetSort(bson.M{"number_finish_at": -1})
+	if gid != "" {
+		filter["game_id"] = gid
+	}
+	slog.Debug("find best record", "filter", filter, "opts", opts)
+	var ret record.Record
+	err := m.collection.FindOne(ctx, filter, opts).Decode(&ret)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return &ret, nil
+		}
+		err = errors.Join(app_err.ErrServerInternal,
+			errors.New("failed to find best record by id"), err)
+		return nil, err
+	}
+	return &ret, err
 }
 
 // FindRecordByID implements record.RecordRepository.

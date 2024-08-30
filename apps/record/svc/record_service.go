@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"moj/domain/pkg/queue"
+	"moj/domain/record"
 	"moj/game/pkg/app_err"
 	"moj/record/db"
 	red_pb "moj/record/rpc"
-	"moj/domain/pkg/queue"
-	"moj/domain/record"
 	"time"
 )
 
@@ -76,27 +76,31 @@ func (s *Server) SubmitRecord(ctx context.Context, req *red_pb.SubmitRecordReque
 	return
 }
 
-func fromRecord(rv []*db.RecordModel) []*red_pb.Record {
+func fromDBRecord(v *db.RecordModel) *red_pb.Record {
+	return &red_pb.Record{
+		RecordID:         v.ID.Hex(),
+		AccountID:        v.AccountID,
+		GameID:           &v.GameID,
+		QuestionID:       v.QuestionID,
+		Language:         v.Language,
+		Code:             v.Code,
+		CodeHash:         v.CodeHash,
+		JudgeStatus:      v.JudgeStatus,
+		FailedReason:     &v.FailedReason,
+		NumberFinishedAt: int64(v.NumberFinisheAt),
+		TotalQuestion:    int64(v.TotalQuestion),
+		CreateTime:       v.CreateTime.Unix(),
+		FinishTime:       v.FinishTime.Unix(),
+		MemoryUsed:       int64(v.MemoryUsed),
+		TimeUsed:         int64(v.TimeUsed),
+		CpuTimeUsed:      int64(v.CPUTimeUsed),
+	}
+}
+
+func fromDBRecords(rv []*db.RecordModel) []*red_pb.Record {
 	ret := make([]*red_pb.Record, len(rv))
 	for i, v := range rv {
-		ret[i] = &red_pb.Record{
-			RecordID:         v.ID.Hex(),
-			AccountID:        v.AccountID,
-			GameID:           &v.GameID,
-			QuestionID:       v.QuestionID,
-			Language:         v.Language,
-			Code:             v.Code,
-			CodeHash:         v.CodeHash,
-			JudgeStatus:      v.JudgeStatus,
-			FailedReason:     &v.FailedReason,
-			NumberFinishedAt: int64(v.NumberFinisheAt),
-			TotalQuestion:    int64(v.TotalQuestion),
-			CreateTime:       v.CreateTime.Unix(),
-			FinishTime:       v.FinishTime.Unix(),
-			MemoryUsed:       int64(v.MemoryUsed),
-			TimeUsed:         int64(v.TimeUsed),
-			CpuTimeUsed:      int64(v.CPUTimeUsed),
-		}
+		ret[i] = fromDBRecord(v)
 	}
 	return ret
 }
@@ -116,7 +120,7 @@ func (s *Server) GetRecordPage(ctx context.Context, req *red_pb.GetRecordPageReq
 	}
 
 	resp = &red_pb.GetRecordPageResponse{
-		Records: fromRecord(res),
+		Records: fromDBRecords(res),
 		Total:   total,
 	}
 	return
@@ -133,24 +137,7 @@ func (s *Server) GetRecord(ctx context.Context, req *red_pb.GetRecordRequest) (
 	}
 
 	resp = &red_pb.GetRecordResponse{
-		Record: &red_pb.Record{
-			RecordID:         rec.RecordID,
-			AccountID:        rec.AccountID,
-			GameID:           &rec.GameID,
-			QuestionID:       rec.QuestionID,
-			Language:         rec.Language,
-			Code:             rec.Code,
-			CodeHash:         rec.CodeHash,
-			JudgeStatus:      rec.JudgeStatus,
-			FailedReason:     &rec.FailedReason,
-			NumberFinishedAt: int64(rec.NumberFinishedAt),
-			TotalQuestion:    int64(rec.TotalQuestion),
-			CreateTime:       rec.CreateTime,
-			FinishTime:       rec.FinishTime,
-			MemoryUsed:       int64(rec.MemoryUsed),
-			TimeUsed:         int64(rec.TimeUsed),
-			CpuTimeUsed:      int64(rec.CPUTimeUsed),
-		},
+		Record: fromDBRecord(db.NewRecordFromAggregation(rec)),
 	}
 	return
 }
@@ -236,6 +223,23 @@ func (s *Server) GetQuestionRecordCount(ctx context.Context, req *red_pb.GetQues
 	resp = &red_pb.GetQuestionRecordCountResponse{
 		PassedCount: passCount,
 		SubmitTotal: total,
+	}
+	return
+}
+
+// GetBestRecord implements red_pb.RecordServiceServer.
+func (s *Server) GetBestRecord(ctx context.Context, req *red_pb.GetBestRecordRequest) (
+	resp *red_pb.GetBestRecordResponse, err error) {
+
+	slog.Debug("get best record request", "req", req)
+	rec, err := s.recordRepository.FindBestRecord(ctx, req.AccountID, req.QuestionID, req.GetGameID())
+	if err != nil {
+		slog.Error("failed to get best record", "err", err)
+		err = responseStatusError(err)
+		return
+	}
+	resp = &red_pb.GetBestRecordResponse{
+		Record: fromDBRecord(db.NewRecordFromAggregation(rec)),
 	}
 	return
 }

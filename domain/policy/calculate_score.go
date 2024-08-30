@@ -39,18 +39,13 @@ func (p *CalculateScorePolicy) OnEvent(event any) error {
 		return nil
 	}
 
-	if evt.LastMostFinishedAt >= evt.NumberFinishedAt {
-		return nil
-	}
-
 	cmd := game.CalculateScoreCmd{
-		GameID:             evt.GameID,
-		RecordID:           evt.RecordID,
-		AccountID:          evt.AccountID,
-		QuestionID:         evt.QuestionID,
-		NumberFinishedAt:   evt.NumberFinishedAt,
-		LastMostFinishedAt: evt.LastMostFinishedAt,
-		TotalQuestion:      evt.TotalQuestion,
+		GameID:           evt.GameID,
+		RecordID:         evt.RecordID,
+		AccountID:        evt.AccountID,
+		QuestionID:       evt.QuestionID,
+		NumberFinishedAt: evt.NumberFinishedAt,
+		TotalQuestion:    evt.TotalQuestion,
 	}
 
 	slog.Info("start to calculate score", "cmd", cmd)

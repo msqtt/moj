@@ -8,13 +8,13 @@ package main
 
 import (
 	"github.com/google/wire"
+	"moj/domain/game"
 	"moj/game/db"
 	"moj/game/domain"
 	"moj/game/etc"
 	"moj/game/listener"
 	"moj/game/mq"
 	"moj/game/svc"
-	"moj/domain/game"
 )
 
 // Injectors from wire.go:
@@ -33,7 +33,8 @@ func InitializeApplication() *App {
 	signupGameCmdHandler := game.NewSignUpGameCmdHandler(gameRepository)
 	cancelSignUpGameCmdHandler := game.NewCancelSignUpGameCmdHandler(gameRepository)
 	server := svc.NewServer(gameViewDao, signUpScoreDao, commandInvoker, gameRepository, createGameCmdHandler, modifyGameCmdHandler, signupGameCmdHandler, cancelSignUpGameCmdHandler)
-	calculateScoreCmdHandler := game.NewCalculateScoreCmdHandler(gameRepository)
+	recordRepository := domain.NewRPCRecordRepository(config)
+	calculateScoreCmdHandler := game.NewCalculateScoreCmdHandler(gameRepository, recordRepository)
 	nsqCalculateScoreConsumer := mq.NewNsqCalculateScoreConsumer(config, calculateScoreCmdHandler, eventDispatcher)
 	app := NewApp(server, mongoDB, config, nsqCalculateScoreConsumer)
 	return app
@@ -45,4 +46,4 @@ func provideDispatcher(supDao db.SignUpScoreDao) domain.EventDispatcher {
 	return domain.NewSyncEventDispatcher(listener.NewSignUpScoreLisener(supDao))
 }
 
-var providers = wire.NewSet(svc.NewServer, game.NewSignUpGameCmdHandler, game.NewCancelSignUpGameCmdHandler, game.NewCreateGameCmdHandler, game.NewModifyGameCmdHandler, game.NewCalculateScoreCmdHandler, mq.NewNsqCalculateScoreConsumer, provideDispatcher, domain.NewSimpleEventQueue, domain.NewTransactionCommandInvoker, domain.NewMongoDBGameRepository, db.NewMongoDBTransactionManager, db.NewMongoDBSignUpScoreDao, db.NewMongoDBGameViewDao, db.NewMongoDB, etc.NewAppConfig)
+var providers = wire.NewSet(svc.NewServer, game.NewSignUpGameCmdHandler, game.NewCancelSignUpGameCmdHandler, game.NewCreateGameCmdHandler, game.NewModifyGameCmdHandler, game.NewCalculateScoreCmdHandler, mq.NewNsqCalculateScoreConsumer, provideDispatcher, domain.NewSimpleEventQueue, domain.NewTransactionCommandInvoker, domain.NewMongoDBGameRepository, domain.NewRPCRecordRepository, db.NewMongoDBTransactionManager, db.NewMongoDBSignUpScoreDao, db.NewMongoDBGameViewDao, db.NewMongoDB, etc.NewAppConfig)

@@ -13,6 +13,7 @@ type Config struct {
 	TLS                   bool
 	Debug                 bool
 	NSQLookUpAddr         string `mapstructure:"NSQ_LOOKUP_ADDR"`
+	RecordRPCAddr         string `mapstructure:"RECORD_RPC_ADDR"`
 	CalculateScoreTopic   string `mapstructure:"CALCULATE_SCORE_TOPIC"`
 	CalculateScoreChannel string `mapstructure:"CALCULATE_SCORE_CHANNEL"`
 }

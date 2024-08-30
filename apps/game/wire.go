@@ -4,13 +4,13 @@
 package main
 
 import (
+	"moj/domain/game"
 	"moj/game/db"
 	"moj/game/domain"
 	"moj/game/etc"
 	"moj/game/listener"
 	"moj/game/mq"
 	"moj/game/svc"
-	"moj/domain/game"
 
 	"github.com/google/wire"
 )
@@ -33,6 +33,7 @@ var providers = wire.NewSet(
 	domain.NewSimpleEventQueue,
 	domain.NewTransactionCommandInvoker,
 	domain.NewMongoDBGameRepository,
+	domain.NewRPCRecordRepository,
 	db.NewMongoDBTransactionManager,
 	db.NewMongoDBSignUpScoreDao,
 	db.NewMongoDBGameViewDao,
