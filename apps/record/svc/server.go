@@ -1,10 +1,10 @@
 package svc
 
 import (
+	"moj/domain/record"
 	"moj/record/db"
 	"moj/record/domain"
 	red_pb "moj/record/rpc"
-	"moj/domain/record"
 )
 
 type Server struct {

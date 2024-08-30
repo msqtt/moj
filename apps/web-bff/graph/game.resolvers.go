@@ -201,6 +201,23 @@ func (r *mutationResolver) CancelSignUpGame(ctx context.Context, gid string) (*m
 	return fromInt64Second(resp.GetTime()), err
 }
 
+// CalculateAllScores is the resolver for the calculateAllScores field.
+func (r *mutationResolver) CalculateAllScores(ctx context.Context, gid string) (*model.Time, error) {
+	_, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", true)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := r.RpcClients.GameClient.CalculateAllScore(ctx,
+		&game_pb.CalculateAllScoreRequest{GameID: gid})
+	if err != nil {
+		slog.Error("failed to calculate all scores", "error", err)
+		return nil, ErrInternal
+	}
+
+	return fromInt64Second(resp.GetTime()), err
+}
+
 // Game is the resolver for the game field.
 func (r *queryResolver) Game(ctx context.Context, id string) (*model.Game, error) {
 	game, err := findGame(r.RpcClients.GameClient, ctx, id)

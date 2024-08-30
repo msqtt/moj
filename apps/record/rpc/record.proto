@@ -8,6 +8,7 @@ service RecordService {
     rpc SubmitRecord(SubmitRecordRequest) returns (SubmitRecordResponse);
     rpc ModifyRecord(ModifyRecordRequest) returns (ModifyRecordResponse);
     rpc GetRecord(GetRecordRequest) returns (GetRecordResponse);
+    rpc GetBestRecord(GetBestRecordRequest) returns (GetBestRecordResponse);
     rpc GetRecordPage(GetRecordPageRequest) returns (GetRecordPageResponse);
 
     rpc GetDailyTaskView(GetDailyTaskViewRequest) returns (GetDailyTaskViewResponse);
@@ -68,6 +69,16 @@ message Record {
 }
 
 message GetRecordResponse {
+    Record record = 1;
+}
+
+message GetBestRecordRequest {
+    string questionID = 1;
+    string accountID = 2;
+    optional string gameID = 3;
+}
+
+message GetBestRecordResponse {
     Record record = 1;
 }
 

@@ -31,6 +31,7 @@ type GameServiceClient interface {
 	DeleteGame(ctx context.Context, in *DeleteGameRequest, opts ...grpc.CallOption) (*DeleteGameResponse, error)
 	SignUpGame(ctx context.Context, in *SignUpGameRequest, opts ...grpc.CallOption) (*SignUpGameResponse, error)
 	CancelSignUpGame(ctx context.Context, in *CancelSignUpGameRequest, opts ...grpc.CallOption) (*CancelSignUpGameResponse, error)
+	CalculateAllScore(ctx context.Context, in *CalculateAllScoreRequest, opts ...grpc.CallOption) (*CalculateAllScoreResponse, error)
 }
 
 type gameServiceClient struct {
@@ -122,6 +123,15 @@ func (c *gameServiceClient) CancelSignUpGame(ctx context.Context, in *CancelSign
 	return out, nil
 }
 
+func (c *gameServiceClient) CalculateAllScore(ctx context.Context, in *CalculateAllScoreRequest, opts ...grpc.CallOption) (*CalculateAllScoreResponse, error) {
+	out := new(CalculateAllScoreResponse)
+	err := c.cc.Invoke(ctx, "/game.GameService/CalculateAllScore", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GameServiceServer is the server API for GameService service.
 // All implementations must embed UnimplementedGameServiceServer
 // for forward compatibility
@@ -135,6 +145,7 @@ type GameServiceServer interface {
 	DeleteGame(context.Context, *DeleteGameRequest) (*DeleteGameResponse, error)
 	SignUpGame(context.Context, *SignUpGameRequest) (*SignUpGameResponse, error)
 	CancelSignUpGame(context.Context, *CancelSignUpGameRequest) (*CancelSignUpGameResponse, error)
+	CalculateAllScore(context.Context, *CalculateAllScoreRequest) (*CalculateAllScoreResponse, error)
 	mustEmbedUnimplementedGameServiceServer()
 }
 
@@ -168,6 +179,9 @@ func (UnimplementedGameServiceServer) SignUpGame(context.Context, *SignUpGameReq
 }
 func (UnimplementedGameServiceServer) CancelSignUpGame(context.Context, *CancelSignUpGameRequest) (*CancelSignUpGameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelSignUpGame not implemented")
+}
+func (UnimplementedGameServiceServer) CalculateAllScore(context.Context, *CalculateAllScoreRequest) (*CalculateAllScoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CalculateAllScore not implemented")
 }
 func (UnimplementedGameServiceServer) mustEmbedUnimplementedGameServiceServer() {}
 
@@ -344,6 +358,24 @@ func _GameService_CancelSignUpGame_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GameService_CalculateAllScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CalculateAllScoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServiceServer).CalculateAllScore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/game.GameService/CalculateAllScore",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServiceServer).CalculateAllScore(ctx, req.(*CalculateAllScoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GameService_ServiceDesc is the grpc.ServiceDesc for GameService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -386,6 +418,10 @@ var GameService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CancelSignUpGame",
 			Handler:    _GameService_CancelSignUpGame_Handler,
+		},
+		{
+			MethodName: "CalculateAllScore",
+			Handler:    _GameService_CalculateAllScore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

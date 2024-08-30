@@ -25,6 +25,7 @@ type RecordServiceClient interface {
 	SubmitRecord(ctx context.Context, in *SubmitRecordRequest, opts ...grpc.CallOption) (*SubmitRecordResponse, error)
 	ModifyRecord(ctx context.Context, in *ModifyRecordRequest, opts ...grpc.CallOption) (*ModifyRecordResponse, error)
 	GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error)
+	GetBestRecord(ctx context.Context, in *GetBestRecordRequest, opts ...grpc.CallOption) (*GetBestRecordResponse, error)
 	GetRecordPage(ctx context.Context, in *GetRecordPageRequest, opts ...grpc.CallOption) (*GetRecordPageResponse, error)
 	GetDailyTaskView(ctx context.Context, in *GetDailyTaskViewRequest, opts ...grpc.CallOption) (*GetDailyTaskViewResponse, error)
 	GetQuestionRecordCount(ctx context.Context, in *GetQuestionRecordCountRequest, opts ...grpc.CallOption) (*GetQuestionRecordCountResponse, error)
@@ -61,6 +62,15 @@ func (c *recordServiceClient) ModifyRecord(ctx context.Context, in *ModifyRecord
 func (c *recordServiceClient) GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
 	out := new(GetRecordResponse)
 	err := c.cc.Invoke(ctx, "/record.RecordService/GetRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recordServiceClient) GetBestRecord(ctx context.Context, in *GetBestRecordRequest, opts ...grpc.CallOption) (*GetBestRecordResponse, error) {
+	out := new(GetBestRecordResponse)
+	err := c.cc.Invoke(ctx, "/record.RecordService/GetBestRecord", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +129,7 @@ type RecordServiceServer interface {
 	SubmitRecord(context.Context, *SubmitRecordRequest) (*SubmitRecordResponse, error)
 	ModifyRecord(context.Context, *ModifyRecordRequest) (*ModifyRecordResponse, error)
 	GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error)
+	GetBestRecord(context.Context, *GetBestRecordRequest) (*GetBestRecordResponse, error)
 	GetRecordPage(context.Context, *GetRecordPageRequest) (*GetRecordPageResponse, error)
 	GetDailyTaskView(context.Context, *GetDailyTaskViewRequest) (*GetDailyTaskViewResponse, error)
 	GetQuestionRecordCount(context.Context, *GetQuestionRecordCountRequest) (*GetQuestionRecordCountResponse, error)
@@ -139,6 +150,9 @@ func (UnimplementedRecordServiceServer) ModifyRecord(context.Context, *ModifyRec
 }
 func (UnimplementedRecordServiceServer) GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecord not implemented")
+}
+func (UnimplementedRecordServiceServer) GetBestRecord(context.Context, *GetBestRecordRequest) (*GetBestRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBestRecord not implemented")
 }
 func (UnimplementedRecordServiceServer) GetRecordPage(context.Context, *GetRecordPageRequest) (*GetRecordPageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecordPage not implemented")
@@ -218,6 +232,24 @@ func _RecordService_GetRecord_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RecordServiceServer).GetRecord(ctx, req.(*GetRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RecordService_GetBestRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBestRecordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecordServiceServer).GetBestRecord(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/record.RecordService/GetBestRecord",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecordServiceServer).GetBestRecord(ctx, req.(*GetBestRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -330,6 +362,10 @@ var RecordService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRecord",
 			Handler:    _RecordService_GetRecord_Handler,
+		},
+		{
+			MethodName: "GetBestRecord",
+			Handler:    _RecordService_GetBestRecord_Handler,
 		},
 		{
 			MethodName: "GetRecordPage",

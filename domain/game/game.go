@@ -106,7 +106,7 @@ func (g *Game) calculate(queue queue.EventQueue, cmd CalculateScoreCmd) error {
 	num := cmd.NumberFinishedAt - cmd.LastMostFinishedAt
 	deno := cmd.TotalQuestion
 
-	score := getScore(num, deno, gross)
+	score := GetScore(num, deno, gross)
 
 	event := CalculateScoreEvent{
 		GameID:     g.GameID,
@@ -117,7 +117,7 @@ func (g *Game) calculate(queue queue.EventQueue, cmd CalculateScoreCmd) error {
 	return queue.EnQueue(event)
 }
 
-func getScore(num, deno, gross int) int {
+func GetScore(num, deno, gross int) int {
 	return num * gross / deno
 }
 
