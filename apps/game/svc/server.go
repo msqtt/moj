@@ -1,10 +1,11 @@
 package svc
 
 import (
+	"moj/domain/game"
+	"moj/domain/record"
 	"moj/game/db"
 	"moj/game/domain"
 	game_pb "moj/game/rpc"
-	"moj/domain/game"
 )
 
 type Server struct {
@@ -17,6 +18,7 @@ type Server struct {
 	modifyGameCmdHandler       *game.ModifyGameCmdHandler
 	signUpGameCmdHandler       *game.SignupGameCmdHandler
 	cancelSignUpGameCmdHandler *game.CancelSignUpGameCmdHandler
+	recordRepository           record.RecordRepository
 }
 
 func NewServer(
@@ -28,7 +30,7 @@ func NewServer(
 	modifyGameCmdHandler *game.ModifyGameCmdHandler,
 	signUpGameCmdHandler *game.SignupGameCmdHandler,
 	cancelSignUpGameCmdHandler *game.CancelSignUpGameCmdHandler,
-
+	recordRepository record.RecordRepository,
 ) *Server {
 	return &Server{
 		gameViewDao:                gameViewDao,
@@ -39,5 +41,6 @@ func NewServer(
 		modifyGameCmdHandler:       modifyGameCmdHandler,
 		signUpGameCmdHandler:       signUpGameCmdHandler,
 		cancelSignUpGameCmdHandler: cancelSignUpGameCmdHandler,
+		recordRepository:           recordRepository,
 	}
 }

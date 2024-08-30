@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"moj/domain/game"
 	"moj/game/db"
 	"moj/game/pkg/app_err"
-	"moj/domain/game"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,7 +35,7 @@ func (m *MongoDBGameRepository) FindGameByID(ctx context.Context, gameID string)
 	id, _ := primitive.ObjectIDFromHex(gameID)
 	slog.Debug("find game by id", "gameID", gameID)
 	var model db.GameModel
-	err := m.collection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&model)
+	err := m.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&model)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.Join(app_err.ErrModelNotFound, game.ErrGameNotFound, err)
@@ -49,7 +49,7 @@ func (m *MongoDBGameRepository) FindGameByID(ctx context.Context, gameID string)
 func (m *MongoDBGameRepository) InsertSignUpAccount(ctx context.Context, gameID string, accountID string, ti int64) error {
 	id, _ := primitive.ObjectIDFromHex(gameID)
 	sTime := time.Unix(ti, 0)
-	result, err := m.collection.UpdateByID(context.TODO(), id,
+	result, err := m.collection.UpdateByID(ctx, id,
 		bson.M{"$push": bson.M{"sign_up_account_list": bson.M{"account_id": accountID, "sign_up_time": sTime}}})
 
 	if err != nil {
@@ -67,14 +67,14 @@ func (m *MongoDBGameRepository) Save(ctx context.Context, game *game.Game) (id s
 
 	var result any
 	if model.ID.IsZero() {
-		result1, err1 := m.collection.InsertOne(context.TODO(), model)
+		result1, err1 := m.collection.InsertOne(ctx, model)
 		if err1 != nil {
 			err = errors.Join(errors.New("failed to insert game"), err1)
 		}
 		id = result1.InsertedID.(primitive.ObjectID).Hex()
 		result = result1
 	} else {
-		result, err = m.collection.UpdateByID(context.TODO(), model.ID, bson.M{"$set": model})
+		result, err = m.collection.UpdateByID(ctx, model.ID, bson.M{"$set": model})
 		if err != nil {
 			err = errors.Join(errors.New("failed to update game"), err)
 		}

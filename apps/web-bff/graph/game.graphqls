@@ -63,6 +63,7 @@ extend type Mutation {
     createGame(input: GameInput!): Game!
     modifyGame(input: GameInput!): Game!
     deleteGame(gid: ID!): Time!
-    signUpGame(gid:ID!): Time!
+    signUpGame(gid: ID!): Time!
     cancelSignUpGame(gid: ID!): Time!
+    calculateAllScores(gid: ID!): Time!
 }

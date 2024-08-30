@@ -93,6 +93,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		CalculateAllScores      func(childComplexity int, gid string) int
 		CancelSignUpGame        func(childComplexity int, gid string) int
 		ChangePassword          func(childComplexity int, input *model.ChangePasswordInput) int
 		CreateGame              func(childComplexity int, input model.GameInput) int
@@ -230,6 +231,7 @@ type MutationResolver interface {
 	DeleteGame(ctx context.Context, gid string) (*model.Time, error)
 	SignUpGame(ctx context.Context, gid string) (*model.Time, error)
 	CancelSignUpGame(ctx context.Context, gid string) (*model.Time, error)
+	CalculateAllScores(ctx context.Context, gid string) (*model.Time, error)
 	CreateQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error)
 	ModifyQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error)
 	DeleteQuestion(ctx context.Context, id string) (*model.Time, error)
@@ -436,6 +438,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.LoginResult.User(childComplexity), true
+
+	case "Mutation.calculateAllScores":
+		if e.complexity.Mutation.CalculateAllScores == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_calculateAllScores_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CalculateAllScores(childComplexity, args["gid"].(string)), true
 
 	case "Mutation.cancelSignUpGame":
 		if e.complexity.Mutation.CancelSignUpGame == nil {
@@ -1364,6 +1378,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Mutation_calculateAllScores_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["gid"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gid"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["gid"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_cancelSignUpGame_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1385,7 +1414,7 @@ func (ec *executionContext) field_Mutation_changePassword_args(ctx context.Conte
 	var arg0 *model.ChangePasswordInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOChangePasswordInput2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐChangePasswordInput(ctx, tmp)
+		arg0, err = ec.unmarshalOChangePasswordInput2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐChangePasswordInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1400,7 +1429,7 @@ func (ec *executionContext) field_Mutation_createGame_args(ctx context.Context, 
 	var arg0 model.GameInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGameInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGameInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐGameInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1415,7 +1444,7 @@ func (ec *executionContext) field_Mutation_createQuestion_args(ctx context.Conte
 	var arg0 model.QuestionInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNQuestionInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionInput(ctx, tmp)
+		arg0, err = ec.unmarshalNQuestionInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1490,7 +1519,7 @@ func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawAr
 	var arg0 model.LoginInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNLoginInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLoginInput(ctx, tmp)
+		arg0, err = ec.unmarshalNLoginInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐLoginInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1505,7 +1534,7 @@ func (ec *executionContext) field_Mutation_modifyGame_args(ctx context.Context, 
 	var arg0 model.GameInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGameInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGameInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐGameInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1520,7 +1549,7 @@ func (ec *executionContext) field_Mutation_modifyQuestion_args(ctx context.Conte
 	var arg0 model.QuestionInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNQuestionInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionInput(ctx, tmp)
+		arg0, err = ec.unmarshalNQuestionInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1535,7 +1564,7 @@ func (ec *executionContext) field_Mutation_modifyUserInfo_args(ctx context.Conte
 	var arg0 *model.UserInfo
 	if tmp, ok := rawArgs["info"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("info"))
-		arg0, err = ec.unmarshalOUserInfo2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserInfo(ctx, tmp)
+		arg0, err = ec.unmarshalOUserInfo2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUserInfo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1550,7 +1579,7 @@ func (ec *executionContext) field_Mutation_register_args(ctx context.Context, ra
 	var arg0 model.RegisterInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRegisterInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRegisterInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRegisterInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐRegisterInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1565,7 +1594,7 @@ func (ec *executionContext) field_Mutation_sendChangePasswordEmail_args(ctx cont
 	var arg0 model.SendChangePasswordEmail
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSendChangePasswordEmail2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSendChangePasswordEmail(ctx, tmp)
+		arg0, err = ec.unmarshalNSendChangePasswordEmail2mojᚋwebᚑbffᚋgraphᚋmodelᚐSendChangePasswordEmail(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1580,7 +1609,7 @@ func (ec *executionContext) field_Mutation_sendRegisterEmail_args(ctx context.Co
 	var arg0 model.SendRegisterEmail
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSendRegisterEmail2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSendRegisterEmail(ctx, tmp)
+		arg0, err = ec.unmarshalNSendRegisterEmail2mojᚋwebᚑbffᚋgraphᚋmodelᚐSendRegisterEmail(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1820,7 +1849,7 @@ func (ec *executionContext) field_Query_games_args(ctx context.Context, rawArgs 
 	var arg2 *model.GamesFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg2, err = ec.unmarshalOGamesFilter2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGamesFilter(ctx, tmp)
+		arg2, err = ec.unmarshalOGamesFilter2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGamesFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1892,7 +1921,7 @@ func (ec *executionContext) field_Query_questions_args(ctx context.Context, rawA
 	var arg2 *model.QuestionsFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg2, err = ec.unmarshalOQuestionsFilter2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionsFilter(ctx, tmp)
+		arg2, err = ec.unmarshalOQuestionsFilter2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionsFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1997,7 +2026,7 @@ func (ec *executionContext) field_Query_users_args(ctx context.Context, rawArgs 
 	var arg2 *model.UsersFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg2, err = ec.unmarshalOUsersFilter2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUsersFilter(ctx, tmp)
+		arg2, err = ec.unmarshalOUsersFilter2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUsersFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2732,7 +2761,7 @@ func (ec *executionContext) _Game_questionList(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.GameQuestion)
 	fc.Result = res
-	return ec.marshalNGameQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionᚄ(ctx, field.Selections, res)
+	return ec.marshalNGameQuestion2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Game_questionList(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2826,7 +2855,7 @@ func (ec *executionContext) _GamePage_games(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameᚄ(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_GamePage_games(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2976,7 +3005,7 @@ func (ec *executionContext) _LoginResult_token(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.Token)
 	fc.Result = res
-	return ec.marshalNToken2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx, field.Selections, res)
+	return ec.marshalNToken2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_LoginResult_token(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3026,7 +3055,7 @@ func (ec *executionContext) _LoginResult_user(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_LoginResult_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3098,7 +3127,7 @@ func (ec *executionContext) _Mutation_sendRegisterEmail(ctx context.Context, fie
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_sendRegisterEmail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3157,7 +3186,7 @@ func (ec *executionContext) _Mutation_sendChangePasswordEmail(ctx context.Contex
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_sendChangePasswordEmail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3216,7 +3245,7 @@ func (ec *executionContext) _Mutation_createGame(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createGame(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3289,7 +3318,7 @@ func (ec *executionContext) _Mutation_modifyGame(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_modifyGame(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3362,7 +3391,7 @@ func (ec *executionContext) _Mutation_deleteGame(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteGame(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3421,7 +3450,7 @@ func (ec *executionContext) _Mutation_signUpGame(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signUpGame(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3480,7 +3509,7 @@ func (ec *executionContext) _Mutation_cancelSignUpGame(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_cancelSignUpGame(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3505,6 +3534,65 @@ func (ec *executionContext) fieldContext_Mutation_cancelSignUpGame(ctx context.C
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_cancelSignUpGame_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_calculateAllScores(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_calculateAllScores(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CalculateAllScores(rctx, fc.Args["gid"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_calculateAllScores(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "time":
+				return ec.fieldContext_Time_time(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Time", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_calculateAllScores_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -3539,7 +3627,7 @@ func (ec *executionContext) _Mutation_createQuestion(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Question)
 	fc.Result = res
-	return ec.marshalNQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
+	return ec.marshalNQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createQuestion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3624,7 +3712,7 @@ func (ec *executionContext) _Mutation_modifyQuestion(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Question)
 	fc.Result = res
-	return ec.marshalNQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
+	return ec.marshalNQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_modifyQuestion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3709,7 +3797,7 @@ func (ec *executionContext) _Mutation_deleteQuestion(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteQuestion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3768,7 +3856,7 @@ func (ec *executionContext) _Mutation_submitRecord(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.Record)
 	fc.Result = res
-	return ec.marshalNRecord2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx, field.Selections, res)
+	return ec.marshalNRecord2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_submitRecord(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3857,7 +3945,7 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.LoginResult)
 	fc.Result = res
-	return ec.marshalNLoginResult2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLoginResult(ctx, field.Selections, res)
+	return ec.marshalNLoginResult2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐLoginResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3918,7 +4006,7 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_register(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4001,7 +4089,7 @@ func (ec *executionContext) _Mutation_modifyUserInfo(ctx context.Context, field 
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_modifyUserInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4084,7 +4172,7 @@ func (ec *executionContext) _Mutation_changePassword(ctx context.Context, field 
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_changePassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4167,7 +4255,7 @@ func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Time)
 	fc.Result = res
-	return ec.marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
+	return ec.marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4226,7 +4314,7 @@ func (ec *executionContext) _Mutation_setUserStatus(ctx context.Context, field g
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_setUserStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4309,7 +4397,7 @@ func (ec *executionContext) _Mutation_setUserAdmin(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_setUserAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4392,7 +4480,7 @@ func (ec *executionContext) _Mutation_fetchAccessToken(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Token)
 	fc.Result = res
-	return ec.marshalNToken2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx, field.Selections, res)
+	return ec.marshalNToken2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_fetchAccessToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4450,7 +4538,7 @@ func (ec *executionContext) _Query_game(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.Game)
 	fc.Result = res
-	return ec.marshalOGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+	return ec.marshalOGame2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_game(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4523,7 +4611,7 @@ func (ec *executionContext) _Query_games(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.GamePage)
 	fc.Result = res
-	return ec.marshalNGamePage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGamePage(ctx, field.Selections, res)
+	return ec.marshalNGamePage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGamePage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_games(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4584,7 +4672,7 @@ func (ec *executionContext) _Query_gameScore(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.Score)
 	fc.Result = res
-	return ec.marshalNScore2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx, field.Selections, res)
+	return ec.marshalNScore2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_gameScore(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4647,7 +4735,7 @@ func (ec *executionContext) _Query_gameScores(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*model.Score)
 	fc.Result = res
-	return ec.marshalNScore2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScoreᚄ(ctx, field.Selections, res)
+	return ec.marshalNScore2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐScoreᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_gameScores(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4710,7 +4798,7 @@ func (ec *executionContext) _Query_question(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Question)
 	fc.Result = res
-	return ec.marshalNQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
+	return ec.marshalNQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_question(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4795,7 +4883,7 @@ func (ec *executionContext) _Query_questions(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.QuestionPage)
 	fc.Result = res
-	return ec.marshalNQuestionPage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPage(ctx, field.Selections, res)
+	return ec.marshalNQuestionPage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_questions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4856,7 +4944,7 @@ func (ec *executionContext) _Query_questionSubmitCount(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.SubmitCount)
 	fc.Result = res
-	return ec.marshalNSubmitCount2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSubmitCount(ctx, field.Selections, res)
+	return ec.marshalNSubmitCount2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐSubmitCount(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_questionSubmitCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4917,7 +5005,7 @@ func (ec *executionContext) _Query_record(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Record)
 	fc.Result = res
-	return ec.marshalNRecord2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx, field.Selections, res)
+	return ec.marshalNRecord2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_record(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5006,7 +5094,7 @@ func (ec *executionContext) _Query_records(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.RecordPage)
 	fc.Result = res
-	return ec.marshalNRecordPage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecordPage(ctx, field.Selections, res)
+	return ec.marshalNRecordPage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecordPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_records(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5067,7 +5155,7 @@ func (ec *executionContext) _Query_dailyTasksNumber(ctx context.Context, field g
 	}
 	res := resTmp.(*model.DailyTasksNumber)
 	fc.Result = res
-	return ec.marshalNDailyTasksNumber2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐDailyTasksNumber(ctx, field.Selections, res)
+	return ec.marshalNDailyTasksNumber2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐDailyTasksNumber(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_dailyTasksNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5125,7 +5213,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5208,7 +5296,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.UserPage)
 	fc.Result = res
-	return ec.marshalNUserPage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserPage(ctx, field.Selections, res)
+	return ec.marshalNUserPage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUserPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5618,7 +5706,7 @@ func (ec *executionContext) _Question_level(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(model.Level)
 	fc.Result = res
-	return ec.marshalNLevel2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx, field.Selections, res)
+	return ec.marshalNLevel2mojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Question_level(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5926,7 +6014,7 @@ func (ec *executionContext) _Question_cases(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Case)
 	fc.Result = res
-	return ec.marshalNCase2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCaseᚄ(ctx, field.Selections, res)
+	return ec.marshalNCase2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCaseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Question_cases(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5978,7 +6066,7 @@ func (ec *executionContext) _Question_passStatus(ctx context.Context, field grap
 	}
 	res := resTmp.(model.QuestionPassStatus)
 	fc.Result = res
-	return ec.marshalNQuestionPassStatus2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx, field.Selections, res)
+	return ec.marshalNQuestionPassStatus2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Question_passStatus(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6066,7 +6154,7 @@ func (ec *executionContext) _QuestionPage_questions(ctx context.Context, field g
 	}
 	res := resTmp.([]*model.Question)
 	fc.Result = res
-	return ec.marshalNQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionᚄ(ctx, field.Selections, res)
+	return ec.marshalNQuestion2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_QuestionPage_questions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6841,7 +6929,7 @@ func (ec *executionContext) _RecordPage_records(ctx context.Context, field graph
 	}
 	res := resTmp.([]*model.Record)
 	fc.Result = res
-	return ec.marshalNRecord2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecordᚄ(ctx, field.Selections, res)
+	return ec.marshalNRecord2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecordᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_RecordPage_records(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7139,7 +7227,7 @@ func (ec *executionContext) _ScoresPage_scores(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.Score)
 	fc.Result = res
-	return ec.marshalNScore2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScoreᚄ(ctx, field.Selections, res)
+	return ec.marshalNScore2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐScoreᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ScoresPage_scores(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7939,7 +8027,7 @@ func (ec *executionContext) _User_finishedQuestion(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.FinishedQuestion)
 	fc.Result = res
-	return ec.marshalNFinishedQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐFinishedQuestion(ctx, field.Selections, res)
+	return ec.marshalNFinishedQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐFinishedQuestion(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_finishedQuestion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7991,7 +8079,7 @@ func (ec *executionContext) _UserPage_users(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserPage_users(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9985,7 +10073,7 @@ func (ec *executionContext) unmarshalInputGameInput(ctx context.Context, obj int
 			it.EndTime = data
 		case "questionList":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("questionList"))
-			data, err := ec.unmarshalNGameQuestionInput2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInputᚄ(ctx, v)
+			data, err := ec.unmarshalNGameQuestionInput2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10142,7 +10230,7 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 			it.Content = data
 		case "level":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("level"))
-			data, err := ec.unmarshalNLevel2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx, v)
+			data, err := ec.unmarshalNLevel2mojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10177,7 +10265,7 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 			it.Tags = data
 		case "cases":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cases"))
-			data, err := ec.unmarshalNCaseInput2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCaseInputᚄ(ctx, v)
+			data, err := ec.unmarshalNCaseInput2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCaseInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10218,7 +10306,7 @@ func (ec *executionContext) unmarshalInputQuestionsFilter(ctx context.Context, o
 			it.Enabled = data
 		case "level":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("level"))
-			data, err := ec.unmarshalOLevel2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx, v)
+			data, err := ec.unmarshalOLevel2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10907,6 +10995,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "cancelSignUpGame":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_cancelSignUpGame(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "calculateAllScores":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_calculateAllScores(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -12395,7 +12490,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCase2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Case) graphql.Marshaler {
+func (ec *executionContext) marshalNCase2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Case) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -12419,7 +12514,7 @@ func (ec *executionContext) marshalNCase2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCase2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCase(ctx, sel, v[i])
+			ret[i] = ec.marshalNCase2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCase(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -12439,7 +12534,7 @@ func (ec *executionContext) marshalNCase2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNCase2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCase(ctx context.Context, sel ast.SelectionSet, v *model.Case) graphql.Marshaler {
+func (ec *executionContext) marshalNCase2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCase(ctx context.Context, sel ast.SelectionSet, v *model.Case) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12449,7 +12544,7 @@ func (ec *executionContext) marshalNCase2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmod
 	return ec._Case(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCaseInput2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCaseInputᚄ(ctx context.Context, v interface{}) ([]*model.CaseInput, error) {
+func (ec *executionContext) unmarshalNCaseInput2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCaseInputᚄ(ctx context.Context, v interface{}) ([]*model.CaseInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
@@ -12458,7 +12553,7 @@ func (ec *executionContext) unmarshalNCaseInput2ᚕᚖmojᚋappsᚋwebᚑbffᚋg
 	res := make([]*model.CaseInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNCaseInput2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCaseInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCaseInput2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCaseInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -12466,16 +12561,16 @@ func (ec *executionContext) unmarshalNCaseInput2ᚕᚖmojᚋappsᚋwebᚑbffᚋg
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCaseInput2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐCaseInput(ctx context.Context, v interface{}) (*model.CaseInput, error) {
+func (ec *executionContext) unmarshalNCaseInput2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐCaseInput(ctx context.Context, v interface{}) (*model.CaseInput, error) {
 	res, err := ec.unmarshalInputCaseInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDailyTasksNumber2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐDailyTasksNumber(ctx context.Context, sel ast.SelectionSet, v model.DailyTasksNumber) graphql.Marshaler {
+func (ec *executionContext) marshalNDailyTasksNumber2mojᚋwebᚑbffᚋgraphᚋmodelᚐDailyTasksNumber(ctx context.Context, sel ast.SelectionSet, v model.DailyTasksNumber) graphql.Marshaler {
 	return ec._DailyTasksNumber(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDailyTasksNumber2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐDailyTasksNumber(ctx context.Context, sel ast.SelectionSet, v *model.DailyTasksNumber) graphql.Marshaler {
+func (ec *executionContext) marshalNDailyTasksNumber2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐDailyTasksNumber(ctx context.Context, sel ast.SelectionSet, v *model.DailyTasksNumber) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12485,11 +12580,11 @@ func (ec *executionContext) marshalNDailyTasksNumber2ᚖmojᚋappsᚋwebᚑbff�
 	return ec._DailyTasksNumber(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNFinishedQuestion2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐFinishedQuestion(ctx context.Context, sel ast.SelectionSet, v model.FinishedQuestion) graphql.Marshaler {
+func (ec *executionContext) marshalNFinishedQuestion2mojᚋwebᚑbffᚋgraphᚋmodelᚐFinishedQuestion(ctx context.Context, sel ast.SelectionSet, v model.FinishedQuestion) graphql.Marshaler {
 	return ec._FinishedQuestion(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNFinishedQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐFinishedQuestion(ctx context.Context, sel ast.SelectionSet, v *model.FinishedQuestion) graphql.Marshaler {
+func (ec *executionContext) marshalNFinishedQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐFinishedQuestion(ctx context.Context, sel ast.SelectionSet, v *model.FinishedQuestion) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12499,11 +12594,11 @@ func (ec *executionContext) marshalNFinishedQuestion2ᚖmojᚋappsᚋwebᚑbff�
 	return ec._FinishedQuestion(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNGame2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v model.Game) graphql.Marshaler {
+func (ec *executionContext) marshalNGame2mojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v model.Game) graphql.Marshaler {
 	return ec._Game(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNGame2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Game) graphql.Marshaler {
+func (ec *executionContext) marshalNGame2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Game) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -12527,7 +12622,7 @@ func (ec *executionContext) marshalNGame2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, sel, v[i])
+			ret[i] = ec.marshalNGame2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -12547,7 +12642,7 @@ func (ec *executionContext) marshalNGame2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
+func (ec *executionContext) marshalNGame2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12557,16 +12652,16 @@ func (ec *executionContext) marshalNGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmod
 	return ec._Game(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNGameInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameInput(ctx context.Context, v interface{}) (model.GameInput, error) {
+func (ec *executionContext) unmarshalNGameInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐGameInput(ctx context.Context, v interface{}) (model.GameInput, error) {
 	res, err := ec.unmarshalInputGameInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNGamePage2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGamePage(ctx context.Context, sel ast.SelectionSet, v model.GamePage) graphql.Marshaler {
+func (ec *executionContext) marshalNGamePage2mojᚋwebᚑbffᚋgraphᚋmodelᚐGamePage(ctx context.Context, sel ast.SelectionSet, v model.GamePage) graphql.Marshaler {
 	return ec._GamePage(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNGamePage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGamePage(ctx context.Context, sel ast.SelectionSet, v *model.GamePage) graphql.Marshaler {
+func (ec *executionContext) marshalNGamePage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGamePage(ctx context.Context, sel ast.SelectionSet, v *model.GamePage) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12576,7 +12671,7 @@ func (ec *executionContext) marshalNGamePage2ᚖmojᚋappsᚋwebᚑbffᚋgraph�
 	return ec._GamePage(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNGameQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GameQuestion) graphql.Marshaler {
+func (ec *executionContext) marshalNGameQuestion2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GameQuestion) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -12600,7 +12695,7 @@ func (ec *executionContext) marshalNGameQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNGameQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestion(ctx, sel, v[i])
+			ret[i] = ec.marshalNGameQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestion(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -12620,7 +12715,7 @@ func (ec *executionContext) marshalNGameQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNGameQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestion(ctx context.Context, sel ast.SelectionSet, v *model.GameQuestion) graphql.Marshaler {
+func (ec *executionContext) marshalNGameQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestion(ctx context.Context, sel ast.SelectionSet, v *model.GameQuestion) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12630,7 +12725,7 @@ func (ec *executionContext) marshalNGameQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgra
 	return ec._GameQuestion(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNGameQuestionInput2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInputᚄ(ctx context.Context, v interface{}) ([]*model.GameQuestionInput, error) {
+func (ec *executionContext) unmarshalNGameQuestionInput2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInputᚄ(ctx context.Context, v interface{}) ([]*model.GameQuestionInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
@@ -12639,7 +12734,7 @@ func (ec *executionContext) unmarshalNGameQuestionInput2ᚕᚖmojᚋappsᚋweb�
 	res := make([]*model.GameQuestionInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNGameQuestionInput2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNGameQuestionInput2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -12647,7 +12742,7 @@ func (ec *executionContext) unmarshalNGameQuestionInput2ᚕᚖmojᚋappsᚋweb�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNGameQuestionInput2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInput(ctx context.Context, v interface{}) (*model.GameQuestionInput, error) {
+func (ec *executionContext) unmarshalNGameQuestionInput2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGameQuestionInput(ctx context.Context, v interface{}) (*model.GameQuestionInput, error) {
 	res, err := ec.unmarshalInputGameQuestionInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -12682,26 +12777,26 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNLevel2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, v interface{}) (model.Level, error) {
+func (ec *executionContext) unmarshalNLevel2mojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, v interface{}) (model.Level, error) {
 	var res model.Level
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNLevel2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, sel ast.SelectionSet, v model.Level) graphql.Marshaler {
+func (ec *executionContext) marshalNLevel2mojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, sel ast.SelectionSet, v model.Level) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNLoginInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLoginInput(ctx context.Context, v interface{}) (model.LoginInput, error) {
+func (ec *executionContext) unmarshalNLoginInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐLoginInput(ctx context.Context, v interface{}) (model.LoginInput, error) {
 	res, err := ec.unmarshalInputLoginInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNLoginResult2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLoginResult(ctx context.Context, sel ast.SelectionSet, v model.LoginResult) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginResult2mojᚋwebᚑbffᚋgraphᚋmodelᚐLoginResult(ctx context.Context, sel ast.SelectionSet, v model.LoginResult) graphql.Marshaler {
 	return ec._LoginResult(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNLoginResult2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLoginResult(ctx context.Context, sel ast.SelectionSet, v *model.LoginResult) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginResult2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐLoginResult(ctx context.Context, sel ast.SelectionSet, v *model.LoginResult) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12711,11 +12806,11 @@ func (ec *executionContext) marshalNLoginResult2ᚖmojᚋappsᚋwebᚑbffᚋgrap
 	return ec._LoginResult(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNQuestion2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v model.Question) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestion2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v model.Question) graphql.Marshaler {
 	return ec._Question(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Question) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestion2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Question) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -12739,7 +12834,7 @@ func (ec *executionContext) marshalNQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋgrap
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, sel, v[i])
+			ret[i] = ec.marshalNQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -12759,7 +12854,7 @@ func (ec *executionContext) marshalNQuestion2ᚕᚖmojᚋappsᚋwebᚑbffᚋgrap
 	return ret
 }
 
-func (ec *executionContext) marshalNQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v *model.Question) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestion2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v *model.Question) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12769,16 +12864,16 @@ func (ec *executionContext) marshalNQuestion2ᚖmojᚋappsᚋwebᚑbffᚋgraph�
 	return ec._Question(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNQuestionInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionInput(ctx context.Context, v interface{}) (model.QuestionInput, error) {
+func (ec *executionContext) unmarshalNQuestionInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionInput(ctx context.Context, v interface{}) (model.QuestionInput, error) {
 	res, err := ec.unmarshalInputQuestionInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNQuestionPage2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPage(ctx context.Context, sel ast.SelectionSet, v model.QuestionPage) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestionPage2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPage(ctx context.Context, sel ast.SelectionSet, v model.QuestionPage) graphql.Marshaler {
 	return ec._QuestionPage(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNQuestionPage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPage(ctx context.Context, sel ast.SelectionSet, v *model.QuestionPage) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestionPage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPage(ctx context.Context, sel ast.SelectionSet, v *model.QuestionPage) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12788,21 +12883,21 @@ func (ec *executionContext) marshalNQuestionPage2ᚖmojᚋappsᚋwebᚑbffᚋgra
 	return ec._QuestionPage(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNQuestionPassStatus2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx context.Context, v interface{}) (model.QuestionPassStatus, error) {
+func (ec *executionContext) unmarshalNQuestionPassStatus2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx context.Context, v interface{}) (model.QuestionPassStatus, error) {
 	var res model.QuestionPassStatus
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNQuestionPassStatus2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx context.Context, sel ast.SelectionSet, v model.QuestionPassStatus) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestionPassStatus2mojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionPassStatus(ctx context.Context, sel ast.SelectionSet, v model.QuestionPassStatus) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNRecord2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx context.Context, sel ast.SelectionSet, v model.Record) graphql.Marshaler {
+func (ec *executionContext) marshalNRecord2mojᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx context.Context, sel ast.SelectionSet, v model.Record) graphql.Marshaler {
 	return ec._Record(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNRecord2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecordᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Record) graphql.Marshaler {
+func (ec *executionContext) marshalNRecord2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecordᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Record) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -12826,7 +12921,7 @@ func (ec *executionContext) marshalNRecord2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraph�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNRecord2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx, sel, v[i])
+			ret[i] = ec.marshalNRecord2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -12846,7 +12941,7 @@ func (ec *executionContext) marshalNRecord2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraph�
 	return ret
 }
 
-func (ec *executionContext) marshalNRecord2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx context.Context, sel ast.SelectionSet, v *model.Record) graphql.Marshaler {
+func (ec *executionContext) marshalNRecord2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecord(ctx context.Context, sel ast.SelectionSet, v *model.Record) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12856,11 +12951,11 @@ func (ec *executionContext) marshalNRecord2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋm
 	return ec._Record(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNRecordPage2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecordPage(ctx context.Context, sel ast.SelectionSet, v model.RecordPage) graphql.Marshaler {
+func (ec *executionContext) marshalNRecordPage2mojᚋwebᚑbffᚋgraphᚋmodelᚐRecordPage(ctx context.Context, sel ast.SelectionSet, v model.RecordPage) graphql.Marshaler {
 	return ec._RecordPage(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNRecordPage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRecordPage(ctx context.Context, sel ast.SelectionSet, v *model.RecordPage) graphql.Marshaler {
+func (ec *executionContext) marshalNRecordPage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐRecordPage(ctx context.Context, sel ast.SelectionSet, v *model.RecordPage) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12870,16 +12965,16 @@ func (ec *executionContext) marshalNRecordPage2ᚖmojᚋappsᚋwebᚑbffᚋgraph
 	return ec._RecordPage(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRegisterInput2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐRegisterInput(ctx context.Context, v interface{}) (model.RegisterInput, error) {
+func (ec *executionContext) unmarshalNRegisterInput2mojᚋwebᚑbffᚋgraphᚋmodelᚐRegisterInput(ctx context.Context, v interface{}) (model.RegisterInput, error) {
 	res, err := ec.unmarshalInputRegisterInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNScore2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx context.Context, sel ast.SelectionSet, v model.Score) graphql.Marshaler {
+func (ec *executionContext) marshalNScore2mojᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx context.Context, sel ast.SelectionSet, v model.Score) graphql.Marshaler {
 	return ec._Score(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNScore2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScoreᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Score) graphql.Marshaler {
+func (ec *executionContext) marshalNScore2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐScoreᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Score) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -12903,7 +12998,7 @@ func (ec *executionContext) marshalNScore2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraph�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNScore2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx, sel, v[i])
+			ret[i] = ec.marshalNScore2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -12923,7 +13018,7 @@ func (ec *executionContext) marshalNScore2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraph�
 	return ret
 }
 
-func (ec *executionContext) marshalNScore2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx context.Context, sel ast.SelectionSet, v *model.Score) graphql.Marshaler {
+func (ec *executionContext) marshalNScore2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐScore(ctx context.Context, sel ast.SelectionSet, v *model.Score) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -12933,12 +13028,12 @@ func (ec *executionContext) marshalNScore2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmo
 	return ec._Score(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNSendChangePasswordEmail2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSendChangePasswordEmail(ctx context.Context, v interface{}) (model.SendChangePasswordEmail, error) {
+func (ec *executionContext) unmarshalNSendChangePasswordEmail2mojᚋwebᚑbffᚋgraphᚋmodelᚐSendChangePasswordEmail(ctx context.Context, v interface{}) (model.SendChangePasswordEmail, error) {
 	res, err := ec.unmarshalInputSendChangePasswordEmail(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSendRegisterEmail2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSendRegisterEmail(ctx context.Context, v interface{}) (model.SendRegisterEmail, error) {
+func (ec *executionContext) unmarshalNSendRegisterEmail2mojᚋwebᚑbffᚋgraphᚋmodelᚐSendRegisterEmail(ctx context.Context, v interface{}) (model.SendRegisterEmail, error) {
 	res, err := ec.unmarshalInputSendRegisterEmail(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -12990,11 +13085,11 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 	return ret
 }
 
-func (ec *executionContext) marshalNSubmitCount2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSubmitCount(ctx context.Context, sel ast.SelectionSet, v model.SubmitCount) graphql.Marshaler {
+func (ec *executionContext) marshalNSubmitCount2mojᚋwebᚑbffᚋgraphᚋmodelᚐSubmitCount(ctx context.Context, sel ast.SelectionSet, v model.SubmitCount) graphql.Marshaler {
 	return ec._SubmitCount(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNSubmitCount2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐSubmitCount(ctx context.Context, sel ast.SelectionSet, v *model.SubmitCount) graphql.Marshaler {
+func (ec *executionContext) marshalNSubmitCount2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐSubmitCount(ctx context.Context, sel ast.SelectionSet, v *model.SubmitCount) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -13004,11 +13099,11 @@ func (ec *executionContext) marshalNSubmitCount2ᚖmojᚋappsᚋwebᚑbffᚋgrap
 	return ec._SubmitCount(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTime2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v model.Time) graphql.Marshaler {
+func (ec *executionContext) marshalNTime2mojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v model.Time) graphql.Marshaler {
 	return ec._Time(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v *model.Time) graphql.Marshaler {
+func (ec *executionContext) marshalNTime2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐTime(ctx context.Context, sel ast.SelectionSet, v *model.Time) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -13018,11 +13113,11 @@ func (ec *executionContext) marshalNTime2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmod
 	return ec._Time(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNToken2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v model.Token) graphql.Marshaler {
+func (ec *executionContext) marshalNToken2mojᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v model.Token) graphql.Marshaler {
 	return ec._Token(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNToken2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v *model.Token) graphql.Marshaler {
+func (ec *executionContext) marshalNToken2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐToken(ctx context.Context, sel ast.SelectionSet, v *model.Token) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -13032,11 +13127,11 @@ func (ec *executionContext) marshalNToken2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmo
 	return ec._Token(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUser2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2mojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUser2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚕᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -13060,7 +13155,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, sel, v[i])
+			ret[i] = ec.marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -13080,7 +13175,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -13090,11 +13185,11 @@ func (ec *executionContext) marshalNUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmod
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUserPage2mojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserPage(ctx context.Context, sel ast.SelectionSet, v model.UserPage) graphql.Marshaler {
+func (ec *executionContext) marshalNUserPage2mojᚋwebᚑbffᚋgraphᚋmodelᚐUserPage(ctx context.Context, sel ast.SelectionSet, v model.UserPage) graphql.Marshaler {
 	return ec._UserPage(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserPage2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserPage(ctx context.Context, sel ast.SelectionSet, v *model.UserPage) graphql.Marshaler {
+func (ec *executionContext) marshalNUserPage2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUserPage(ctx context.Context, sel ast.SelectionSet, v *model.UserPage) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -13383,7 +13478,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOChangePasswordInput2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐChangePasswordInput(ctx context.Context, v interface{}) (*model.ChangePasswordInput, error) {
+func (ec *executionContext) unmarshalOChangePasswordInput2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐChangePasswordInput(ctx context.Context, v interface{}) (*model.ChangePasswordInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -13391,14 +13486,14 @@ func (ec *executionContext) unmarshalOChangePasswordInput2ᚖmojᚋappsᚋwebᚑ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOGame2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
+func (ec *executionContext) marshalOGame2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Game(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOGamesFilter2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐGamesFilter(ctx context.Context, v interface{}) (*model.GamesFilter, error) {
+func (ec *executionContext) unmarshalOGamesFilter2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐGamesFilter(ctx context.Context, v interface{}) (*model.GamesFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -13422,7 +13517,7 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalOLevel2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, v interface{}) (*model.Level, error) {
+func (ec *executionContext) unmarshalOLevel2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, v interface{}) (*model.Level, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -13431,14 +13526,14 @@ func (ec *executionContext) unmarshalOLevel2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋ
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOLevel2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, sel ast.SelectionSet, v *model.Level) graphql.Marshaler {
+func (ec *executionContext) marshalOLevel2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐLevel(ctx context.Context, sel ast.SelectionSet, v *model.Level) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) unmarshalOQuestionsFilter2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐQuestionsFilter(ctx context.Context, v interface{}) (*model.QuestionsFilter, error) {
+func (ec *executionContext) unmarshalOQuestionsFilter2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐQuestionsFilter(ctx context.Context, v interface{}) (*model.QuestionsFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -13462,14 +13557,14 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOUser2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOUserInfo2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUserInfo(ctx context.Context, v interface{}) (*model.UserInfo, error) {
+func (ec *executionContext) unmarshalOUserInfo2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUserInfo(ctx context.Context, v interface{}) (*model.UserInfo, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -13477,7 +13572,7 @@ func (ec *executionContext) unmarshalOUserInfo2ᚖmojᚋappsᚋwebᚑbffᚋgraph
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOUsersFilter2ᚖmojᚋappsᚋwebᚑbffᚋgraphᚋmodelᚐUsersFilter(ctx context.Context, v interface{}) (*model.UsersFilter, error) {
+func (ec *executionContext) unmarshalOUsersFilter2ᚖmojᚋwebᚑbffᚋgraphᚋmodelᚐUsersFilter(ctx context.Context, v interface{}) (*model.UsersFilter, error) {
 	if v == nil {
 		return nil, nil
 	}

@@ -219,19 +219,6 @@ func (r *queryResolver) QuestionSubmitCount(ctx context.Context, qid string, gid
 	}, err
 }
 
-func fromPbPassStatus(s red_pb.CheckAccountPassResponse_PassStatus) model.QuestionPassStatus {
-	switch s {
-	case red_pb.CheckAccountPassResponse_Pass:
-		return model.QuestionPassStatusPass
-	case red_pb.CheckAccountPassResponse_Undo:
-		return model.QuestionPassStatusUndo
-	case red_pb.CheckAccountPassResponse_Working:
-		return model.QuestionPassStatusWorking
-	default:
-		return model.QuestionPassStatusUndo
-	}
-}
-
 // PassStatus is the resolver for the passStatus field.
 func (r *questionResolver) PassStatus(ctx context.Context, obj *model.Question) (model.QuestionPassStatus, error) {
 	uid, err := checkUserLogin(r.RpcClients.UserClient, r.sessionManager, ctx, "", false)
@@ -264,6 +251,18 @@ type questionResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func fromPbPassStatus(s red_pb.CheckAccountPassResponse_PassStatus) model.QuestionPassStatus {
+	switch s {
+	case red_pb.CheckAccountPassResponse_Pass:
+		return model.QuestionPassStatusPass
+	case red_pb.CheckAccountPassResponse_Undo:
+		return model.QuestionPassStatusUndo
+	case red_pb.CheckAccountPassResponse_Working:
+		return model.QuestionPassStatusWorking
+	default:
+		return model.QuestionPassStatusUndo
+	}
+}
 func findQuestion(client ques_pb.QuestionServiceClient, ctx context.Context, id string) (*model.Question, error) {
 	req := &ques_pb.GetQuestionRequest{
 		QuestionID: id,

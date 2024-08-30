@@ -2,10 +2,13 @@ package svc
 
 import (
 	"context"
+	"errors"
 	"log/slog"
-	game_pb "moj/game/rpc"
+	"math"
 	"moj/domain/game"
 	"moj/domain/pkg/queue"
+	"moj/game/pkg/app_err"
+	game_pb "moj/game/rpc"
 	"time"
 )
 
@@ -309,6 +312,56 @@ func (s *Server) DeleteGame(ctx context.Context, req *game_pb.DeleteGameRequest)
 		return
 	}
 	resp = &game_pb.DeleteGameResponse{
+		Time: time.Now().Unix(),
+	}
+	return
+}
+
+// CalculateAllScore implements game_pb.GameServiceServer.
+func (s *Server) CalculateAllScore(ctx context.Context, req *game_pb.CalculateAllScoreRequest) (
+	resp *game_pb.CalculateAllScoreResponse, err error) {
+	slog.Debug("calculate all score", "req", req)
+
+	gameAgg, err := s.gameRepository.FindGameByID(ctx, req.GameID)
+	if err != nil {
+		slog.Error("calculateAllScore: failed to get game by id", "err", err)
+		err = responseStatusError(err)
+		return
+	}
+	models, _, err := s.signUpScoreDao.FindPage(ctx, req.GameID, 1, math.MaxInt64)
+	if err != nil {
+		slog.Error("failed to calculate all score", "err", err)
+		err = responseStatusError(err)
+		return
+	}
+
+	var errs []error
+
+	for _, m := range models {
+		for _, q := range gameAgg.QuestionList {
+			record, err := s.recordRepository.FindBestRecord(ctx, m.AccountID,
+				q.QuestionID, req.GameID)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+			score := game.GetScore(record.NumberFinishedAt, record.TotalQuestion, q.Score)
+			err = s.signUpScoreDao.UpdateScore(ctx, req.GameID, m.AccountID, score)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+		}
+	}
+
+	if len(errs) > 0 {
+		err = errors.Join(append(errs, app_err.ErrServerInternal)...)
+		slog.Error("failed to calculate all score", "err", err)
+		err = responseStatusError(err)
+		return
+	}
+
+	resp = &game_pb.CalculateAllScoreResponse{
 		Time: time.Now().Unix(),
 	}
 	return

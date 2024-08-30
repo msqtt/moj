@@ -2,8 +2,8 @@ package listener
 
 import (
 	"context"
-	"moj/game/db"
 	"moj/domain/game"
+	"moj/game/db"
 	"time"
 )
 
@@ -16,12 +16,7 @@ func (s *SignUpScoreLisener) OnEvent(event any) (err error) {
 	ctx := context.Background()
 	switch evt := event.(type) {
 	case game.CalculateScoreEvent:
-		score, err1 := s.signUpScoreDao.FindByID(ctx, evt.GameID, evt.AccountID)
-		if err1 != nil {
-			return err1
-		}
-		score.Score = evt.Score
-		err = s.signUpScoreDao.Save(ctx, score)
+		err = s.signUpScoreDao.UpdateScore(ctx, evt.GameID, evt.AccountID, evt.Score)
 	case game.SignUpGameEvent:
 		model := &db.SignUpScoreViewModel{
 			GameID:     evt.GameID,
