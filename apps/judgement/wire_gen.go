@@ -8,6 +8,7 @@ package main
 
 import (
 	"github.com/google/wire"
+	"moj/domain/judgement"
 	"moj/judgement/db"
 	"moj/judgement/domain"
 	"moj/judgement/etc"
@@ -15,7 +16,6 @@ import (
 	"moj/judgement/mq/consumer"
 	"moj/judgement/mq/producer"
 	"moj/judgement/svc"
-	"moj/domain/judgement"
 )
 
 // Injectors from wire.go:
@@ -30,7 +30,7 @@ func InitializeApplication() *App {
 	executionService := domain.NewSbJudger(config)
 	executionCmdHandler := judgement.NewExecutionCmdHandler(judgementRepository, executionService)
 	questionRepository := domain.NewRPCQuestionRepository(config)
-	caseFileService := domain.NewMinioCaseReader()
+	caseFileService := domain.NewCacheCaseReader(config)
 	server := svc.NewServer(commandInvoker, executionCmdHandler, questionRepository, caseFileService)
 	nsqExecuteJudgementConsumer := consumer.NewNsqExecuteJudgementConsumer(config, executionCmdHandler, caseFileService, questionRepository, eventDispatcher)
 	app := NewApp(server, mongoDB, config, nsqExecuteJudgementConsumer)
@@ -45,4 +45,4 @@ func provideDispatcher(conf *etc.Config) domain.EventDispatcher {
 		[]producer.Producer{producer.NewNsqModifyRecordProducer(conf)})
 }
 
-var providers = wire.NewSet(svc.NewServer, domain.NewTransactionCommandInvoker, domain.NewMongoDBJudementRepository, domain.NewSbJudger, domain.NewRPCQuestionRepository, domain.NewMinioCaseReader, judgement.NewExecutionCmdHandler, consumer.NewNsqExecuteJudgementConsumer, provideDispatcher, db.NewMongoDBTransactionManager, db.NewMongoDB, etc.NewAppConfig)
+var providers = wire.NewSet(svc.NewServer, domain.NewTransactionCommandInvoker, domain.NewMongoDBJudementRepository, domain.NewSbJudger, domain.NewRPCQuestionRepository, domain.NewCacheCaseReader, judgement.NewExecutionCmdHandler, consumer.NewNsqExecuteJudgementConsumer, provideDispatcher, db.NewMongoDBTransactionManager, db.NewMongoDB, etc.NewAppConfig)

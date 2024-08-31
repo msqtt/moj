@@ -4,6 +4,7 @@
 package main
 
 import (
+	"moj/domain/judgement"
 	"moj/judgement/db"
 	"moj/judgement/domain"
 	"moj/judgement/etc"
@@ -11,7 +12,6 @@ import (
 	"moj/judgement/mq/consumer"
 	"moj/judgement/mq/producer"
 	"moj/judgement/svc"
-	"moj/domain/judgement"
 
 	"github.com/google/wire"
 )
@@ -28,7 +28,7 @@ var providers = wire.NewSet(
 	domain.NewMongoDBJudementRepository,
 	domain.NewSbJudger,
 	domain.NewRPCQuestionRepository,
-	domain.NewMinioCaseReader,
+	domain.NewCacheCaseReader,
 	judgement.NewExecutionCmdHandler,
 	consumer.NewNsqExecuteJudgementConsumer,
 
