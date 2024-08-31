@@ -1,6 +1,8 @@
 package etc
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -12,14 +14,17 @@ type Config struct {
 	CertFile                 string `mapstructure:"CERT_FILE"`
 	TLS                      bool
 	Debug                    bool
-	SbJudgerRPCAddr          string `mapstructure:"SB_JUDGER_RPC_ADDR"`
-	QuestionRPCAddr          string `mapstructure:"QUESTION_RPC_ADDR"`
-	OutPutMsgLimit           int    `mapstructure:"OUTPUT_MSG_LIMIT"`
-	NsqdAddr                 string `mapstructure:"NSQD_ADDR"`
-	NsqLookUpAddr            string `mapstructure:"NSQ_LOOKUP_ADDR"`
-	ExecuteJudgeTopic        string `mapstructure:"EXECUTE_JUDGE_TOPIC"`
-	ExecuteJudgeTopicChannel string `mapstructure:"EXECUTE_JUDGE_TOPIC_CHANNEL"`
-	FinishJudgementTopic     string `mapstructure:"FINISH_RECORD_TOPIC"`
+	SbJudgerRPCAddr          string        `mapstructure:"SB_JUDGER_RPC_ADDR"`
+	QuestionRPCAddr          string        `mapstructure:"QUESTION_RPC_ADDR"`
+	OutPutMsgLimit           int           `mapstructure:"OUTPUT_MSG_LIMIT"`
+	NsqdAddr                 string        `mapstructure:"NSQD_ADDR"`
+	NsqLookUpAddr            string        `mapstructure:"NSQ_LOOKUP_ADDR"`
+	ExecuteJudgeTopic        string        `mapstructure:"EXECUTE_JUDGE_TOPIC"`
+	ExecuteJudgeTopicChannel string        `mapstructure:"EXECUTE_JUDGE_TOPIC_CHANNEL"`
+	FinishJudgementTopic     string        `mapstructure:"FINISH_RECORD_TOPIC"`
+	ValkeyHostAddr           string        `mapstructure:"VALKEY_HOST_ADDR"`
+	OssPrefixURL             string        `mapstructure:"OSS_PREFIX_URL"`
+	CaseCacheExpireTime      time.Duration `mapstructure:"CASE_CACHE_EXPIRE_TIME"`
 }
 
 func NewAppConfig() *Config {
