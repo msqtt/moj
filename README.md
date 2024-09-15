@@ -54,7 +54,7 @@ moj 是一个简单的 OnlineJudge 分布式服务应用，设计基于领域驱
 
 #### ServiceMesh
 
-~~本项目的设计理念是 KISS ，所以~~推荐使用架构简单且轻量化的 Linkerd 作为 ServiceMesh ，安装方式请参考[官方文档](https://linkerd.io/)。
+推荐使用架构简单且轻量化的 Linkerd 作为 ServiceMesh ，安装方式请参考[官方文档](https://linkerd.io/)。
 
 #### 监控设施
 
